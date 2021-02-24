@@ -6,6 +6,8 @@ public class Scanner
 {
   //Variables
   //private final static String delimiters = " \t;:()\'\"=!<>+-*/[]#,^\n";
+  private final static String operators = "+-*/<>!=#^";
+  private final static String separators = "():;[],";
   public Token currentToken = new Token();
   public int iColPos;
   public int iSourceLineNr;
@@ -204,8 +206,9 @@ public class Scanner
         {
           System.out.printf("\nMissing closed quotation on line %d\n", iSourceLineNr + 1);
           System.out.println("");
-          iSourceLineNr += 1;
-          iColPos = 0;
+          //No need to itterate when already at end of line
+          //iSourceLineNr += 1;
+          //iColPos = 0;
           currentToken = nextToken;
           return currentToken.tokenStr;
         }
@@ -237,13 +240,11 @@ public class Scanner
     }
     //Non-Special
     //Operators
-    else if(input == '+' || input == '-' || input == '*' || input == '/' || input == '<' ||
-          input == '>' || input == '!' || input == '=' || input == '#' || input == '^')
+    else if(operators.contains(String.valueOf(input)))
     {
       return "OPERATOR";
     }
-    //Seperators //String.valueOf(input).matches("(|)|:|;|[|]|,"))
-    else if(input == '(' || input == ')' || input == ':' || input == ';' || input == '[' || input == ']' ||input == ',')
+    else if(separators.contains(String.valueOf(input)))
     {
       return "SEPARATOR";
     }
