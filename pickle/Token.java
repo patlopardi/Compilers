@@ -54,11 +54,13 @@ public class Token
             subClassifStr = subClassif.toString();
         else
             subClassifStr = "-";
-    
-        System.out.printf("%-11s %-12s %s\n"
-            , primClassifStr
-            , subClassifStr
-            , tokenStr);
+
+        if(!tokenStr.equals("COMMENT")){
+            System.out.printf("%-11s %-12s %s\n"
+                    , primClassifStr
+                    , subClassifStr
+                    , tokenStr);
+        }
     }
 
 }      
