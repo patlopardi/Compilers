@@ -16,6 +16,18 @@ public class Scanner
     add("in");
     add("notin");
   }};
+  private final static ArrayList<String> uniqueFlowArr = new ArrayList<String>() {
+  {
+    add("endif");
+    add("elseif");
+    add("else");
+    add("endfor");
+    add("endwhile");
+    add("while");
+    add("if");
+    add("for");
+  }
+  };
   public Token currentToken = new Token();
   public int iColPos;
   public int iSourceLineNr;
@@ -105,6 +117,13 @@ public class Scanner
               }
               nextToken.primClassif = Classif.OPERATOR;
               nextToken.tokenStr += textCharM[iColPos];
+              //Check if 2 character operator
+              if(textCharM[iColPos + 1] == '=')
+              {
+                //Iterate and assign 2nd character
+                iColPos++;
+                nextToken.tokenStr+= textCharM[iColPos];
+              }
               currentToken = nextToken;
               iColPos++;
               return currentToken.tokenStr;
@@ -213,6 +232,7 @@ public class Scanner
             case "OPERAND":
               nextToken.tokenStr += textCharM[iColPos];
               iColPos++;
+              //May be able to be shortened down \/
               //Check if and or not in notin
               if(uniqueOperatorArr.contains(nextToken.tokenStr))
               {
@@ -226,6 +246,28 @@ public class Scanner
                   return currentToken.tokenStr;
                 }
               }
+              //Check control flow tokens
+              if(uniqueFlowArr.contains(nextToken.tokenStr))
+              {
+                //Ensure nothing is added, ex. "fort" is not "for"
+                if(iColPos > textCharM.length - 1 || !getType(textCharM[iColPos]).equals("OPERAND") && !getType(textCharM[iColPos]).equals("NUMBER"))
+                {
+                  //Set as Control
+                  nextToken.primClassif = Classif.CONTROL;
+                  //Specify subclass
+                  if(uniqueFlowArr.subList(0,5).contains(nextToken.tokenStr))
+                  {
+                    nextToken.subClassif = SubClassif.END;
+                  }
+                  else
+                  {
+                    nextToken.subClassif = SubClassif.FLOW;
+                  }
+                  currentToken = nextToken;
+                  return currentToken.tokenStr;
+                }
+              }
+              
               //Line ends
               if(iColPos > textCharM.length - 1)
               {
