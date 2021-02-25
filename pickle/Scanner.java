@@ -2,6 +2,8 @@ package pickle;
 import java.util.*;
 import java.io.*;
 
+import static pickle.PickleUtil.checkComments;
+
 public class Scanner
 {
   //Variables
@@ -16,6 +18,7 @@ public class Scanner
   public boolean flagString = false;
   public boolean flagNum = false;
   public boolean flagDecimal = false;
+  public boolean flagComments = false;
 
   //Attributes
   //Constructor
@@ -47,26 +50,36 @@ public class Scanner
     Token nextToken = new Token();
 
     // End of line logic
-    if((iColPos > textCharM.length - 1))
-    {
-      iSourceLineNr += 1;
-      if(sourceLineM.size() <= iSourceLineNr)
-      {
-        return "";
-      }
-      textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
-      iColPos = 0;
-    }
 
-    if(iColPos == 0 && sourceLineM.get(iSourceLineNr).trim().length() > 1)
-    {
-      System.out.printf("%d %s\n", iSourceLineNr + 1, sourceLineM.get(iSourceLineNr));
-    }
     //While not end of file
     while(sourceLineM.size() > iSourceLineNr)
     {
       //Check blank line
-  
+      if((iColPos > textCharM.length - 1))
+      {
+        iSourceLineNr += 1;
+        if(sourceLineM.size() <= iSourceLineNr)
+        {
+          return "";
+        }
+        textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
+        iColPos = 0;
+        flagComments = false;
+      }
+
+      if(iColPos == 0 && sourceLineM.get(iSourceLineNr).trim().length() > 1) {
+        System.out.printf("%d %s\n", iSourceLineNr + 1, sourceLineM.get(iSourceLineNr));
+      }
+
+      if(flagComments == false){
+        textCharM = checkComments(textCharM);
+        flagComments = true;
+      }
+      if(textCharM.length == 0){
+        currentToken.tokenStr = "COMMENT";
+        return currentToken.tokenStr;
+      }
+
       if(sourceLineM.get(iSourceLineNr).trim().length() < 1)
       {
         //Increment Line, set text char array, reset col position
@@ -78,6 +91,13 @@ public class Scanner
         {
           System.out.printf("%d %s\n", iSourceLineNr + 1, sourceLineM.get(iSourceLineNr));
         }
+
+        textCharM = checkComments(textCharM);
+        if(textCharM.length == 0){
+          currentToken.tokenStr = "COMMENT";
+          return currentToken.tokenStr;
+        }
+
       }
       //!!!!!!!!!!!!!!!!!!!!!!!!MARKED FIRST CHARACTER!!!!!!!!!!!!!!!!
       else if(flagStartCharacter)
@@ -88,11 +108,6 @@ public class Scanner
           switch(getType(textCharM[iColPos]))
           {
             case "OPERATOR":
-              if(textCharM[iColPos + 1] == '/'){
-                iColPos = textCharM.length;
-                currentToken.tokenStr = "COMMENT";
-                return currentToken.tokenStr;
-              }
               nextToken.primClassif = Classif.OPERATOR;
               nextToken.tokenStr += textCharM[iColPos];
               currentToken = nextToken;
@@ -157,11 +172,6 @@ public class Scanner
           switch(getType(textCharM[iColPos]))
           {
             case "OPERATOR":
-              if(textCharM[iColPos + 1] == '/'){
-                iColPos = textCharM.length;
-                currentToken.tokenStr = "COMMENT";
-                return currentToken.tokenStr;
-              }
               currentToken = nextToken;
               return currentToken.tokenStr;
             case "SEPARATOR":
