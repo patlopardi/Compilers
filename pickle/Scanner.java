@@ -8,6 +8,14 @@ public class Scanner
   //private final static String delimiters = " \t;:()\'\"=!<>+-*/[]#,^\n";
   private final static String operators = "+-*/<>!=#^";
   private final static String separators = "():;[],";
+  private final static ArrayList<String> uniqueOperatorArr = new ArrayList<String>(){
+  {
+    add("and");
+    add("or");
+    add("not");
+    add("in");
+    add("notin");
+  }};
   public Token currentToken = new Token();
   public int iColPos;
   public int iSourceLineNr;
@@ -205,6 +213,19 @@ public class Scanner
             case "OPERAND":
               nextToken.tokenStr += textCharM[iColPos];
               iColPos++;
+              //Check if and or not in notin
+              if(uniqueOperatorArr.contains(nextToken.tokenStr))
+              {
+                //Ensure it's end of the statement
+                if(iColPos > textCharM.length - 1 || !getType(textCharM[iColPos]).equals("OPERAND") && !getType(textCharM[iColPos]).equals("NUMBER"))
+                {
+                  //Set as Operator
+                  nextToken.primClassif = Classif.OPERATOR;
+                  nextToken.subClassif = SubClassif.EMPTY;
+                  currentToken = nextToken;
+                  return currentToken.tokenStr;
+                }
+              }
               //Line ends
               if(iColPos > textCharM.length - 1)
               {
