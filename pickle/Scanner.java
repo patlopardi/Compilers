@@ -29,7 +29,7 @@ public class Scanner
     try (BufferedReader br = new BufferedReader(new FileReader(sourceFileNm))) {
       while (br.ready()){
         sourceLineM.add(br.readLine());
-      } 
+      }
       br.close();
     } catch (IOException e) {
       return; 
@@ -47,6 +47,8 @@ public class Scanner
     //Flags
     boolean flagStartCharacter = true;
     Token nextToken = new Token();
+
+    // End of line logic
     if((iColPos > textCharM.length - 1))
     {
       iSourceLineNr += 1;
@@ -57,6 +59,7 @@ public class Scanner
       textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
       iColPos = 0;
     }
+
     if(iColPos == 0 && sourceLineM.get(iSourceLineNr).trim().length() > 1)
     {
       System.out.printf("%d %s\n", iSourceLineNr + 1, sourceLineM.get(iSourceLineNr));
@@ -87,6 +90,11 @@ public class Scanner
           switch(getType(textCharM[iColPos]))
           {
             case "OPERATOR":
+              if(textCharM[iColPos + 1] == '/'){
+                iColPos = textCharM.length;
+                currentToken.tokenStr = "COMMENT";
+                return currentToken.tokenStr;
+              }
               nextToken.primClassif = Classif.OPERATOR;
               nextToken.tokenStr += textCharM[iColPos];
               currentToken = nextToken;
@@ -151,6 +159,11 @@ public class Scanner
           switch(getType(textCharM[iColPos]))
           {
             case "OPERATOR":
+              if(textCharM[iColPos + 1] == '/'){
+                iColPos = textCharM.length;
+                currentToken.tokenStr = "COMMENT";
+                return currentToken.tokenStr;
+              }
               currentToken = nextToken;
               return currentToken.tokenStr;
             case "SEPARATOR":
@@ -199,6 +212,10 @@ public class Scanner
                 return currentToken.tokenStr;
               }
               break;
+            case "COMMENT":
+              if(textCharM[iColPos+1] == '/'){
+                iColPos = textCharM.length;
+              }
             default:
               System.out.println("No Match");
           }
@@ -218,7 +235,7 @@ public class Scanner
     return "";
   }
   
-  
+
   
   //Returns Identifier
   private String getType(char input)
@@ -252,6 +269,10 @@ public class Scanner
     else if(input == ' ')
     {
       return "SPACE";  
+    }
+    //comments
+    else if(input =='/'){
+      return "COMMENT";
     }
     //Operand
     else
