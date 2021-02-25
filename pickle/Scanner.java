@@ -66,6 +66,7 @@ public class Scanner
         iColPos = 0;
         flagComments = false;
       }
+
       if(iColPos == 0 && sourceLineM.get(iSourceLineNr).trim().length() > 1) {
         System.out.printf("%d %s\n", iSourceLineNr + 1, sourceLineM.get(iSourceLineNr));
       }
