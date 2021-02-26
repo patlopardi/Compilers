@@ -123,9 +123,8 @@ public class Scanner
       {
         flagStartCharacter = false;
         //Sort for first character
-        try {
-          switch(getType(textCharM[iColPos]))
-          {
+        switch(getType(textCharM[iColPos]))
+        {
             case "OPERATOR":
               nextToken.primClassif = Classif.OPERATOR;
               nextToken.tokenStr += textCharM[iColPos];
@@ -186,22 +185,11 @@ public class Scanner
               iColPos++;
               break;
             default:
-              System.out.println("No Match");
-        }
-        } catch(Exception e)
-        {
-          System.out.printf("\nMissing closed quotation on line %d\n", iSourceLineNr + 1);
-          iSourceLineNr += 1;
-          iColPos = 0;
-          currentToken = nextToken;
-          return currentToken.tokenStr;
         }
       }
       //!!!!!!!!!!!!!!!!!!!!!!!!!!NON FIRST CHARACTER!!!!!!!!!!!!!!!!!!!!!!!!
       else
       {
-        try
-        {
           //Sort for Nth character
           switch(getType(textCharM[iColPos]))
           {
@@ -215,7 +203,7 @@ public class Scanner
               currentToken = nextToken;
               return currentToken.tokenStr;
             case "STRING":
-              //Non-quote accounting
+              //Non-quoted accounting
               if(textCharM[iColPos] == quoteType)
               {
                 flagString = false;
@@ -223,6 +211,15 @@ public class Scanner
                 iColPos++;
                 currentToken = nextToken;
                 return currentToken.tokenStr; 
+              }
+              //If end of line and string isn't concluded then error
+              if((iColPos + 1 > textCharM.length - 1))
+              {
+                flagString = false;
+                currentToken = nextToken;
+                //Error Alert
+                System.out.printf("\nERROR: Missing closed quotation on line %d for String %s \n", iSourceLineNr + 1, currentToken.tokenStr);
+                return currentToken.tokenStr;
               }
               //Handling escaped values
               if(textCharM[iColPos] == '\\')
@@ -297,15 +294,7 @@ public class Scanner
               }
               break;
             default:
-              System.out.println("No Match");
           }
-        } catch(Exception e)
-        {
-          System.out.printf("\nMissing closed quotation on line %d\n", iSourceLineNr + 1);
-          System.out.println("");
-          currentToken = nextToken;
-          return currentToken.tokenStr;
-        }
       }
     }
     //Return for end of file
