@@ -211,8 +211,33 @@ public class Scanner
                 currentToken = nextToken;
                 return currentToken.tokenStr; 
               }
-              nextToken.tokenStr += textCharM[iColPos];
-              iColPos++;
+              //Handling escaped values
+              if(textCharM[iColPos] == '\\')
+              {
+                iColPos++;
+                if("\"\'\\".contains(String.valueOf(textCharM[iColPos])))
+                {
+                  nextToken.tokenStr += textCharM[iColPos];
+                }
+                else if(textCharM[iColPos] == 'n')
+                {
+                  nextToken.tokenStr += Character.toString((char) 10);
+                }
+                else if(textCharM[iColPos] == 't')
+                {
+                  nextToken.tokenStr += Character.toString((char) 9);
+                }
+                else if(textCharM[iColPos] == 'a')
+                {
+                  nextToken.tokenStr += Character.toString((char) 7);
+                }
+                iColPos++;
+              }
+              else 
+              {
+                nextToken.tokenStr += textCharM[iColPos];
+                iColPos++;
+              }
               break;
             case "NUMBER":
               if(textCharM[iColPos] == '.'){
