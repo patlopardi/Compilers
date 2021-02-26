@@ -1,7 +1,6 @@
 package pickle;
 import java.util.*;
 import java.io.*;
-import static pickle.PickleUtil;
 
 public class Scanner
 {
