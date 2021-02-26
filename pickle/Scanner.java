@@ -8,7 +8,6 @@ public class Scanner
   //private final static String delimiters = " \t;:()\'\"=!<>+-*/[]#,^\n";
   private final static String operators = "+-*/<>!=#^";
   private final static String separators = "():;[],";
-  private SymbolTable symbolTable = new SymbolTable();
   public Token currentToken = new Token();
   public int iColPos;
   public int iSourceLineNr;
@@ -23,12 +22,26 @@ public class Scanner
   public boolean flagComments = false;
 
   //Attributes
-  //Constructor
+  /**
+  * Constructor for the Scanner class which set variables and reads through
+  *    file, appending to list.
+  * <p>
+  *
+  * The variables it populates are String fileNm and SymbolTable symbol.
+  *    The file fileNm has it's lines appended to an array list sourceLineM.
+  *    It also assigns the first line of sourceLineM to char array textCharM.
+  *
+  * @param sourceFileNm    String which holds the name of file to be read
+  * @param symbolTable     SymbolTable object passed into class to set variable
+  *
+  * @return      N/A
+  * @throws      Exception if file can't be read and lines appended to array list
+  */
   public Scanner(String sourceFileNm, SymbolTable symbolTable)
   {
     fileNm = sourceFileNm;
     symbol = symbolTable;
-    //Read file
+    //Read through file using BufferReader to append to array
     try (BufferedReader br = new BufferedReader(new FileReader(sourceFileNm))) {
       while (br.ready()){
         sourceLineM.add(br.readLine());
@@ -37,22 +50,38 @@ public class Scanner
     } catch (IOException e) {
       return; 
     }
-    //Starting line number
+    //Set line number and column position for the arrays
     iSourceLineNr = 0;
     iColPos = 0;
-    //Split into characters
+    //Set char array to first line of the string array of lines 
     textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
   }
-  
+  /**
+  * Sorts through array of lines to populate Tokens with correct identifiers, then
+  *    returns either the next Token's String or an empty String if end of array
+  * <p>
+  *
+  * The return value is currentToken.tokenStr. Loops through String Array sourceLineM
+  *    then adds line to char array textCharM. Loops through the character array grabbing
+  *    characters and appending them to the Token nextToken. When it hits an end to the
+  *    token and it has been classified/subclassified it will set currentToken to nextToken
+  *    then return nextToken. The sorting of what to do with the characters is done with
+  *    two case statements (one for first character and other for non-first) that handle
+  *    the character depending on identifier.
+  *
+  * @param      N/A
+  *
+  * @return      String currentToken.tokenStr which is the String of the current token
+  *                  created or returns a "" when end of search.
+  */
   public String getNext()
   {
     //Variables
-    //Flags
     boolean flagStartCharacter = true;
     Token nextToken = new Token();
 
 
-    //While not end of file
+    //Loop through array of lines until at the end
     while(sourceLineM.size() > iSourceLineNr)
     {
 
@@ -73,6 +102,7 @@ public class Scanner
         flagComments = false;
       }
 
+      // Print for when on a new line
       if(iColPos == 0 && sourceLineM.get(iSourceLineNr).trim().length() > 1)
       {
         System.out.printf("%d %s\n", iSourceLineNr + 1, sourceLineM.get(iSourceLineNr));
@@ -249,7 +279,7 @@ public class Scanner
               //End of Operand Check
               if(iColPos > textCharM.length - 1 || !getType(textCharM[iColPos]).equals("OPERAND") && !getType(textCharM[iColPos]).equals("NUMBER"))
               {
-                STEntry htSearchResult = symbolTable.getSymbol(nextToken.tokenStr);
+                STEntry htSearchResult = symbol.getSymbol(nextToken.tokenStr);
                 if(htSearchResult == null && iColPos > textCharM.length - 1)
                 {
                   currentToken = nextToken;
@@ -275,9 +305,6 @@ public class Scanner
         {
           System.out.printf("\nMissing closed quotation on line %d\n", iSourceLineNr + 1);
           System.out.println("");
-          //No need to itterate when already at end of line
-          //iSourceLineNr += 1;
-          //iColPos = 0;
           currentToken = nextToken;
           return currentToken.tokenStr;
         }
@@ -288,8 +315,17 @@ public class Scanner
   }
   
 
-  
-  //Returns Identifier
+  /**
+  * Returns a String to represent the identifier of a character.
+  * <p>
+  *
+  * The return is either STRING,NUMBER,OPERATOR,SEPERATOR,SPACE, or OPERAND. It
+  *    takes in a char input which is the character to be sorted and checks for match.
+  *
+  * @param input      Type char to be sorted.
+  *
+  * @return       String with values of either STRING,NUMBER,OPERATOR,SEPERATOR,SPACE, or OPERAND
+  */
   private String getType(char input)
   {
     //Special cases first
