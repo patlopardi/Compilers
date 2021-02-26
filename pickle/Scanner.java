@@ -16,6 +16,7 @@ public class Scanner
   public List<String> sourceLineM = new ArrayList<>();
   public String fileNm = "";
   public SymbolTable symbol = new SymbolTable();
+  private char quoteType = 'n';
   public boolean flagString = false;
   public boolean flagNum = false;
   public boolean flagDecimal = false;
@@ -88,11 +89,6 @@ public class Scanner
         }     
         textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
         iColPos = 0;
-        //Print new line if not whitespace
-        if(sourceLineM.get(iSourceLineNr).trim().length() > 1)
-        {
-          System.out.printf("%d %s\n", iSourceLineNr + 1, sourceLineM.get(iSourceLineNr));
-        }
       }
       //!!!!!!!!!!!!!!!!!!!!!!!!MARKED FIRST CHARACTER!!!!!!!!!!!!!!!!
       else if(flagStartCharacter)
@@ -128,6 +124,7 @@ public class Scanner
               break;
             case "STRING":
               flagString = true;
+              quoteType = textCharM[iColPos];
               nextToken.primClassif = Classif.OPERAND;
               nextToken.subClassif = SubClassif.STRING;
               iColPos++;
@@ -191,9 +188,10 @@ public class Scanner
               return currentToken.tokenStr;
             case "STRING":
               //Non-quote accounting
-              if(textCharM[iColPos] == '\"')
+              if(textCharM[iColPos] == quoteType)
               {
                 flagString = false;
+                quoteType = 'n';
                 iColPos++;
                 currentToken = nextToken;
                 return currentToken.tokenStr; 
@@ -296,7 +294,7 @@ public class Scanner
   {
     //Special cases first
     //String 
-    if(flagString || input == '\"')
+    if(flagString || input == '\"' || input == '\'')
     {
       return "STRING";
     }

@@ -63,7 +63,7 @@ public class SymbolTable
     if(ret != null){
       return ret;
     }
-    System.out.println("Error: No such value in the symbol table");
+    //System.out.println("Error: No such value in the symbol table");
     return null;
   }
 }
