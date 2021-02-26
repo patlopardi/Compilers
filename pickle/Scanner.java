@@ -26,7 +26,6 @@ public class Scanner
   * Constructor for the Scanner class which set variables and reads through
   *    file, appending to list.
   * <p>
-  *
   * The variables it populates are String fileNm and SymbolTable symbol.
   *    The file fileNm has it's lines appended to an array list sourceLineM.
   *    It also assigns the first line of sourceLineM to char array textCharM.
@@ -60,7 +59,6 @@ public class Scanner
   * Sorts through array of lines to populate Tokens with correct identifiers, then
   *    returns either the next Token's String or an empty String if end of array
   * <p>
-  *
   * The return value is currentToken.tokenStr. Loops through String Array sourceLineM
   *    then adds line to char array textCharM. Loops through the character array grabbing
   *    characters and appending them to the Token nextToken. When it hits an end to the
@@ -318,7 +316,6 @@ public class Scanner
   /**
   * Returns a String to represent the identifier of a character.
   * <p>
-  *
   * The return is either STRING,NUMBER,OPERATOR,SEPERATOR,SPACE, or OPERAND. It
   *    takes in a char input which is the character to be sorted and checks for match.
   *
