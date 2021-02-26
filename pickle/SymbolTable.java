@@ -46,24 +46,33 @@ public class SymbolTable
 
   /**
    * putSymbol() puts a symbol into the symbol table
-   * @param symbol the symbol to add
-   * @param entry the entry for that symbol
+   * <p>
+   * Uses String symbol and STEntry object to .put into ht hashtable.
+   *
+   * @param symbol      the symbol to add
+   * @param entry       the entry for that symbol
+   *
+   * @return      N/A
    */
   public void putSymbol(String symbol, STEntry entry){
     ht.put(symbol, entry);
   }
 
   /**
-   * gets an entry that corresponds with an entry of a symbol table
-   * @param symbol the symbol to look for
-   * @return return the entry that corresponds to the symbol
+   * Gets an entry that corresponds with an entry of a symbol table.
+   * <p>
+   * Uses .get for HashMap ht to return an STEntry correlating with string symbol.
+   *
+   * @param symbol       the symbol to look for
+   *
+   * @return return the entry that corresponds to the symbol or null if not found.
    */
   public STEntry getSymbol(String symbol){
     STEntry ret = ht.get(symbol);
     if(ret != null){
       return ret;
     }
-    System.out.println("Error: No such value in the symbol table");
+    //System.out.println("Error: No such value in the symbol table");
     return null;
   }
 }

@@ -11,7 +11,7 @@ public final class PickleUtil {
                 if((i - 1) > 0){
                     // Cut the comments out of the token array
                     textArray = Arrays.copyOfRange(textArray, 0, i);
-                    System.out.println("New Arr :" + String.valueOf(textArray));
+                    //System.out.println("New Arr :" + String.valueOf(textArray));
                     break;
                 }
                 else{
