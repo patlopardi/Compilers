@@ -68,12 +68,27 @@ public class Scanner
     //While not end of file
     while(sourceLineM.size() > iSourceLineNr)
     {
-      //Check blank line
-  
-      if(sourceLineM.get(iSourceLineNr).trim().length() < 1)
+      //Check end of line
+      if((iColPos > textCharM.length - 1))
       {
+        iSourceLineNr += 1;
+        if(sourceLineM.size() <= iSourceLineNr)
+        {
+          return "";
+        }
+        textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
+        iColPos = 0;
+       }
+    
+      //Check blank line
+      if(sourceLineM.get(iSourceLineNr).trim().length() < 1)
+      { 
         //Increment Line, set text char array, reset col position
         iSourceLineNr += 1;
+        if(sourceLineM.size() <= iSourceLineNr)
+        {
+          return "";
+        }     
         textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
         iColPos = 0;
         //Print new line if not whitespace
@@ -91,7 +106,7 @@ public class Scanner
           switch(getType(textCharM[iColPos]))
           {
             case "OPERATOR":
-              if(textCharM[iColPos + 1] == '/'){
+              if(iColPos < textCharM.length - 1 && textCharM[iColPos + 1] == '/'){
                 iColPos = textCharM.length;
                 currentToken.tokenStr = "COMMENT";
                 return currentToken.tokenStr;
@@ -99,7 +114,7 @@ public class Scanner
               nextToken.primClassif = Classif.OPERATOR;
               nextToken.tokenStr += textCharM[iColPos];
               //Check if 2 character operator
-              if(textCharM[iColPos + 1] == '=')
+              if(iColPos < textCharM.length - 1 && textCharM[iColPos + 1] == '=')
               {
                 //Iterate and assign 2nd character
                 iColPos++;
