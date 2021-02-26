@@ -2,34 +2,13 @@ package pickle;
 import java.util.*;
 import java.io.*;
 
-import static pickle.PickleUtil.checkComments;
-
 public class Scanner
 {
   //Variables
   //private final static String delimiters = " \t;:()\'\"=!<>+-*/[]#,^\n";
   private final static String operators = "+-*/<>!=#^";
   private final static String separators = "():;[],";
-  private final static ArrayList<String> uniqueOperatorArr = new ArrayList<String>(){
-  {
-    add("and");
-    add("or");
-    add("not");
-    add("in");
-    add("notin");
-  }};
-  private final static ArrayList<String> uniqueFlowArr = new ArrayList<String>() {
-  {
-    add("endif");
-    add("elseif");
-    add("else");
-    add("endfor");
-    add("endwhile");
-    add("while");
-    add("if");
-    add("for");
-  }
-  };
+  private SymbolTable symbolTable = new SymbolTable();
   public Token currentToken = new Token();
   public int iColPos;
   public int iSourceLineNr;
@@ -40,7 +19,6 @@ public class Scanner
   public boolean flagString = false;
   public boolean flagNum = false;
   public boolean flagDecimal = false;
-  public boolean flagComments = false;
 
   //Attributes
   //Constructor
@@ -72,36 +50,26 @@ public class Scanner
     Token nextToken = new Token();
 
     // End of line logic
+    if((iColPos > textCharM.length - 1))
+    {
+      iSourceLineNr += 1;
+      if(sourceLineM.size() <= iSourceLineNr)
+      {
+        return "";
+      }
+      textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
+      iColPos = 0;
+    }
 
+    if(iColPos == 0 && sourceLineM.get(iSourceLineNr).trim().length() > 1)
+    {
+      System.out.printf("%d %s\n", iSourceLineNr + 1, sourceLineM.get(iSourceLineNr));
+    }
     //While not end of file
     while(sourceLineM.size() > iSourceLineNr)
     {
       //Check blank line
-      if((iColPos > textCharM.length - 1))
-      {
-        iSourceLineNr += 1;
-        if(sourceLineM.size() <= iSourceLineNr)
-        {
-          return "";
-        }
-        textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
-        iColPos = 0;
-        flagComments = false;
-      }
-
-      if(iColPos == 0 && sourceLineM.get(iSourceLineNr).trim().length() > 1) {
-        System.out.printf("%d %s\n", iSourceLineNr + 1, sourceLineM.get(iSourceLineNr));
-      }
-
-      if(flagComments == false){
-        textCharM = checkComments(textCharM);
-        flagComments = true;
-      }
-      if(textCharM.length == 0){
-        currentToken.tokenStr = "COMMENT";
-        return currentToken.tokenStr;
-      }
-
+  
       if(sourceLineM.get(iSourceLineNr).trim().length() < 1)
       {
         //Increment Line, set text char array, reset col position
@@ -113,13 +81,6 @@ public class Scanner
         {
           System.out.printf("%d %s\n", iSourceLineNr + 1, sourceLineM.get(iSourceLineNr));
         }
-
-        textCharM = checkComments(textCharM);
-        if(textCharM.length == 0){
-          currentToken.tokenStr = "COMMENT";
-          return currentToken.tokenStr;
-        }
-
       }
       //!!!!!!!!!!!!!!!!!!!!!!!!MARKED FIRST CHARACTER!!!!!!!!!!!!!!!!
       else if(flagStartCharacter)
@@ -130,6 +91,11 @@ public class Scanner
           switch(getType(textCharM[iColPos]))
           {
             case "OPERATOR":
+              if(textCharM[iColPos + 1] == '/'){
+                iColPos = textCharM.length;
+                currentToken.tokenStr = "COMMENT";
+                return currentToken.tokenStr;
+              }
               nextToken.primClassif = Classif.OPERATOR;
               nextToken.tokenStr += textCharM[iColPos];
               //Check if 2 character operator
@@ -176,8 +142,15 @@ public class Scanner
             case "OPERAND":
               nextToken.primClassif = Classif.OPERAND;
               nextToken.tokenStr += textCharM[iColPos];
-              //Change this to be specific
-              nextToken.subClassif = SubClassif.IDENTIFIER;
+              
+              //Boolean constant check
+              if((textCharM[iColPos] == 'T' || textCharM[iColPos] == 'F') && (iColPos > textCharM.length - 1 || (!getType(textCharM[iColPos + 1]).equals("OPERAND") && !getType(textCharM[iColPos + 1]).equals("NUMBER")))){
+                nextToken.subClassif = SubClassif.BOOLEAN;
+              }
+              else{
+                nextToken.subClassif = SubClassif.IDENTIFIER;
+              }
+              
               iColPos++;
               break;
             default:
@@ -201,6 +174,11 @@ public class Scanner
           switch(getType(textCharM[iColPos]))
           {
             case "OPERATOR":
+              if(textCharM[iColPos + 1] == '/'){
+                iColPos = textCharM.length;
+                currentToken.tokenStr = "COMMENT";
+                return currentToken.tokenStr;
+              }
               currentToken = nextToken;
               return currentToken.tokenStr;
             case "SEPARATOR":
@@ -242,47 +220,27 @@ public class Scanner
             case "OPERAND":
               nextToken.tokenStr += textCharM[iColPos];
               iColPos++;
-              //May be able to be shortened down \/
-              //Check if and or not in notin
-              if(uniqueOperatorArr.contains(nextToken.tokenStr))
-              {
-                //Ensure it's end of the statement
-                if(iColPos > textCharM.length - 1 || !getType(textCharM[iColPos]).equals("OPERAND") && !getType(textCharM[iColPos]).equals("NUMBER"))
-                {
-                  //Set as Operator
-                  nextToken.primClassif = Classif.OPERATOR;
-                  nextToken.subClassif = SubClassif.EMPTY;
-                  currentToken = nextToken;
-                  return currentToken.tokenStr;
-                }
-              }
-              //Check control flow tokens
-              if(uniqueFlowArr.contains(nextToken.tokenStr))
-              {
-                //Ensure nothing is added, ex. "fort" is not "for"
-                if(iColPos > textCharM.length - 1 || !getType(textCharM[iColPos]).equals("OPERAND") && !getType(textCharM[iColPos]).equals("NUMBER"))
-                {
-                  //Set as Control
-                  nextToken.primClassif = Classif.CONTROL;
-                  //Specify subclass
-                  if(uniqueFlowArr.subList(0,5).contains(nextToken.tokenStr))
-                  {
-                    nextToken.subClassif = SubClassif.END;
-                  }
-                  else
-                  {
-                    nextToken.subClassif = SubClassif.FLOW;
-                  }
-                  currentToken = nextToken;
-                  return currentToken.tokenStr;
-                }
-              }
               
-              //Line ends
-              if(iColPos > textCharM.length - 1)
+              //End of Operand Check
+              if(iColPos > textCharM.length - 1 || !getType(textCharM[iColPos]).equals("OPERAND") && !getType(textCharM[iColPos]).equals("NUMBER"))
               {
-                currentToken = nextToken;
-                return currentToken.tokenStr;
+                STEntry htSearchResult = symbolTable.getSymbol(nextToken.tokenStr);
+                if(htSearchResult == null && iColPos > textCharM.length - 1)
+                {
+                  currentToken = nextToken;
+                  return currentToken.tokenStr;
+                }
+                else if(htSearchResult != null)
+                {
+                  nextToken.primClassif = htSearchResult.primClassif;
+                  if(htSearchResult instanceof STControl)
+                  {
+                    STControl subHolder = (STControl) htSearchResult;
+                    nextToken.subClassif = subHolder.subClassif;
+                  }
+                  currentToken = nextToken;
+                  return currentToken.tokenStr;
+                }
               }
               break;
             case "COMMENT":
