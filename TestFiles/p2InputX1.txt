@@ -1,4 +1,4 @@
-Int i; // Test
+Int i;
 Float pi;
 String day;
    day
@@ -29,7 +29,7 @@ print("\tradius="
       ,  area);
 Int irad2;
 irad2 = radius ^ 2;
-print("\t2. area using int radius as left operand");
+print("\x2. area using int radius as left operand");
 area = irad2 * pi;
 print("\tradius=", radius, "irad2=", irad2, "area=", area);
 Float circum;
@@ -112,4 +112,3 @@ while i < 5:
     i = i + 1;
 endwhile;
 print("\tAfter outer while");
-
