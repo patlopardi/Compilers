@@ -1,4 +1,8 @@
 package pickle;
+import pickle.Exceptions.InvalidFloatException;
+import pickle.Exceptions.InvalidLiteralException;
+import pickle.Exceptions.InvalidStringException;
+
 import java.util.*;
 import java.io.*;
 
@@ -67,13 +71,10 @@ public class Scanner
   *    two case statements (one for first character and other for non-first) that handle
   *    the character depending on identifier.
   *
-  * @param      N/A
-  *
   * @return      String currentToken.tokenStr which is the String of the current token
   *                  created or returns a "" when end of search.
   */
-  public String getNext()
-  {
+  public String getNext() throws InvalidFloatException, InvalidLiteralException, InvalidStringException {
     //Variables
     boolean flagStartCharacter = true;
     Token nextToken = new Token();
@@ -217,9 +218,9 @@ public class Scanner
               {
                 flagString = false;
                 currentToken = nextToken;
+                currentToken.tokenStr += textCharM[iColPos];
                 //Error Alert
-                System.out.printf("\nERROR: Missing closed quotation on line %d for String %s \n", iSourceLineNr + 1, currentToken.tokenStr);
-                return currentToken.tokenStr;
+                throw new InvalidStringException( currentToken.tokenStr, iColPos, iSourceLineNr );
               }
               //Handling escaped values
               if(textCharM[iColPos] == '\\')
@@ -251,16 +252,11 @@ public class Scanner
               break;
             case "NUMBER":
               if(textCharM[iColPos] == '.'){
-                if(flagDecimal == true)
-                {
-                  flagDecimal = false;
-                  System.out.printf("\nIncorrect float value on line %d\n", iSourceLineNr + 1);
-                  System.out.println("");
-                  iSourceLineNr += 1;
-                  iColPos = 0;
-                  currentToken = nextToken;
-                  return currentToken.tokenStr;
+
+                if(flagDecimal == true) {
+                  throw new InvalidFloatException(nextToken.tokenStr,textCharM,iColPos,iSourceLineNr);
                 }
+
                 flagDecimal = true;
                 nextToken.subClassif = SubClassif.FLOAT;
               }
@@ -268,9 +264,13 @@ public class Scanner
               iColPos++;
               break;
             case "OPERAND":
+              // Check for invalid literal
+              if(nextToken.subClassif == SubClassif.INTEGER || nextToken.subClassif == SubClassif.FLOAT){
+                throw new InvalidLiteralException(nextToken.tokenStr, textCharM, iColPos, iSourceLineNr);
+              }
+
               nextToken.tokenStr += textCharM[iColPos];
               iColPos++;
-              
               //End of Operand Check
               if(iColPos > textCharM.length - 1 || !getType(textCharM[iColPos]).equals("OPERAND") && !getType(textCharM[iColPos]).equals("NUMBER"))
               {
