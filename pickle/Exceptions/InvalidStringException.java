@@ -23,8 +23,7 @@ public class InvalidStringException extends Exception{
     /**
      * <p>
      * This function overrides the getMessage() function for the Exception class
-     *      and loops through the invalid literal until a non digit character
-     *      is found to return the full invalid float to the user
+     *     and returns a string with the formatted error message
      *
      * @Override    Used to override the getMessage function in the Exception class
      * @return      String that will be the full error message
