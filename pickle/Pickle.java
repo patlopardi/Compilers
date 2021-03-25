@@ -23,6 +23,9 @@ public class Pickle
     {
         // Create the SymbolTable
         SymbolTable symbolTable = new SymbolTable();
+        Expression expr = new Expression();
+        expr.Test();
+        /*
         try
         {
             // Print a column heading 
@@ -40,6 +43,6 @@ public class Pickle
         catch (Exception e)
         {
             e.printStackTrace();
-        }
+        }*/
     }
 }
