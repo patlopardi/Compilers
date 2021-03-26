@@ -85,7 +85,7 @@ public class Scanner
     Numeric nOp2 = new Numeric(this, res02, "-", "2nd Operand");
     a.Declare("i", res02);
     ResultValue test = a.Assign("i", PickleUtil.Square(nOp1,nOp2));
-    System.out.println(PickleUtil.LessThan(nOp1, nOp2));
+    //System.out.println(PickleUtil.LessThan(nOp1, nOp2));
 
 
     //Loop through array of lines until at the end

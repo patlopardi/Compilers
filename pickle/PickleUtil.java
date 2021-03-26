@@ -65,11 +65,11 @@ public final class PickleUtil {
         }
 
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            int value = (int) nOp1.resultValue.value -  (Double.valueOf(nOp2.resultValue.value.toString())).intValue();
+            int value = (Integer.valueOf(nOp1.resultValue.value.toString())).intValue() - (Integer.valueOf(nOp2.resultValue.value.toString())).intValue();
             result = new ResultValue(SubClassif.INTEGER, value, "","");
         }
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            double value = (double) nOp1.resultValue.value - Double.valueOf(nOp2.resultValue.value.toString());
+            double value = Double.valueOf(nOp1.resultValue.value.toString()) - Double.valueOf(nOp2.resultValue.value.toString());
             result = new ResultValue(SubClassif.FLOAT, value, "","");
         }
 
@@ -82,13 +82,12 @@ public final class PickleUtil {
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
-
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            int value = (int) nOp1.resultValue.value + (Double.valueOf(nOp2.resultValue.value.toString())).intValue();
+            int value = (Integer.valueOf(nOp1.resultValue.value.toString())).intValue() + (Integer.valueOf(nOp2.resultValue.value.toString())).intValue();
             result = new ResultValue(SubClassif.INTEGER, value, "","");
         }
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            double value = (double) nOp1.resultValue.value + Double.valueOf(nOp2.resultValue.value.toString());
+            double value =  Double.valueOf(nOp1.resultValue.value.toString()) + Double.valueOf(nOp2.resultValue.value.toString());
             result = new ResultValue(SubClassif.FLOAT, value, "","");
         }
 
@@ -102,11 +101,11 @@ public final class PickleUtil {
         }
 
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            int value = (int) nOp1.resultValue.value * (Double.valueOf(nOp2.resultValue.value.toString())).intValue();
+            int value = (Integer.valueOf(nOp1.resultValue.value.toString())).intValue() * (Integer.valueOf(nOp2.resultValue.value.toString())).intValue();
             result = new ResultValue(SubClassif.INTEGER, value, "","");
         }
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            double value = (double) nOp1.resultValue.value * Double.valueOf(nOp2.resultValue.value.toString());
+            double value = Double.valueOf(nOp1.resultValue.value.toString()) * Double.valueOf(nOp2.resultValue.value.toString());
             result = new ResultValue(SubClassif.FLOAT, value, "","");
         }
 
@@ -121,11 +120,11 @@ public final class PickleUtil {
         }
 
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            int value = (int) nOp1.resultValue.value / (Double.valueOf(nOp2.resultValue.value.toString())).intValue();
+            int value = (Integer.valueOf(nOp1.resultValue.value.toString())).intValue() / (Integer.valueOf(nOp2.resultValue.value.toString())).intValue();
             result = new ResultValue(SubClassif.INTEGER, value, "","");
         }
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            double value = (double) nOp1.resultValue.value / Double.valueOf(nOp2.resultValue.value.toString());
+            double value = Double.valueOf(nOp1.resultValue.value.toString()) / Double.valueOf(nOp2.resultValue.value.toString());
             result = new ResultValue(SubClassif.FLOAT, value, "","");
         }
 
@@ -140,8 +139,8 @@ public final class PickleUtil {
         }
 
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            int op1 = (int) nOp1.resultValue.value;
-            int op2 = (Double.valueOf(nOp2.resultValue.value.toString()).intValue());
+            int op1 = (Integer.valueOf(nOp1.resultValue.value.toString())).intValue();
+            int op2 = (Integer.valueOf(nOp2.resultValue.value.toString())).intValue();
             int value = (int) Math.pow(op1, op2);
             result = new ResultValue(SubClassif.INTEGER, value, "","");
         }

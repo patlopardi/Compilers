@@ -62,5 +62,9 @@ public class Token
                     , tokenStr);
         }
     }
+    public ResultValue toResult(String terminating)
+    {
+      return new ResultValue(this.subClassif, tokenStr, null, terminating);
+    }
 
 }      
