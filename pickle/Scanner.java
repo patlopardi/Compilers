@@ -78,14 +78,14 @@ public class Scanner
     //Variables
     boolean flagStartCharacter = true;
     Token nextToken = new Token();
-    StorageManager a = new StorageManager();
-    ResultValue res01 = new ResultValue(SubClassif.FLOAT, 2.3, "", "d");
-    ResultValue res02 = new ResultValue(SubClassif.FLOAT, 2.3, "", "");
-    Numeric nOp1 = new Numeric(this, res01, "-", "1st Operand");
-    Numeric nOp2 = new Numeric(this, res02, "-", "2nd Operand");
-    a.Declare("i", res02);
-    ResultValue test = a.Assign("i", PickleUtil.Square(nOp1,nOp2));
-    //System.out.println(PickleUtil.LessThan(nOp1, nOp2));
+//    StorageManager a = new StorageManager();
+//    ResultValue res01 = new ResultValue(SubClassif.INTEGER, 4, "", "d");
+//    ResultValue res02 = new ResultValue(SubClassif.INTEGER, 2.0, "", "");
+//    Numeric nOp1 = new Numeric(this, res01, "-", "1st Operand");
+//    Numeric nOp2 = new Numeric(this, res02, "-", "2nd Operand");
+//    a.Declare("i", res02);
+//    ResultValue test = a.Assign("i", PickleUtil.Square(nOp1,nOp2));
+//    System.out.println(PickleUtil.GreaterThan(nOp1,nOp2));
 
 
     //Loop through array of lines until at the end
