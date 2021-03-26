@@ -50,13 +50,13 @@ public final class PickleUtil {
 
     /**
      * <p>
-     * This function will return a string based on the resulting subtraction from
+     * This function will return a ResultValue based on the resulting subtraction from
      *      the two operands and the type will be based off the left operand
      *
      * @param nOp1  Left hand operand, the result type will match this
      * @param nOp2  Right hand operand
      *
-     * @return      String
+     * @return      ResultValue
      */
     public static ResultValue Subtract(Numeric nOp1, Numeric nOp2){
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
@@ -77,6 +77,16 @@ public final class PickleUtil {
 
     }
 
+    /**
+     * <p>
+     * This function will return a ResultValue based on the resulting addition from
+     *      the two operands and the type will be based off the left operand
+     *
+     * @param nOp1  Left hand operand, the result type will match this
+     * @param nOp2  Right hand operand
+     *
+     * @return      ResultValue
+     */
     public static ResultValue Addition(Numeric nOp1, Numeric nOp2){
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
@@ -94,12 +104,24 @@ public final class PickleUtil {
         return result;
 
     }
+
+    /**
+     * <p>
+     * This function will return a ResultValue based on the resulting multiplcation from
+     *      the two operands and the type will be based off the left operand
+     *
+     * @param nOp1  Left hand operand, the result type will match this
+     * @param nOp2  Right hand operand
+     *
+     * @return      ResultValue
+     */
     public static ResultValue Multiply(Numeric nOp1, Numeric nOp2){
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
 
+        // check left hand operand type
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
             int value = nOp1.valueToInt() * nOp2.valueToInt();
             result = new ResultValue(SubClassif.INTEGER, value, "","");
@@ -113,6 +135,16 @@ public final class PickleUtil {
 
     }
 
+    /**
+     * <p>
+     * This function will return a ResultValue based on the resulting division from
+     *      the two operands and the type will be based off the left operand
+     *
+     * @param nOp1  Left hand operand, the result type will match this
+     * @param nOp2  Right hand operand
+     *
+     * @return      ResultValue
+     */
     public static ResultValue Divide(Numeric nOp1, Numeric nOp2){
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
@@ -132,6 +164,16 @@ public final class PickleUtil {
 
     }
 
+    /**
+     * <p>
+     * This function will return a ResultValue based on the resulting square from
+     *      the two operands and the type will be based off the left operand
+     *
+     * @param nOp1  Left hand operand, the result type will match this
+     * @param nOp2  Right hand operand
+     *
+     * @return      ResultValue
+     */
     public static ResultValue Square(Numeric nOp1, Numeric nOp2){
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
@@ -153,6 +195,16 @@ public final class PickleUtil {
 
     }
 
+    /**
+     * <p>
+     * This function will return true if the left operand is equivalent to
+     *      the right operand
+     *
+     * @param nOp1  Left hand operand
+     * @param nOp2  Right hand operand
+     *
+     * @return      Boolean
+     */
     public static Boolean Equivalent(Numeric nOp1, Numeric nOp2){
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
@@ -165,6 +217,16 @@ public final class PickleUtil {
         }
     }
 
+    /**
+     * <p>
+     * This function will return true if the left operand is not equivalent to
+     *      the right operand
+     *
+     * @param nOp1  Left hand operand
+     * @param nOp2  Right hand operand
+     *
+     * @return      Boolean
+     */
     public static Boolean NotEquivalent(Numeric nOp1, Numeric nOp2){
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
@@ -178,6 +240,16 @@ public final class PickleUtil {
     }
 
 
+    /**
+     * <p>
+     * This function will return true if the left operand is less than or equal to
+     *      the right operand
+     *
+     * @param nOp1  Left hand operand
+     * @param nOp2  Right hand operand
+     *
+     * @return      Boolean
+     */
     public static Boolean LessThanOrEqual(Numeric nOp1, Numeric nOp2){
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
@@ -190,6 +262,16 @@ public final class PickleUtil {
         }
     }
 
+    /**
+     * <p>
+     * This function will return true if the left operand is greater than or equal to
+     *      the right operand
+     *
+     * @param nOp1  Left hand operand
+     * @param nOp2  Right hand operand
+     *
+     * @return      Boolean
+     */
     public static Boolean GreaterThanOrEqual(Numeric nOp1, Numeric nOp2){
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
@@ -202,6 +284,16 @@ public final class PickleUtil {
         }
     }
 
+    /**
+     * <p>
+     * This function will return true if the left operand is less than
+     *      the right operand and false if else
+     *
+     * @param nOp1  Left hand operand
+     * @param nOp2  Right hand operand
+     *
+     * @return      Boolean
+     */
     public static Boolean LessThan(Numeric nOp1, Numeric nOp2){
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
@@ -214,6 +306,16 @@ public final class PickleUtil {
         }
     }
 
+    /**
+     * <p>
+     * This function will return true if the left operand is greater than to
+     *      the right operand and false if else
+     *
+     * @param nOp1  Left hand operand
+     * @param nOp2  Right hand operand
+     *
+     * @return      Boolean
+     */
     public static Boolean GreaterThan(Numeric nOp1, Numeric nOp2){
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
