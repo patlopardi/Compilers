@@ -23,9 +23,6 @@ public class Pickle
     {
         // Create the SymbolTable
         SymbolTable symbolTable = new SymbolTable();
-        Expression expr = new Expression();
-        expr.Test();
-        /*
         try
         {
             Scanner scan = new Scanner(args[0], symbolTable);
@@ -35,6 +32,7 @@ public class Pickle
         catch (Exception e)
         {
             e.printStackTrace();
-        }*/
+        }
     }
 }
+
