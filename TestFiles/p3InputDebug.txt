@@ -1,3 +1,4 @@
+print("p3InputDebug.txt");
 Int i;
 Float pi;
 String day;
@@ -5,6 +6,7 @@ String day;
    =
    "Sunday";
 String name;
+debug Assign on;
 name = "Anita Goodgrade";
 String weird;
 weird = "\tTX\tTexas\n";
@@ -13,6 +15,7 @@ loc = "TX";
 
 // numeric stuff
 print(">>> Checking datatype results based on left operand");
+debug Stmt on;
 pi = 3.14;
 Float area;
 Float radius2;
@@ -29,7 +32,7 @@ print("\tradius="
       ,  area);
 Int irad2;
 irad2 = radius ^ 2;
-print("\x2. area using int radius as left operand");
+print("\t2. area using int radius as left operand");
 area = irad2 * pi;
 print("\tradius=", radius, "irad2=", irad2, "area=", area);
 Float circum;
@@ -42,6 +45,23 @@ print("\t4. circumference using twoPi as int * float");
 twoPi = 2 * pi;
 circum = twoPi * radius;
 print("\tradius=", radius, "twoPi=", twoPi, "circum=", circum);
+
+// Minus stuff
+debug Assign off;
+debug Expr on;
+debug Stmt off;
+Int A;
+Int B;
+Float D;
+A = 10;
+B = 6;
+D = 25;
+print(">> Minus test, A=", A, "B=", B, "D=", D);
+print("D-A=", D-A);
+print("-A=", -A);
+print("-D=", -D);
+A = -B;
+print("A=-B =", A);
 
 // Simple if
 i = 0;
@@ -68,6 +88,7 @@ endif;
 // while and if
 print(">>> First while i < 5");
 i = 1;
+debug Stmt on;
 while i < 5:
     print("\ttop of while, i=", i);
     if i < 3:
@@ -91,6 +112,7 @@ while i < 5:
     endif;
     print("\tbottom of while, i=", i);
 endwhile;
+debug Stmt off;
 print("\tAfter first while");
 
 // nested while loops

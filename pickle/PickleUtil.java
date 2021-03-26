@@ -37,4 +37,266 @@ public final class PickleUtil {
         }
         return textArray;
     }
+
+    public static boolean checkNumericExpr(ResultValue res01, ResultValue res02){
+        if ((res01.dataType == SubClassif.FLOAT || res01.dataType == SubClassif.INTEGER) &&
+                (res02.dataType == SubClassif.FLOAT || res02.dataType == SubClassif.INTEGER)){
+            return true;
+        }
+        else   {
+            return false;
+        }
+    }
+
+    /**
+     * <p>
+     * This function will return a string based on the resulting subtraction from
+     *      the two operands and the type will be based off the left operand
+     *
+     * @param nOp1  Left hand operand, the result type will match this
+     * @param nOp2  Right hand operand
+     *
+     * @return      String
+     */
+    public static ResultValue Subtract(Numeric nOp1, Numeric nOp2){
+        ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
+        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
+           // Throw error
+        }
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            int value = (int) nOp1.resultValue.value -  (Double.valueOf(nOp2.resultValue.value.toString())).intValue();
+            result = new ResultValue(SubClassif.INTEGER, value, "","");
+        }
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            double value = (double) nOp1.resultValue.value - Double.valueOf(nOp2.resultValue.value.toString());
+            result = new ResultValue(SubClassif.FLOAT, value, "","");
+        }
+
+        return result;
+
+    }
+
+    public static ResultValue Addition(Numeric nOp1, Numeric nOp2){
+        ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
+        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
+            // Throw error
+        }
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            int value = (int) nOp1.resultValue.value + (Double.valueOf(nOp2.resultValue.value.toString())).intValue();
+            result = new ResultValue(SubClassif.INTEGER, value, "","");
+        }
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            double value = (double) nOp1.resultValue.value + Double.valueOf(nOp2.resultValue.value.toString());
+            result = new ResultValue(SubClassif.FLOAT, value, "","");
+        }
+
+        return result;
+
+    }
+    public static ResultValue Multiply(Numeric nOp1, Numeric nOp2){
+        ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
+        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
+            // Throw error
+        }
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            int value = (int) nOp1.resultValue.value * (Double.valueOf(nOp2.resultValue.value.toString())).intValue();
+            result = new ResultValue(SubClassif.INTEGER, value, "","");
+        }
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            double value = (double) nOp1.resultValue.value * Double.valueOf(nOp2.resultValue.value.toString());
+            result = new ResultValue(SubClassif.FLOAT, value, "","");
+        }
+
+        return result;
+
+    }
+
+    public static ResultValue Divide(Numeric nOp1, Numeric nOp2){
+        ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
+        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
+            // Throw error
+        }
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            int value = (int) nOp1.resultValue.value / (Double.valueOf(nOp2.resultValue.value.toString())).intValue();
+            result = new ResultValue(SubClassif.INTEGER, value, "","");
+        }
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            double value = (double) nOp1.resultValue.value / Double.valueOf(nOp2.resultValue.value.toString());
+            result = new ResultValue(SubClassif.FLOAT, value, "","");
+        }
+
+        return result;
+
+    }
+
+    public static ResultValue Square(Numeric nOp1, Numeric nOp2){
+        ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
+        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
+            // Throw error
+        }
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            int op1 = (int) nOp1.resultValue.value;
+            int op2 = (Double.valueOf(nOp2.resultValue.value.toString()).intValue());
+            int value = (int) Math.pow(op1, op2);
+            result = new ResultValue(SubClassif.INTEGER, value, "","");
+        }
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            double value = Math.pow((double) nOp1.resultValue.value, Double.valueOf(nOp2.resultValue.value.toString()));
+            result = new ResultValue(SubClassif.FLOAT, value, "","");
+        }
+
+        return result;
+
+    }
+
+    public static Boolean Equivalent(Numeric nOp1, Numeric nOp2){
+        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
+            // Throw error
+        }
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            if ((int) nOp1.resultValue.value == (Double.valueOf(nOp2.resultValue.value.toString()).intValue())){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            if((double) nOp1.resultValue.value == Double.valueOf(nOp2.resultValue.value.toString())){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public static Boolean NotEquivalent(Numeric nOp1, Numeric nOp2){
+        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
+            // Throw error
+        }
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            if ((int) nOp1.resultValue.value != (Double.valueOf(nOp2.resultValue.value.toString()).intValue())){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            if((double) nOp1.resultValue.value != Double.valueOf(nOp2.resultValue.value.toString())){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        return false;
+    }
+
+
+    public static Boolean LessThanOrEqual(Numeric nOp1, Numeric nOp2){
+        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
+            // Throw error
+        }
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            if ((int) nOp1.resultValue.value <= (Double.valueOf(nOp2.resultValue.value.toString()).intValue())){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            if((double) nOp1.resultValue.value <= Double.valueOf(nOp2.resultValue.value.toString())){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public static Boolean GreaterThanOrEqual(Numeric nOp1, Numeric nOp2){
+        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
+            // Throw error
+        }
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            if ((int) nOp1.resultValue.value >= (Double.valueOf(nOp2.resultValue.value.toString()).intValue())){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            if((double) nOp1.resultValue.value >= Double.valueOf(nOp2.resultValue.value.toString())){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public static Boolean GreaterThan(Numeric nOp1, Numeric nOp2){
+        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
+            // Throw error
+        }
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            if ((int) nOp1.resultValue.value > (Double.valueOf(nOp2.resultValue.value.toString()).intValue())){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            if((double) nOp1.resultValue.value > Double.valueOf(nOp2.resultValue.value.toString())){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public static Boolean LessThan(Numeric nOp1, Numeric nOp2){
+        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
+            // Throw error
+        }
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            if ((int) nOp1.resultValue.value < (Double.valueOf(nOp2.resultValue.value.toString()).intValue())){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            if((double) nOp1.resultValue.value < Double.valueOf(nOp2.resultValue.value.toString())){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        return false;
+    }
+
 }
