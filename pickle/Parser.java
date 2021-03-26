@@ -5,6 +5,7 @@ import java.util.Hashtable;
 public class Parser {
     public Scanner scan;
     public SymbolTable symbolT;
+    public StorageManager storage = new StorageManager();
     public Parser(Scanner scanner, SymbolTable symbolTable){
         this.scan = scanner;
         this.symbolT = symbolTable;
@@ -72,19 +73,32 @@ public class Parser {
     }
 
     public void assignment(){
-        
-        //General Case
-        Expr exp = new Expr(scan);
+        //Temporary things for testing the assignment
+        Expr exp = new Expr(scan, storage);
         try{
-                //Skips past the variable and assignment (ex: foo =)
+                //Sets the variable
+                /*String var = scan.currentToken.tokenStr;
+                //Assuming just normal = for testing
+                String equalVar = scan.currentToken.tokenStr;
                 scan.getNext();
-                scan.getNext();
-                exp.expr(";");
+                ResultValue result = exp.expr(";");
+                storage.Declare(var, result);
+                */
+                //The handle for different types of =
+                /*if(equalVar.equals("="))
+                {
+                  storage.Declare(var, result);
+                }
+                else if(equalVar.equals("+="))
+                {
+                  storage.Declare(var, PickleUtil.Addition())
+                }*/
+                
             }
             catch (Exception e){
                 e.printStackTrace();
             }
-        //skipTo(";");
+        skipTo(";");
 
     }
     public void skipTo(String stopToken){

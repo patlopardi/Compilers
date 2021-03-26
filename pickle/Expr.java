@@ -3,18 +3,25 @@ package pickle;
 public class Expr {
   public Scanner scan;
   public String endSeparator;
+  public StorageManager storage;
   
-  public Expr(Scanner scanner){
+  public Expr(Scanner scanner, StorageManager storage){
     
     this.scan = scanner;
-    
+    this.storage = storage;
   }
     
   public ResultValue expr(String endSeparator) throws Exception {
     // begin on the first token of the expression
     this.endSeparator = endSeparator;
     
+    if(scan.currentToken.primClassif != Classif.OPERAND)
+    {
+      scan.getNext();
+    }
+    
     Token operator;
+    System.out.printf("This is the current token %s \n", scan.currentToken.tokenStr);
     ResultValue res = products();                    
     ResultValue temp;
     
@@ -96,7 +103,7 @@ public class Expr {
       {
         case IDENTIFIER:                
           //Need reference to the manager
-          //res = StorageManager.getVariableValue(scan.currentToken.tokenStr);
+          res = storage.getVariableValue(scan.currentToken.tokenStr);
           // nextToken is operator or sep
           scan.getNext();                     
           return res;	
