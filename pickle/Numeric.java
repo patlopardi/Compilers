@@ -30,5 +30,13 @@ public class Numeric {
         // this.res = res;
     }
 
+    public int valueToInt(){
+        return (Double.valueOf(this.resultValue.value.toString())).intValue();
+    }
+
+    public double valueToDouble(){
+        return (Double.valueOf(this.resultValue.value.toString()));
+    }
+
 
 }
