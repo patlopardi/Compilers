@@ -16,7 +16,7 @@ public class Parser {
         try{
             while(! scan.getNext().isEmpty() ){
                 //scan.currentToken.printToken();
-                System.out.println(scan.currentToken.tokenStr);
+                //System.out.println(scan.currentToken.tokenStr);
                 if(scan.currentToken.tokenStr.equals("print")){
                     print();
                     continue;
@@ -36,7 +36,7 @@ public class Parser {
                 }
                 else{
                     assignment();
-                    //System.out.println(scan.currentToken.tokenStr);
+                    
                 }
             }
 
@@ -72,8 +72,19 @@ public class Parser {
     }
 
     public void assignment(){
-        System.out.println("in assignment");
-        skipTo(";");
+        
+        //General Case
+        Expr exp = new Expr(scan);
+        try{
+                //Skips past the variable and assignment (ex: foo =)
+                scan.getNext();
+                scan.getNext();
+                exp.expr(";");
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        //skipTo(";");
 
     }
     public void skipTo(String stopToken){

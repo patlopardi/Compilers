@@ -27,6 +27,7 @@ public class Pickle
         {
             Scanner scan = new Scanner(args[0], symbolTable);
             Parser parser = new Parser(scan, symbolTable);
+            
 
         }
         catch (Exception e)
