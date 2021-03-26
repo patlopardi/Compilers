@@ -4,7 +4,7 @@ package pickle;
 
 public class Numeric {
     public Scanner scan;
-    // public resultValue res;
+    public ResultValue resultValue;
     public String operator;
     public String operand;
 
@@ -22,11 +22,13 @@ public class Numeric {
      * @return      N/A
      */
 
-    public Numeric(Scanner scan, String operator, String operand ){
+    public Numeric(Scanner scan, ResultValue resultValue, String operator, String operand ){
         this.operand = operand;
+        this.resultValue = resultValue;
         this.operator = operator;
         this.scan = scan;
         // this.res = res;
     }
+
 
 }
