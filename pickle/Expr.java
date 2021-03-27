@@ -22,18 +22,21 @@ public class Expr {
     this.storage = storage;
   }
 
+
+
     /**
   * Expr function which starts the movement down the grammar
   * <p>
-  *   Starting handle for any token that is + or -, takes the left and right operand
-  *      and runs either a addition or subtract using the util functionality
+  *   Starting handle for any token that is comparing two values, then returning a result value
+  *    holding the boolean of the statement.
   *
   * @param endSeparator      The end Separator for populating the ResultValue with
   *
-  * @return       ResultValue which holds the value of the calculation of the expression
+  * @return       ResultValue which holds the boolean values of the calculated expression
   * @throws       Exception
   */
   public ResultValue expr(String endSeparator) throws Exception {
+    
     // begin on the first token of the expression
     this.endSeparator = endSeparator;
     
@@ -43,10 +46,72 @@ public class Expr {
     }
     
     Token operator;
+    ResultValue res = summation();              
+    ResultValue temp;
+    boolean result;
+    
+    //Loop for the actual check of the comparison
+    while (scan.currentToken.tokenStr.equals("<") || scan.currentToken.tokenStr.equals(">") || scan.currentToken.tokenStr.equals("<=") || scan.currentToken.tokenStr.equals(">=") ||
+    scan.currentToken.tokenStr.equals("==") || scan.currentToken.tokenStr.equals("!=")){
+      operator = scan.currentToken;
+      scan.getNext();
+      if (scan.currentToken.primClassif != Classif.OPERAND)
+        System.out.printf("Within expression, expected operand.  Found %s", scan.currentToken.tokenStr);
+
+      temp = summation(); 
+      if(operator.tokenStr.equals("<"))   
+      {
+        result = PickleUtil.LessThan(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
+        res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
+      }              
+      else if(operator.tokenStr.equals(">"))
+      {
+        result = PickleUtil.GreaterThan(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
+        res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
+      }
+      else if(operator.tokenStr.equals("<="))
+      {
+        result = PickleUtil.LessThanOrEqual(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
+        res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
+      }
+      else if(operator.tokenStr.equals(">="))
+      {
+        result = PickleUtil.GreaterThanOrEqual(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
+        res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
+      }
+      else if(operator.tokenStr.equals("=="))
+      {
+        result = PickleUtil.Equivalent(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
+        res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
+      }
+      else if(operator.tokenStr.equals("!="))
+      {
+        result = PickleUtil.NotEquivalent(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
+        res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
+      }
+    }
+    //System.out.printf("Final result is: %s \n", res.value);
+    return res;
+  }
+
+    /**
+  * Summation function which is the 2nd down from the branching top level. It handles addition
+  *    as well as subtraction expressions
+  * <p>
+  *   Handle for any two tokens that add or subtract from one another. Then returns as
+  *    a resultvalue of the expression's sum
+  *
+  * @return       ResultValue which holds the value of the calculated expression
+  * @throws       Exception
+  */
+  private ResultValue summation() throws Exception {
+    
+    Token operator;
     //System.out.printf("This is the current token %s \n", scan.currentToken.tokenStr);
     ResultValue res = products();                    
     ResultValue temp;
     
+    //Loop for the actual check of the summation
     while (scan.currentToken.tokenStr.equals("+") || scan.currentToken.tokenStr.equals("-")){
       operator = scan.currentToken;
       scan.getNext();
@@ -63,12 +128,11 @@ public class Expr {
         res = PickleUtil.Subtract(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
       }
     }
-    System.out.printf("\n My final return is %s \n", res.value);
     return res;
 }
 
   /**
-  * Products which is the 2nd down from the top level and handles the * and / expressions
+  * Products which is the 3rd down from the top level and handles the * and / expressions
   * <p>
   *   Handle for any two tokens that multiply or divide. Then return as the result.
   *
@@ -104,7 +168,7 @@ public class Expr {
   }
 
     /**
-  * Handles exponents of the expression which is the 3rd down from the top level
+  * Handles exponents of the expression which is the 4th down from the top level
   * <p>
   *   Handles exponent of left and right expression, returns the ResultValue fo the expression
   *
@@ -181,7 +245,6 @@ public class Expr {
       }
 
     }
-
     
     System.out.printf("Within operand, found: '%s'", scan.currentToken.tokenStr);
     return null; 
