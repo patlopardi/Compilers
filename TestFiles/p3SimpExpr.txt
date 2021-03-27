@@ -1,4 +1,5 @@
 // Expressions involving one operator
+debug Stmt on;
 print("p3SimpExpr.txt");
 Int two;
 two = 2;

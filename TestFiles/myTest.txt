@@ -1,0 +1,4 @@
+debug Stmt on;
+debug Assign on;
+int i = 1;
+i = -i;
