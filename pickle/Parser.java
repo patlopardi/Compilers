@@ -24,7 +24,7 @@ public class Parser {
         try{
             while(! scan.getNext().isEmpty() ){
                 //scan.currentToken.printToken();
-                System.out.println(scan.currentToken.tokenStr);
+//                System.out.println(scan.currentToken.tokenStr);
                 if(scan.currentToken.tokenStr.equals("print")){
                     print();
                     continue;
@@ -38,6 +38,7 @@ public class Parser {
                 else if(scan.currentToken.tokenStr.equals("Int") || scan.currentToken.tokenStr.equals("Bool")
                         || scan.currentToken.tokenStr.equals("String") || scan.currentToken.tokenStr.equals("Float")){
                     skipTo(";");
+//                    System.out.println(scan.currentToken.tokenStr);
                 }
                 else{
                     res = assignment();
@@ -65,79 +66,48 @@ public class Parser {
 
     private void print() {
         try{
-            //System.out.println("in print");
             scan.getNext();
-            while(!scan.getNext().isEmpty()){
-                //System.out.println("token: " + scan.currentToken.tokenStr);
-                if(scan.currentToken.tokenStr.equals(")")){
-                    scan.getNext();
-                    break;
+            while(!scan.getNext().equals(";")){
+                if(scan.currentToken.subClassif == SubClassif.IDENTIFIER){
+                    System.out.println(" " + storage.getVariableValue(scan.currentToken.tokenStr).value);
                 }
-
+                else if(scan.currentToken.primClassif==Classif.OPERAND){
+                    System.out.print(scan.currentToken.tokenStr);
+                }
                 else if(scan.currentToken.tokenStr.equals(",")){
-                    scan.getNext();
-                    if(scan.currentToken.subClassif.equals(SubClassif.STRING)){
-                        System.out.print(scan.currentToken.tokenStr + " ");
-                    }
-                    else {
-                        //error("Hello this is a test '%s' at line: ", scan.currentToken.tokenStr);
-                        System.out.print(scan.currentToken.tokenStr + " ");
-                    }
-                }
-                else{
-                    if(scan.currentToken.subClassif.equals(SubClassif.STRING)){
-                        System.out.print(scan.currentToken.tokenStr + " ");
-                    }
-                    else {
-                        System.out.print(scan.currentToken.tokenStr + " ");
-                    }
                 }
             }
+//            System.out.println();
+            skipTo(";");
+//            System.out.println("still in print " + scan.currentToken.tokenStr);
         }
         catch (Exception e){
             e.printStackTrace();
         }
-        //System.out.println("still in print " + scan.currentToken.tokenStr);
+
         System.out.println();
-        skipTo(";");
+
+//        System.out.println("still in print " + scan.currentToken.tokenStr);
     }
-    //Sets the variable
-                /*String var = scan.currentToken.tokenStr;
-                //Assuming just normal = for testing
-                String equalVar = scan.currentToken.tokenStr;
-                scan.getNext();
-                ResultValue result = exp.expr(";");
-                storage.Declare(var, result);
-                */
-    //The handle for different types of =
-                /*if(equalVar.equals("="))
-                {
-                  storage.Declare(var, result);
-                }
-                else if(equalVar.equals("+="))
-                {
-                  storage.Declare(var, PickleUtil.Addition())
-                }*/
 
     public ResultValue assignment() throws Exception {
-        System.out.println("in assignemnt");
+//        System.out.println("in assignemnt");
         Expr exp = new Expr(scan, storage);
         ResultValue res = null;
 
         if(!bExec)
             skipTo(";");
         else {
-            System.out.println("in else");
 //        ResultValue res;
             if (scan.currentToken.subClassif != SubClassif.IDENTIFIER)
-                error("expected a variable for the target of an assignment", scan.currentToken.tokenStr);
+                error("expected a variable for the target of an assignment ", scan.currentToken);
 
             String variableStr = scan.currentToken.tokenStr;
 //
 //// get the assignment operator and check it
-            System.out.println("befoer get next");
+//            System.out.println("befoer get next");
             scan.getNext();
-            System.out.println("afet get next");
+//            System.out.println("afet get next");
             if (scan.currentToken.primClassif != Classif.OPERATOR)
                 error("expected assignment operator", scan.currentToken.tokenStr);
 //
@@ -149,15 +119,15 @@ public class Parser {
             //System.out.println("in assignment");
                 switch (operatorStr) {
                     case "=":
-                        System.out.println("before expr");
+//                        System.out.println("before expr");
                         res02 = exp.expr(";");
 
-                        System.out.println(res02.value);
+//                        System.out.println(res02.value);
                         res = storage.Assign(variableStr, res02);   // assign to target
-                        System.out.println(res.value);
+//                        System.out.println(res.value);
                         break;
                     case "-=":
-                        System.out.println("in second case");
+//                        System.out.println("in second case");
                         res02 = exp.expr(operatorStr);
                         // expression must be numeric, raise exception if not
                         n0p2 = new Numeric(scan, res02, " -=", "2nd Operand");
@@ -166,10 +136,10 @@ public class Parser {
                         // target variable must be numeric
                         n0p1 = new Numeric(scan, res01, " -=", "1st operand");
                         // subtract 2nd operand from first and assign it
-                        System.out.println(PickleUtil.Subtract(n0p1, n0p2).value);
+//                        System.out.println(PickleUtil.Subtract(n0p1, n0p2).value);
                         //ResultValue temp = PickleUtil.Subtract(n0p1, n0p2);
                         res = storage.Assign(variableStr, PickleUtil.Subtract(n0p1, n0p2));
-                        System.out.println(res.value);
+//                        System.out.println(res.value);
                         break;
                     case "+=":
                         res02 = exp.expr(operatorStr);
@@ -194,89 +164,134 @@ public class Parser {
     }
 
     private void ifStmt(boolean bExec) {
-        System.out.println("in if");
-        int saveLineNr = scan.currentToken.iSourceLineNr;
-        if(bExec) {
-//        // we are executing (not ignoring)
-            boolean resCond = evalCond();
-//        // Did the condition return True?
-            if(resCond) {
-//        // Cond returned True, continue executing
-                executeStatements(true);
-//        // what ended the statements after the true part?  Else of endif
-//        if resTemp.terminatingStr == “else”:
-//        //toss the colon
-//        If scan.getNext() != ‘:’:
-//        errorWithCurrent(“expected ‘:’ after ‘else’”);
-//        endif;
+        try {
+//            System.out.println("in if");
+            int saveLineNr = scan.currentToken.iSourceLineNr;
+            if (bExec) {
+                //        // we are executing (not ignoring)
+                boolean resCond = evalCond();
+                //        // Did the condition return True?
+                if (resCond) {
+//                    System.out.println("this is a true statement");
+                    //        // Cond returned True, continue executing
+                    executeStatements(true);
+//                    System.out.println("back here");
+//                    System.out.println(scan.currentToken.tokenStr);
+                    if(scan.currentToken.tokenStr.equals(";")){
+                        scan.getNext();
+                    }
 
-//        resTemp = executeStatements(F); // since the condition is false
-//        endif;
-//        if resTemp.terminatingStr != “endif”:
-//        error("expected an ‘endif’ for ‘if’ beginning at line %d, found ‘%s’",                                                               saveLineNr, resTemp.terminatingStr);
-//        endif;
-//        // endif should be followed by a semicolon
-//        If scan.getNext() != ‘;’:
-//        errorWithCurrent(“expected ‘;’ after ‘endif’”);
-//         else:
-//        // Cond returned False, ignore execution
-//        ResaultValue resTemp = executeStatements(F); //since the condition was false
-//        // the true statements were terminated by an else or endif
-//        if resTemp.terminatingStr == “else”:
-//        //toss the colon
-//        If scan.getNext() != ‘:’:
-//        errorWithCurrent(“expected ‘:’ after ‘else’”);
-//        endif;
-//        // Since the IF’s condition was false, we want to execute the else part
-//        // (when present)
-//        resTemp = executeStatements(T);
-//        endif;
-//        if resTemp.terminatingStr != “endif”:
-//        error("expected an ‘endif’ for ‘if’ beginning at line %d, found ‘%s’",                                                               saveLineNr, resTemp.terminatingStr);
-//        endif;
-//        // endif should be followed by a semicolon
-//        If scan.getNext() != ‘;’:
-//        errorWithCurrent(“expected ‘;’ after ‘endif’”);
-//        endif;
+//                    System.out.println("out");
+                    //        // what ended the statements after the true part?  Else of endif
+                    if (scan.currentToken.tokenStr.equals("else")) {
+                        if (!scan.getNext().equals(":"))
+                            error("expected colon after else but received: ", scan.currentToken.tokenStr);
+                        executeStatements(false);
+//                        System.out.println("back here");
+//                        System.out.println(scan.currentToken.tokenStr);
+                    }
+                    else if(!scan.currentToken.tokenStr.equals("endif")){
+                        error("expected an endif for if found: ", scan.currentToken.tokenStr);
+                    }
+//                    System.out.println("in here");
+                    if(!scan.getNext().equals(";"))
+                        error("expected ; after endif but received: ", scan.currentToken.tokenStr);
+                }
+                else {
+//                    System.out.println("in big else");
+                    executeStatements(false);
+//                    System.out.println("back here in big else");
+//                    System.out.println(scan.currentToken.tokenStr);
+                    if(scan.currentToken.tokenStr.equals("else")){
+//                        System.out.println("executing else part");
+                        if(!scan.getNext().equals(":"))
+                            error("expected a : after else received: ", scan.currentToken.tokenStr);
+
+                        executeStatements(true);
+                    }
+                    if(!scan.currentToken.tokenStr.equals("endif"))
+                        error("expected endif for if received: ", scan.currentToken.tokenStr);
+                    if(!scan.getNext().equals(";"))
+                        error("expected ; after endif received: ", scan.currentToken.tokenStr);
+
+
+                }
             }
-//    else
-//        // we are ignoring execution
-//        // we want to ignore the conditional, true part, and false part
-//        // Should we execute evalCond ?
-//        SkipTo(“:”);
-//        resTemp = executeStatements(F);
-//        // should be terminated by else or endif
-//        if resTemp.terminatingStr == “else”:
-//        //toss the colon
-//        If scan.getNext() != ‘:’:
-//        errorWithCurrent(“expected ‘:’ after ‘else’”);
-//        endif
-//                // we are ignoring the if
-//                resTemp = executeStatements(F);
-//        endif;
-//        if resTemp.terminatingStr != “endif”:
-//        error("expected an ‘endif’ for ‘if’ beginning at line %d, found ‘%s’",                                                               saveLineNr, resTemp.terminatingStr);
-//        endif;
-//        // endif should be followed by a semicolon
-//        If scan.getNext() != ‘;’:
-//        errorWithCurrent(“expected ‘;’ after ‘endif’”);
-//        endif;
+            else{
+                skipTo(":");
+                executeStatements(false);
+                if(scan.currentToken.tokenStr.equals("else")){
+                    if(!scan.getNext().equals(":"))
+                        error("expected a : after else received: ", scan.currentToken.tokenStr);
+                    executeStatements(false);
+                }
+                if(!scan.currentToken.tokenStr.equals("endif"))
+                    error("expected endif for if received: ", scan.currentToken.tokenStr);
+                if(!scan.getNext().equals(";"))
+                    error("expected ; after endif received: ", scan.currentToken.tokenStr);
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
     public void ignoreStatements(){
         try{
+//            System.out.println("in ignoreStatements");
             boolean check = true;
             boolean checkForIf = false;
+            scan.getNext();
             while(check){
-                scan.getNext();
+//                System.out.println("printing: " + scan.currentToken.tokenStr);
                 if(scan.currentToken.tokenStr.equals("if"))
                     checkForIf = true;
                 else if((scan.currentToken.tokenStr.equals("else") || scan.currentToken.tokenStr.equals("endif"))&& !checkForIf){
-                    check = false;
+//                    System.out.println("middle else if");
+
+                    return;
                 }
                 else if(scan.currentToken.tokenStr.equals("endif") && checkForIf){
+//                    System.out.println("last else if");
                     checkForIf = false;
                 }
+                scan.getNext();
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public void execute(){
+        ResultValue res;
+        boolean check = true;
+
+        try{
+            scan.getNext();
+            while(check){
+//                System.out.println("in execute while loop");
+                //scan.currentToken.printToken();
+//                System.out.println(scan.currentToken.tokenStr);
+                if(scan.currentToken.tokenStr.equals("print")){
+//                    System.out.println("in print");
+                    print();
+                }
+                if(scan.currentToken.tokenStr.equals("if")){
+//                    System.out.println("in if ");
+                    ifStmt(bExec);
+                }
+                else if(scan.currentToken.tokenStr.equals("Int") || scan.currentToken.tokenStr.equals("Bool")
+                        || scan.currentToken.tokenStr.equals("String") || scan.currentToken.tokenStr.equals("Float")){
+                    skipTo(";");
+                }
+                else if(scan.currentToken.tokenStr.equals("endif") || scan.currentToken.tokenStr.equals("else")){
+//                    System.out.println("in last else if");
+                    return;
+                }
+                else{
+                    res = assignment();
+                    //System.out.println(scan.currentToken.tokenStr);
+                }
+                scan.getNext();
             }
         }
         catch (Exception e){
@@ -284,12 +299,16 @@ public class Parser {
         }
     }
     public void executeStatements(boolean check){
-        if(!check){
+        if(!check) {
             ignoreStatements();
+        }
+        else{
+            skipTo(":");
+            execute();
         }
     }
     public boolean evalCond(){
-        System.out.println("in eval");
+//        System.out.println("in eval");
         boolean check = false;
         Expr exp = new Expr(scan, storage);
         ResultValue res01;
@@ -302,9 +321,14 @@ public class Parser {
             scan.getNext();
             scan.getNext();
             Object k = scan.currentToken.tokenStr;
-            if(k != res01.value)
-                return false;
-            return true;
+//            System.out.println(k);
+//            System.out.println(res01.value);
+            if(k.equals(res01.value)) {
+//                System.out.println("it is true");
+                //ignoreStatements();
+                return true;
+            }
+            return false;
         }
         catch (Exception e){
             e.printStackTrace();
@@ -328,11 +352,5 @@ public class Parser {
                 e.printStackTrace();
             }
         }
-//        try {
-//            scan.getNext();
-//        }
-//        catch (Exception e){
-//            e.printStackTrace();
-//        }
     }
 }
