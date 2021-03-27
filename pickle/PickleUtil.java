@@ -203,7 +203,7 @@ public final class PickleUtil {
             result = new ResultValue(SubClassif.INTEGER, value, "","");
         }
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            double value = Math.pow((double) nOp1.resultValue.value, nOp2.valueToDouble());
+            double value = Math.pow((nOp1.valueToDouble()), nOp2.valueToDouble());
             result = new ResultValue(SubClassif.FLOAT, value, "","");
         }
 
@@ -225,12 +225,32 @@ public final class PickleUtil {
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
-        if (nOp1.valueToDouble()  == nOp2.valueToDouble()){
-            return true;
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            if (nOp1.valueToInt() == nOp2.valueToInt()){
+                return true;
+            }
+            else {
+                return false;
+            }
         }
-        else {
-            return false;
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            if((nOp1.valueToDouble() == Double.valueOf(nOp2.resultValue.value.toString()))){
+                return true;
+            }
+            else{
+                return false;
+            }
         }
+        else if(nOp1.resultValue.dataType == SubClassif.STRING){
+            if(nOp1.valueToString().equals(nOp2.valueToString())){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        return false;
     }
 
     /**
@@ -247,12 +267,33 @@ public final class PickleUtil {
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
-        if (nOp1.valueToDouble() != nOp2.valueToDouble()){
-            return true;
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            if (nOp1.valueToInt() != nOp2.valueToInt()){
+                return true;
+            }
+            else {
+                return false;
+            }
         }
-        else {
-            return false;
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            if((nOp1.valueToDouble() != Double.valueOf(nOp2.resultValue.value.toString()))){
+                return true;
+            }
+            else{
+                return false;
+            }
         }
+        else if(nOp1.resultValue.dataType == SubClassif.STRING){
+            if(nOp1.valueToString().compareTo(nOp2.valueToString()) == 0){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -270,12 +311,33 @@ public final class PickleUtil {
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
-        if (nOp1.valueToDouble() <= nOp2.valueToDouble()){
-            return true;
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            if (nOp1.valueToInt() <= nOp2.valueToInt()){
+                return true;
+            }
+            else {
+                return false;
+            }
         }
-        else {
-            return false;
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            if((nOp1.valueToDouble() <= nOp2.valueToDouble())){
+                return true;
+            }
+            else{
+                return false;
+            }
         }
+        else if(nOp1.resultValue.dataType == SubClassif.STRING){
+            if(nOp1.valueToString().compareTo(nOp2.valueToString()) <= 0){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -292,12 +354,32 @@ public final class PickleUtil {
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
-        if (nOp1.valueToDouble() >= nOp2.valueToDouble()){
-            return true;
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            if (nOp1.valueToInt() >= nOp2.valueToInt()){
+                return true;
+            }
+            else {
+                return false;
+            }
         }
-        else {
-            return false;
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            if((nOp1.valueToDouble() >= nOp2.valueToDouble())){
+                return true;
+            }
+            else{
+                return false;
+            }
         }
+        else if(nOp1.resultValue.dataType == SubClassif.STRING){
+            if(nOp1.valueToString().compareTo(nOp2.valueToString()) >= 0){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -310,15 +392,10 @@ public final class PickleUtil {
      *
      * @return      Boolean
      */
-    public static Boolean LessThan(Numeric nOp1, Numeric nOp2){
+    public static Boolean GreaterThan(Numeric nOp1, Numeric nOp2){
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
-<<<<<<< Updated upstream
-        if (nOp1.valueToDouble() < nOp2.valueToDouble()){
-            return true;
-=======
-
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
             if (nOp1.valueToInt() > nOp2.valueToInt()){
                 return true;
@@ -335,11 +412,18 @@ public final class PickleUtil {
             else{
                 return false;
             }
->>>>>>> Stashed changes
         }
-        else {
-            return false;
+       
+        else if(nOp1.resultValue.dataType == SubClassif.STRING){
+            if(nOp1.valueToString().compareTo(nOp2.valueToString()) > 0){
+                return false;
+            }
+            else{
+                return true;
+            }
         }
+
+        return false;
     }
 
     /**
@@ -352,16 +436,36 @@ public final class PickleUtil {
      *
      * @return      Boolean
      */
-    public static Boolean GreaterThan(Numeric nOp1, Numeric nOp2){
+    public static Boolean LessThan(Numeric nOp1, Numeric nOp2){
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
-        if (nOp1.valueToDouble() > nOp2.valueToDouble()){
-            return true;
+
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            if (nOp1.valueToInt() < nOp2.valueToInt()){
+                return true;
+            }
+            else {
+                return false;
+            }
         }
-        else {
-            return false;
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            if((nOp1.valueToDouble() < nOp2.valueToDouble())){
+                return true;
+            }
+            else{
+                return false;
+            }
         }
+        else if(nOp1.resultValue.dataType == SubClassif.STRING){
+            if(nOp1.valueToString().compareTo(nOp2.valueToString()) < 0){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+        return false;
     }
 
 }

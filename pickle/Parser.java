@@ -6,6 +6,8 @@ import javax.print.DocFlavor;
 import java.util.Hashtable;
 
 public class Parser {
+    public boolean debugExpr = false;
+    public boolean debugAssign = false;
     public Scanner scan;
     public SymbolTable symbolT;
     public StorageManager storage = new StorageManager();
@@ -24,7 +26,6 @@ public class Parser {
         try{
             while(! scan.getNext().isEmpty() ){
                 //scan.currentToken.printToken();
-                System.out.println(scan.currentToken.tokenStr);
                 if(scan.currentToken.tokenStr.equals("print")){
                     print();
                     continue;
@@ -34,6 +35,11 @@ public class Parser {
                 }
                 else if(scan.currentToken.tokenStr.equals("while")){
                     whileStmt();
+                }
+                else if(scan.currentToken.tokenStr.equals("debug")){
+                    String debugType = scan.getNext();
+                    String debugSwitch = scan.getNext();
+                    debug(debugType, debugSwitch);
                 }
                 else if(scan.currentToken.tokenStr.equals("Int") || scan.currentToken.tokenStr.equals("Bool")
                         || scan.currentToken.tokenStr.equals("String") || scan.currentToken.tokenStr.equals("Float")){
@@ -51,6 +57,30 @@ public class Parser {
             e.printStackTrace();
         }
 
+
+    }
+    public void debug(String debugType, String debugSwitch){
+
+        switch (debugType) {
+            case "Stmt":
+                if (debugSwitch.equals("off")){
+                    this.scan.debugStatement = false;
+                }
+                else {
+                    this.scan.debugStatement = true;
+                }
+                break;
+            case "Assign":
+                if (debugSwitch.equals("off")){
+                    debugAssign = false;
+                }
+                else {
+                    debugAssign = true;
+                }
+                break;
+        }
+
+        skipTo(";");
 
     }
 
@@ -120,14 +150,12 @@ public class Parser {
                 }*/
 
     public ResultValue assignment() throws Exception {
-        System.out.println("in assignemnt");
         Expr exp = new Expr(scan, storage);
         ResultValue res = null;
 
         if(!bExec)
             skipTo(";");
         else {
-            System.out.println("in else");
 //        ResultValue res;
             if (scan.currentToken.subClassif != SubClassif.IDENTIFIER)
                 error("expected a variable for the target of an assignment", scan.currentToken.tokenStr);
@@ -135,9 +163,7 @@ public class Parser {
             String variableStr = scan.currentToken.tokenStr;
 //
 //// get the assignment operator and check it
-            System.out.println("befoer get next");
             scan.getNext();
-            System.out.println("afet get next");
             if (scan.currentToken.primClassif != Classif.OPERATOR)
                 error("expected assignment operator", scan.currentToken.tokenStr);
 //
@@ -149,15 +175,15 @@ public class Parser {
             //System.out.println("in assignment");
                 switch (operatorStr) {
                     case "=":
-                        System.out.println("before expr");
                         res02 = exp.expr(";");
 
-                        System.out.println(res02.value);
                         res = storage.Assign(variableStr, res02);   // assign to target
-                        System.out.println(res.value);
+                        if(debugAssign){
+                            System.out.println("... Assign result into \'" + variableStr +
+                                                "\' is " + res02.value );
+                        }
                         break;
                     case "-=":
-                        System.out.println("in second case");
                         res02 = exp.expr(operatorStr);
                         // expression must be numeric, raise exception if not
                         n0p2 = new Numeric(scan, res02, " -=", "2nd Operand");
@@ -166,10 +192,8 @@ public class Parser {
                         // target variable must be numeric
                         n0p1 = new Numeric(scan, res01, " -=", "1st operand");
                         // subtract 2nd operand from first and assign it
-                        System.out.println(PickleUtil.Subtract(n0p1, n0p2).value);
                         //ResultValue temp = PickleUtil.Subtract(n0p1, n0p2);
                         res = storage.Assign(variableStr, PickleUtil.Subtract(n0p1, n0p2));
-                        System.out.println(res.value);
                         break;
                     case "+=":
                         res02 = exp.expr(operatorStr);
@@ -181,7 +205,7 @@ public class Parser {
                         n0p1 = new Numeric(scan, res01, " +=", " st operand");
                         // subtract 2nd operand from first and assign it
                         res = storage.Assign(variableStr, PickleUtil.Addition(n0p1, n0p2));
-//                        System.out.println("terminating string of res01 " + res01.terminatingString);
+                        // System.out.println("terminating string of res01 " + res01.terminatingString);
                         break;
                     default:
                         error("expected assignment operator", operatorStr);
@@ -194,7 +218,6 @@ public class Parser {
     }
 
     private void ifStmt(boolean bExec) {
-        System.out.println("in if");
         int saveLineNr = scan.currentToken.iSourceLineNr;
         if(bExec) {
 //        // we are executing (not ignoring)
@@ -289,7 +312,6 @@ public class Parser {
         }
     }
     public boolean evalCond(){
-        System.out.println("in eval");
         boolean check = false;
         Expr exp = new Expr(scan, storage);
         ResultValue res01;
