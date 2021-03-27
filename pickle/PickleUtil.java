@@ -134,6 +134,22 @@ public final class PickleUtil {
         return result;
 
     }
+    public static ResultValue UnitaryMinus(Numeric nOp1){
+        ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
+
+        // check left hand operand type
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            int value = nOp1.valueToInt() * -1;
+            result = new ResultValue(SubClassif.INTEGER, value, "","");
+        }
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            double value = nOp1.valueToDouble() * -1;
+            result = new ResultValue(SubClassif.FLOAT, value, "","");
+        }
+
+        return result;
+
+    }
 
     /**
      * <p>
@@ -380,7 +396,6 @@ public final class PickleUtil {
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
-
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
             if (nOp1.valueToInt() > nOp2.valueToInt()){
                 return true;
@@ -389,6 +404,7 @@ public final class PickleUtil {
                 return false;
             }
         }
+
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
             if((nOp1.valueToDouble() > nOp2.valueToDouble())){
                 return true;
@@ -397,6 +413,7 @@ public final class PickleUtil {
                 return false;
             }
         }
+       
         else if(nOp1.resultValue.dataType == SubClassif.STRING){
             if(nOp1.valueToString().compareTo(nOp2.valueToString()) > 0){
                 return false;
