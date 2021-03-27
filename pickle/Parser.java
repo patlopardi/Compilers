@@ -340,27 +340,17 @@ public class Parser {
         }
     }
     public boolean evalCond(){
-//        System.out.println("in eval");
+//      System.out.println("in eval");
         boolean check = false;
         Expr exp = new Expr(scan, storage);
         ResultValue res01;
         ResultValue res02;
-        String t;
 
         try{
-            scan.getNext();
-            res01 = storage.getVariableValue(scan.currentToken.tokenStr);
-            scan.getNext();
-            scan.getNext();
-            Object k = scan.currentToken.tokenStr;
-//            System.out.println(k);
-//            System.out.println(res01.value);
-            if(k.equals(res01.value)) {
-//                System.out.println("it is true");
-                //ignoreStatements();
-                return true;
-            }
-            return false;
+            res01 = exp.expr(":");
+            check = (boolean) res01.value;
+            return check;
+
         }
         catch (Exception e){
             e.printStackTrace();

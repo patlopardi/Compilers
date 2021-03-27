@@ -49,7 +49,6 @@ print("\tradius=", radius, "twoPi=", twoPi, "circum=", circum);
 // Minus stuff
 debug Assign off;
 debug Expr on;
-debug Stmt off;
 Int A;
 Int B;
 Float D;
