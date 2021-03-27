@@ -50,13 +50,13 @@ public final class PickleUtil {
 
     /**
      * <p>
-     * This function will return a string based on the resulting subtraction from
+     * This function will return a ResultValue based on the resulting subtraction from
      *      the two operands and the type will be based off the left operand
      *
      * @param nOp1  Left hand operand, the result type will match this
      * @param nOp2  Right hand operand
      *
-     * @return      String
+     * @return      ResultValue
      */
     public static ResultValue Subtract(Numeric nOp1, Numeric nOp2){
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
@@ -65,11 +65,11 @@ public final class PickleUtil {
         }
 
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            int value = (Integer.valueOf(nOp1.resultValue.value.toString())).intValue() - (Integer.valueOf(nOp2.resultValue.value.toString())).intValue();
+            int value = nOp1.valueToInt() - nOp2.valueToInt();
             result = new ResultValue(SubClassif.INTEGER, value, "","");
         }
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            double value = Double.valueOf(nOp1.resultValue.value.toString()) - Double.valueOf(nOp2.resultValue.value.toString());
+            double value = nOp1.valueToDouble() - nOp2.valueToDouble();
             result = new ResultValue(SubClassif.FLOAT, value, "","");
         }
 
@@ -77,35 +77,73 @@ public final class PickleUtil {
 
     }
 
+    /**
+     * <p>
+     * This function will return a ResultValue based on the resulting addition from
+     *      the two operands and the type will be based off the left operand
+     *
+     * @param nOp1  Left hand operand, the result type will match this
+     * @param nOp2  Right hand operand
+     *
+     * @return      ResultValue
+     */
     public static ResultValue Addition(Numeric nOp1, Numeric nOp2){
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            int value = (Integer.valueOf(nOp1.resultValue.value.toString())).intValue() + (Integer.valueOf(nOp2.resultValue.value.toString())).intValue();
+            int value = nOp1.valueToInt() + nOp2.valueToInt();
             result = new ResultValue(SubClassif.INTEGER, value, "","");
         }
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            double value =  Double.valueOf(nOp1.resultValue.value.toString()) + Double.valueOf(nOp2.resultValue.value.toString());
+            double value =  nOp1.valueToDouble() + nOp2.valueToDouble();
             result = new ResultValue(SubClassif.FLOAT, value, "","");
         }
 
         return result;
 
     }
+
+    /**
+     * <p>
+     * This function will return a ResultValue based on the resulting multiplcation from
+     *      the two operands and the type will be based off the left operand
+     *
+     * @param nOp1  Left hand operand, the result type will match this
+     * @param nOp2  Right hand operand
+     *
+     * @return      ResultValue
+     */
     public static ResultValue Multiply(Numeric nOp1, Numeric nOp2){
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
 
+        // check left hand operand type
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            int value = (Integer.valueOf(nOp1.resultValue.value.toString())).intValue() * (Integer.valueOf(nOp2.resultValue.value.toString())).intValue();
+            int value = nOp1.valueToInt() * nOp2.valueToInt();
             result = new ResultValue(SubClassif.INTEGER, value, "","");
         }
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            double value = Double.valueOf(nOp1.resultValue.value.toString()) * Double.valueOf(nOp2.resultValue.value.toString());
+            double value = nOp1.valueToDouble() * nOp2.valueToDouble();
+            result = new ResultValue(SubClassif.FLOAT, value, "","");
+        }
+
+        return result;
+
+    }
+    public static ResultValue UnitaryMinus(Numeric nOp1){
+        ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
+
+        // check left hand operand type
+        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+            int value = nOp1.valueToInt() * -1;
+            result = new ResultValue(SubClassif.INTEGER, value, "","");
+        }
+        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+            double value = nOp1.valueToDouble() * -1;
             result = new ResultValue(SubClassif.FLOAT, value, "","");
         }
 
@@ -113,6 +151,16 @@ public final class PickleUtil {
 
     }
 
+    /**
+     * <p>
+     * This function will return a ResultValue based on the resulting division from
+     *      the two operands and the type will be based off the left operand
+     *
+     * @param nOp1  Left hand operand, the result type will match this
+     * @param nOp2  Right hand operand
+     *
+     * @return      ResultValue
+     */
     public static ResultValue Divide(Numeric nOp1, Numeric nOp2){
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
@@ -120,11 +168,11 @@ public final class PickleUtil {
         }
 
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            int value = (Integer.valueOf(nOp1.resultValue.value.toString())).intValue() / (Integer.valueOf(nOp2.resultValue.value.toString())).intValue();
+            int value = nOp1.valueToInt() / nOp2.valueToInt();
             result = new ResultValue(SubClassif.INTEGER, value, "","");
         }
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            double value = Double.valueOf(nOp1.resultValue.value.toString()) / Double.valueOf(nOp2.resultValue.value.toString());
+            double value = nOp1.valueToDouble() / nOp2.valueToDouble();
             result = new ResultValue(SubClassif.FLOAT, value, "","");
         }
 
@@ -132,6 +180,16 @@ public final class PickleUtil {
 
     }
 
+    /**
+     * <p>
+     * This function will return a ResultValue based on the resulting square from
+     *      the two operands and the type will be based off the left operand
+     *
+     * @param nOp1  Left hand operand, the result type will match this
+     * @param nOp2  Right hand operand
+     *
+     * @return      ResultValue
+     */
     public static ResultValue Square(Numeric nOp1, Numeric nOp2){
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
@@ -139,13 +197,13 @@ public final class PickleUtil {
         }
 
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            int op1 = (Integer.valueOf(nOp1.resultValue.value.toString())).intValue();
-            int op2 = (Integer.valueOf(nOp2.resultValue.value.toString())).intValue();
+            int op1 = nOp1.valueToInt();
+            int op2 = nOp2.valueToInt();
             int value = (int) Math.pow(op1, op2);
             result = new ResultValue(SubClassif.INTEGER, value, "","");
         }
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            double value = Math.pow((double) nOp1.resultValue.value, Double.valueOf(nOp2.resultValue.value.toString()));
+            double value = Math.pow((nOp1.valueToDouble()), nOp2.valueToDouble());
             result = new ResultValue(SubClassif.FLOAT, value, "","");
         }
 
@@ -153,13 +211,23 @@ public final class PickleUtil {
 
     }
 
+    /**
+     * <p>
+     * This function will return true if the left operand is equivalent to
+     *      the right operand
+     *
+     * @param nOp1  Left hand operand
+     * @param nOp2  Right hand operand
+     *
+     * @return      Boolean
+     */
     public static Boolean Equivalent(Numeric nOp1, Numeric nOp2){
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
 
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            if ((int) nOp1.resultValue.value == (Double.valueOf(nOp2.resultValue.value.toString()).intValue())){
+            if (nOp1.valueToInt() == nOp2.valueToInt()){
                 return true;
             }
             else {
@@ -167,7 +235,15 @@ public final class PickleUtil {
             }
         }
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            if((double) nOp1.resultValue.value == Double.valueOf(nOp2.resultValue.value.toString())){
+            if((nOp1.valueToDouble() == Double.valueOf(nOp2.resultValue.value.toString()))){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else if(nOp1.resultValue.dataType == SubClassif.STRING){
+            if(nOp1.valueToString().equals(nOp2.valueToString())){
                 return true;
             }
             else{
@@ -177,13 +253,23 @@ public final class PickleUtil {
         return false;
     }
 
+    /**
+     * <p>
+     * This function will return true if the left operand is not equivalent to
+     *      the right operand
+     *
+     * @param nOp1  Left hand operand
+     * @param nOp2  Right hand operand
+     *
+     * @return      Boolean
+     */
     public static Boolean NotEquivalent(Numeric nOp1, Numeric nOp2){
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
 
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            if ((int) nOp1.resultValue.value != (Double.valueOf(nOp2.resultValue.value.toString()).intValue())){
+            if (nOp1.valueToInt() != nOp2.valueToInt()){
                 return true;
             }
             else {
@@ -191,24 +277,43 @@ public final class PickleUtil {
             }
         }
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            if((double) nOp1.resultValue.value != Double.valueOf(nOp2.resultValue.value.toString())){
+            if((nOp1.valueToDouble() != Double.valueOf(nOp2.resultValue.value.toString()))){
                 return true;
             }
             else{
                 return false;
             }
         }
+        else if(nOp1.resultValue.dataType == SubClassif.STRING){
+            if(nOp1.valueToString().compareTo(nOp2.valueToString()) == 0){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+
         return false;
     }
 
 
+    /**
+     * <p>
+     * This function will return true if the left operand is less than or equal to
+     *      the right operand
+     *
+     * @param nOp1  Left hand operand
+     * @param nOp2  Right hand operand
+     *
+     * @return      Boolean
+     */
     public static Boolean LessThanOrEqual(Numeric nOp1, Numeric nOp2){
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
 
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            if ((int) nOp1.resultValue.value <= (Double.valueOf(nOp2.resultValue.value.toString()).intValue())){
+            if (nOp1.valueToInt() <= nOp2.valueToInt()){
                 return true;
             }
             else {
@@ -216,23 +321,42 @@ public final class PickleUtil {
             }
         }
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            if((double) nOp1.resultValue.value <= Double.valueOf(nOp2.resultValue.value.toString())){
+            if((nOp1.valueToDouble() <= nOp2.valueToDouble())){
                 return true;
             }
             else{
                 return false;
             }
         }
+        else if(nOp1.resultValue.dataType == SubClassif.STRING){
+            if(nOp1.valueToString().compareTo(nOp2.valueToString()) <= 0){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+
         return false;
     }
 
+    /**
+     * <p>
+     * This function will return true if the left operand is greater than or equal to
+     *      the right operand
+     *
+     * @param nOp1  Left hand operand
+     * @param nOp2  Right hand operand
+     *
+     * @return      Boolean
+     */
     public static Boolean GreaterThanOrEqual(Numeric nOp1, Numeric nOp2){
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
 
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            if ((int) nOp1.resultValue.value >= (Double.valueOf(nOp2.resultValue.value.toString()).intValue())){
+            if (nOp1.valueToInt() >= nOp2.valueToInt()){
                 return true;
             }
             else {
@@ -240,47 +364,85 @@ public final class PickleUtil {
             }
         }
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            if((double) nOp1.resultValue.value >= Double.valueOf(nOp2.resultValue.value.toString())){
+            if((nOp1.valueToDouble() >= nOp2.valueToDouble())){
                 return true;
             }
             else{
                 return false;
             }
         }
+        else if(nOp1.resultValue.dataType == SubClassif.STRING){
+            if(nOp1.valueToString().compareTo(nOp2.valueToString()) >= 0){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
         return false;
     }
 
+    /**
+     * <p>
+     * This function will return true if the left operand is less than
+     *      the right operand and false if else
+     *
+     * @param nOp1  Left hand operand
+     * @param nOp2  Right hand operand
+     *
+     * @return      Boolean
+     */
     public static Boolean GreaterThan(Numeric nOp1, Numeric nOp2){
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
-
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            if ((int) nOp1.resultValue.value > (Double.valueOf(nOp2.resultValue.value.toString()).intValue())){
+            if (nOp1.valueToInt() > nOp2.valueToInt()){
                 return true;
             }
             else {
                 return false;
             }
         }
+
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            if((double) nOp1.resultValue.value > Double.valueOf(nOp2.resultValue.value.toString())){
+            if((nOp1.valueToDouble() > nOp2.valueToDouble())){
                 return true;
             }
             else{
                 return false;
             }
         }
+       
+        else if(nOp1.resultValue.dataType == SubClassif.STRING){
+            if(nOp1.valueToString().compareTo(nOp2.valueToString()) > 0){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+
         return false;
     }
 
+    /**
+     * <p>
+     * This function will return true if the left operand is greater than to
+     *      the right operand and false if else
+     *
+     * @param nOp1  Left hand operand
+     * @param nOp2  Right hand operand
+     *
+     * @return      Boolean
+     */
     public static Boolean LessThan(Numeric nOp1, Numeric nOp2){
         if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
             // Throw error
         }
 
         if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            if ((int) nOp1.resultValue.value < (Double.valueOf(nOp2.resultValue.value.toString()).intValue())){
+            if (nOp1.valueToInt() < nOp2.valueToInt()){
                 return true;
             }
             else {
@@ -288,11 +450,19 @@ public final class PickleUtil {
             }
         }
         else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            if((double) nOp1.resultValue.value < Double.valueOf(nOp2.resultValue.value.toString())){
+            if((nOp1.valueToDouble() < nOp2.valueToDouble())){
                 return true;
             }
             else{
                 return false;
+            }
+        }
+        else if(nOp1.resultValue.dataType == SubClassif.STRING){
+            if(nOp1.valueToString().compareTo(nOp2.valueToString()) < 0){
+                return false;
+            }
+            else{
+                return true;
             }
         }
         return false;

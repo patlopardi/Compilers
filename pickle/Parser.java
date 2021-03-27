@@ -6,6 +6,8 @@ import javax.print.DocFlavor;
 import java.util.Hashtable;
 
 public class Parser {
+    public boolean debugExpr = false;
+    public boolean debugAssign = false;
     public Scanner scan;
     public SymbolTable symbolT;
     public StorageManager storage = new StorageManager();
@@ -24,6 +26,7 @@ public class Parser {
         try{
             while(! scan.getNext().isEmpty() ){
                 //scan.currentToken.printToken();
+
 //                System.out.println(scan.currentToken.tokenStr);
                 if(scan.currentToken.tokenStr.equals("print")){
                     print();
@@ -34,6 +37,11 @@ public class Parser {
                 }
                 else if(scan.currentToken.tokenStr.equals("while")){
                     whileStmt();
+                }
+                else if(scan.currentToken.tokenStr.equals("debug")){
+                    String debugType = scan.getNext();
+                    String debugSwitch = scan.getNext();
+                    debug(debugType, debugSwitch);
                 }
                 else if(scan.currentToken.tokenStr.equals("Int") || scan.currentToken.tokenStr.equals("Bool")
                         || scan.currentToken.tokenStr.equals("String") || scan.currentToken.tokenStr.equals("Float")){
@@ -52,6 +60,30 @@ public class Parser {
             e.printStackTrace();
         }
 
+
+    }
+    public void debug(String debugType, String debugSwitch){
+
+        switch (debugType) {
+            case "Stmt":
+                if (debugSwitch.equals("off")){
+                    this.scan.debugStatement = false;
+                }
+                else {
+                    this.scan.debugStatement = true;
+                }
+                break;
+            case "Assign":
+                if (debugSwitch.equals("off")){
+                    debugAssign = false;
+                }
+                else {
+                    debugAssign = true;
+                }
+                break;
+        }
+
+        skipTo(";");
 
     }
 
@@ -151,7 +183,7 @@ public class Parser {
                         n0p1 = new Numeric(scan, res01, " +=", " st operand");
                         // subtract 2nd operand from first and assign it
                         res = storage.Assign(variableStr, PickleUtil.Addition(n0p1, n0p2));
-//                        System.out.println("terminating string of res01 " + res01.terminatingString);
+                        // System.out.println("terminating string of res01 " + res01.terminatingString);
                         break;
                     default:
                         error("expected assignment operator", operatorStr);

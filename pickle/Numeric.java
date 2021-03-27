@@ -30,5 +30,29 @@ public class Numeric {
         // this.res = res;
     }
 
+    /**
+     * <p>
+     * Returns an integer value of the resultValue.value object
+     *
+     * @return     int
+     */
+    public int valueToInt(){
+        return (Double.valueOf(this.resultValue.value.toString())).intValue();
+    }
+
+    /**
+     * <p>
+     * Returns an double value of the resultValue.value object
+     *
+     * @return    double
+     */
+    public double valueToDouble(){
+        return (Double.valueOf(this.resultValue.value.toString()));
+    }
+
+    public String valueToString(){
+        return (this.resultValue.value.toString());
+    }
+
 
 }
