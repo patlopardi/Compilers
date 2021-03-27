@@ -49,48 +49,49 @@ public class Expr {
     ResultValue res = summation();              
     ResultValue temp;
     boolean result;
-    
-    //Loop for the actual check of the comparison
-    while (scan.currentToken.tokenStr.equals("<") || scan.currentToken.tokenStr.equals(">") || scan.currentToken.tokenStr.equals("<=") || scan.currentToken.tokenStr.equals(">=") ||
-    scan.currentToken.tokenStr.equals("==") || scan.currentToken.tokenStr.equals("!=")){
-      operator = scan.currentToken;
-      scan.getNext();
-      if (scan.currentToken.primClassif != Classif.OPERAND)
-        System.out.printf("Within expression, expected operand.  Found %s", scan.currentToken.tokenStr);
+    while (!scan.currentToken.tokenStr.equals(this.endSeparator)){
+      //Loop for the actual check of the comparison
+      while (scan.currentToken.tokenStr.equals("<") || scan.currentToken.tokenStr.equals(">") || scan.currentToken.tokenStr.equals("<=") || scan.currentToken.tokenStr.equals(">=") ||
+      scan.currentToken.tokenStr.equals("==") || scan.currentToken.tokenStr.equals("!=")){
+        operator = scan.currentToken;
+        scan.getNext();
+        if (scan.currentToken.primClassif != Classif.OPERAND)
+          System.out.printf("Within expression, expected operand.  Found %s", scan.currentToken.tokenStr);
 
-      temp = summation(); 
-      if(operator.tokenStr.equals("<"))   
-      {
-        result = PickleUtil.LessThan(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
-        res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
-      }              
-      else if(operator.tokenStr.equals(">"))
-      {
-        result = PickleUtil.GreaterThan(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
-        res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
-      }
-      else if(operator.tokenStr.equals("<="))
-      {
-        result = PickleUtil.LessThanOrEqual(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
-        res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
-      }
-      else if(operator.tokenStr.equals(">="))
-      {
-        result = PickleUtil.GreaterThanOrEqual(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
-        res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
-      }
-      else if(operator.tokenStr.equals("=="))
-      {
-        result = PickleUtil.Equivalent(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
-        res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
-      }
-      else if(operator.tokenStr.equals("!="))
-      {
-        result = PickleUtil.NotEquivalent(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
-        res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
+        temp = summation(); 
+        if(operator.tokenStr.equals("<"))   
+        {
+          result = PickleUtil.LessThan(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
+          res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
+        }              
+        else if(operator.tokenStr.equals(">"))
+        {
+          result = PickleUtil.GreaterThan(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
+          res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
+        }
+        else if(operator.tokenStr.equals("<="))
+        {
+          result = PickleUtil.LessThanOrEqual(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
+          res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
+        }
+        else if(operator.tokenStr.equals(">="))
+        {
+          result = PickleUtil.GreaterThanOrEqual(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
+          res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
+        }
+        else if(operator.tokenStr.equals("=="))
+        {
+          result = PickleUtil.Equivalent(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
+          res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
+        }
+        else if(operator.tokenStr.equals("!="))
+        {
+          result = PickleUtil.NotEquivalent(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
+          res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
+        }
       }
     }
-    //System.out.printf("Final result is: %s \n", res.value);
+    // System.out.printf("Final result is: %s \n", res.value);
     return res;
   }
 
