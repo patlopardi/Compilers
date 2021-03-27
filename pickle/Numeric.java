@@ -50,5 +50,9 @@ public class Numeric {
         return (Double.valueOf(this.resultValue.value.toString()));
     }
 
+    public String valueToString(){
+        return (this.resultValue.value.toString());
+    }
+
 
 }
