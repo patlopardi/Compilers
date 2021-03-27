@@ -62,45 +62,25 @@ public class Parser {
                 , scan.fileNm);
     }
 
-
     private void print() {
         try{
-            //System.out.println("in print");
-            scan.getNext();
-            while(!scan.getNext().isEmpty()){
-                //System.out.println("token: " + scan.currentToken.tokenStr);
-                if(scan.currentToken.tokenStr.equals(")")){
-                    scan.getNext();
-                    break;
-                }
-
-                else if(scan.currentToken.tokenStr.equals(",")){
-                    scan.getNext();
-                    if(scan.currentToken.subClassif.equals(SubClassif.STRING)){
-                        System.out.print(scan.currentToken.tokenStr + " ");
-                    }
-                    else {
-                        //error("Hello this is a test '%s' at line: ", scan.currentToken.tokenStr);
-                        System.out.print(scan.currentToken.tokenStr + " ");
-                    }
-                }
-                else{
-                    if(scan.currentToken.subClassif.equals(SubClassif.STRING)){
-                        System.out.print(scan.currentToken.tokenStr + " ");
-                    }
-                    else {
-                        System.out.print(scan.currentToken.tokenStr + " ");
-                    }
+            scan.getNext(); //moves to left parenth
+            while(! scan.getNext().equals(")")){
+                if (scan.currentToken.subClassif==SubClassif.IDENTIFIER){
+                System.out.printf("%s", storage.getVariableValue(scan.currentToken.tokenStr).value);
+                }else if (scan.currentToken.primClassif==Classif.OPERAND){
+                    System.out.printf(scan.currentToken.tokenStr);
+                }else if (scan.currentToken.tokenStr.equals(",")){
                 }
             }
+            System.out.printf("\n");
+            skipTo(";");
         }
         catch (Exception e){
             e.printStackTrace();
         }
-        //System.out.println("still in print " + scan.currentToken.tokenStr);
-        System.out.println();
-        skipTo(";");
     }
+    
     //Sets the variable
                 /*String var = scan.currentToken.tokenStr;
                 //Assuming just normal = for testing

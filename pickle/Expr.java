@@ -1,5 +1,16 @@
 package pickle;
 
+  /**
+  * Constructor for the Expr class which set variables
+  * <p>
+  * The variables it populates is the scanner object for reading in tokens as 
+  *     as the storage object which holds all the initialized variable values
+  *
+  * @param scanner      Scanner object for iterating through and getting the tokens
+  * @param storage      StorageManager object for access to the initialized variables
+  *
+  * @return      N/A
+  */
 public class Expr {
   public Scanner scan;
   public String endSeparator;
@@ -10,7 +21,18 @@ public class Expr {
     this.scan = scanner;
     this.storage = storage;
   }
-    
+
+    /**
+  * Expr function which starts the movement down the grammar
+  * <p>
+  *   Starting handle for any token that is + or -, takes the left and right operand
+  *      and runs either a addition or subtract using the util functionality
+  *
+  * @param endSeparator      The end Separator for populating the ResultValue with
+  *
+  * @return       ResultValue which holds the value of the calculation of the expression
+  * @throws       Exception
+  */
   public ResultValue expr(String endSeparator) throws Exception {
     // begin on the first token of the expression
     this.endSeparator = endSeparator;
@@ -21,7 +43,7 @@ public class Expr {
     }
     
     Token operator;
-    System.out.printf("This is the current token %s \n", scan.currentToken.tokenStr);
+    //System.out.printf("This is the current token %s \n", scan.currentToken.tokenStr);
     ResultValue res = products();                    
     ResultValue temp;
     
@@ -41,10 +63,18 @@ public class Expr {
         res = PickleUtil.Subtract(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
       }
     }
-    System.out.printf("\n My final return is %s \n", res.value);
+    //System.out.printf("\n My final return is %s \n", res.value);
     return res;
 }
 
+  /**
+  * Products which is the 2nd down from the top level and handles the * and / expressions
+  * <p>
+  *   Handle for any two tokens that multiply or divide. Then return as the result.
+  *
+  * @return       ResultValue which holds the value of the calculation of the expression
+  * @throws       Exception
+  */
   private ResultValue products() throws Exception {
 
     Token operator; 
@@ -72,7 +102,15 @@ public class Expr {
     }
     return res;
   }
-  
+
+    /**
+  * Handles exponents of the expression which is the 3rd down from the top level
+  * <p>
+  *   Handles exponent of left and right expression, returns the ResultValue fo the expression
+  *
+  * @return       ResultValue which holds the value of the calculation of the expression
+  * @throws       Exception
+  */
   private ResultValue expon() throws Exception {
 
     Token operator; 
@@ -95,6 +133,15 @@ public class Expr {
     return res;
   }
 
+    /**
+  * Handles the bottom layer of the grammar specifying indepth value of token
+  * <p>
+  *   Returns the value of the variable, through either searching the storage or through the
+  *     literal current value. They're returned as a ResultValue
+  *
+  * @return       ResultValue which holds the value of the token (either from stored variable or just value)
+  * @throws       Exception
+  */
   private ResultValue operand() throws Exception {
     ResultValue res = null;
     if (scan.currentToken.primClassif == Classif.OPERAND)
