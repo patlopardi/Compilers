@@ -23,6 +23,7 @@ public class Scanner
   public boolean flagString = false;
   public boolean flagNum = false;
   public boolean flagDecimal = false;
+  public boolean debugStatement = false;
   public boolean flagComments = false;
 
   //Attributes
@@ -110,7 +111,7 @@ public class Scanner
       }
 
       // Print for when on a new line
-      if(iColPos == 0 && sourceLineM.get(iSourceLineNr).trim().length() > 1)
+      if(iColPos == 0 && sourceLineM.get(iSourceLineNr).trim().length() > 1 && this.debugStatement)
       {
         System.out.printf("%d %s\n", iSourceLineNr + 1, sourceLineM.get(iSourceLineNr));
       }
