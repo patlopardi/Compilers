@@ -21,8 +21,7 @@ public class Expr {
     }
     
     Token operator;
-    System.out.printf("This is the current token %s \n", scan.currentToken.tokenStr);
-    ResultValue res = products();                    
+    ResultValue res = products();
     ResultValue temp;
     
     while (scan.currentToken.tokenStr.equals("+") || scan.currentToken.tokenStr.equals("-")){
@@ -41,7 +40,6 @@ public class Expr {
         res = PickleUtil.Subtract(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
       }
     }
-    System.out.printf("\n My final return is %s \n", res.value);
     return res;
 }
 
