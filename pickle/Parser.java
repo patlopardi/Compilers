@@ -306,6 +306,7 @@ public class Parser {
                 if(scan.currentToken.tokenStr.equals("print")){
 //                    System.out.println("in print");
                     print();
+                    scan.getNext();
                 }
                 if(scan.currentToken.tokenStr.equals("if")){
 //                    System.out.println("in if ");
