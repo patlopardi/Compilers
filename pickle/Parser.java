@@ -180,12 +180,12 @@ public class Parser {
 
             switch (operatorStr) {
                 case "=":
-                    res02 = exp.expr(";");
+                    res02 = exp.expr(";", debugExpr);
 
                     res = storage.Assign(variableStr, res02);   // assign to target
                     break;
                 case "-=":
-                    res02 = exp.expr(operatorStr);
+                    res02 = exp.expr(operatorStr, debugExpr);
                     // expression must be numeric, raise exception if not
                     n0p2 = new Numeric(scan, res02, " -=", "2nd Operand");
                     // Since it is numeric, we need value of target variable
@@ -200,7 +200,7 @@ public class Parser {
 //                        System.out.println(res.value);
                     break;
                 case "+=":
-                    res02 = exp.expr(operatorStr);
+                    res02 = exp.expr(operatorStr, debugExpr);
                     // expression must be numeric, raise exception if not
                     n0p2 = new Numeric(scan, res02, " +=", " nd Operand");
                     // Since it is numeric, we need value of target variable
