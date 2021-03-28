@@ -86,6 +86,14 @@ public class Parser {
                     debugAssign = true;
                 }
                 break;
+            case "Expr":
+                if (debugSwitch.equals("off")){
+                    debugExpr = false;
+                }
+                else {
+                    debugExpr = true;
+                }
+                break;
         }
 
         skipTo(";");
@@ -158,15 +166,14 @@ public class Parser {
                 switch (operatorStr) {
                     case "=":
 //                        System.out.println("before expr");
-                        res02 = exp.expr(";");
-
+                        res02 = exp.expr(";", debugExpr);
 //                        System.out.println(res02.value);
                         res = storage.Assign(variableStr, res02);   // assign to target
 //                        System.out.println(res.value);
                         break;
                     case "-=":
 //                        System.out.println("in second case");
-                        res02 = exp.expr(operatorStr);
+                        res02 = exp.expr(operatorStr, debugExpr);
                         // expression must be numeric, raise exception if not
                         n0p2 = new Numeric(scan, res02, " -=", "2nd Operand");
                         // Since it is numeric, we need value of target variable
@@ -180,7 +187,7 @@ public class Parser {
 //                        System.out.println(res.value);
                         break;
                     case "+=":
-                        res02 = exp.expr(operatorStr);
+                        res02 = exp.expr(operatorStr, debugExpr);
                         // expression must be numeric, raise exception if not
                         n0p2 = new Numeric(scan, res02, " +=", " nd Operand");
                         // Since it is numeric, we need value of target variable
@@ -270,6 +277,7 @@ public class Parser {
                 if(!scan.getNext().equals(";"))
                     error("expected ; after endif received: ", scan.currentToken.tokenStr);
             }
+
         }
         catch (Exception e){
             e.printStackTrace();
@@ -383,7 +391,7 @@ public class Parser {
         ResultValue res02;
 
         try{
-            res01 = exp.expr(":");
+            res01 = exp.expr(":", debugExpr);
             check = (boolean) res01.value;
             return check;
         }
