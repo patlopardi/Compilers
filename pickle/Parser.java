@@ -90,6 +90,14 @@ public class Parser {
                     debugAssign = true;
                 }
                 break;
+            case "Expr":
+                if (debugSwitch.equals("off")){
+                    debugExpr = false;
+                }
+                else {
+                    debugExpr = true;
+                }
+                break;
         }
 
         skipTo(";");
@@ -169,6 +177,7 @@ public class Parser {
             ResultValue res01;
             Numeric n0p2;  // numeric value of second operand
             Numeric n0p1;  // numeric value of first operand
+
             switch (operatorStr) {
                 case "=":
                     res02 = exp.expr(";");
@@ -184,6 +193,7 @@ public class Parser {
                     // target variable must be numeric
                     n0p1 = new Numeric(scan, res01, " -=", "1st operand");
                     // subtract 2nd operand from first and assign it
+
 //                        System.out.println(PickleUtil.Subtract(n0p1, n0p2).value);
                     //ResultValue temp = PickleUtil.Subtract(n0p1, n0p2);
                     res = storage.Assign(variableStr, PickleUtil.Subtract(n0p1, n0p2));
@@ -205,6 +215,7 @@ public class Parser {
                     error("expected assignment operator received instead: ", operatorStr);
                     break;
             }
+
 //            System.out.println("after switch");
         }
 
@@ -266,6 +277,7 @@ public class Parser {
                 if(!scan.getNext().equals(";"))
                     error("expected ; after endif received: ", scan.currentToken.tokenStr);
             }
+
         }
         catch (Exception e){
             e.printStackTrace();
@@ -278,7 +290,9 @@ public class Parser {
      */
     public void whileStmt() {
         int saveLineNr = scan.iSourceLineNr;
+
         int saveLineAfter=0;
+
         boolean flag = false;
         try{
 
@@ -287,6 +301,7 @@ public class Parser {
                 if(flag){
                     resCond = evalCond();
                     if(!resCond){
+
                         break;
                     }
                 }
@@ -440,7 +455,7 @@ public class Parser {
         ResultValue res02;
 
         try{
-            res01 = exp.expr(":");
+            res01 = exp.expr(":", debugExpr);
             check = (boolean) res01.value;
             return check;
         }

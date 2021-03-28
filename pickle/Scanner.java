@@ -93,11 +93,6 @@ public class Scanner
     while(sourceLineM.size() > iSourceLineNr)
     {
 
-      if(flagComments == false){
-        textCharM = PickleUtil.checkComments(textCharM); // Deletes all comments from the text array
-        flagComments = true;
-      }
-
       // End of line logic
       if((iColPos > textCharM.length - 1)) {
         iSourceLineNr += 1;
@@ -110,6 +105,11 @@ public class Scanner
         flagComments = false;
       }
 
+      if(!flagComments){
+        textCharM = PickleUtil.checkComments(textCharM); // Deletes all comments from the text array
+        flagComments = true;
+      }
+
       // Print for when on a new line
       if(iColPos == 0 && sourceLineM.get(iSourceLineNr).trim().length() > 1 && this.debugStatement)
       {
@@ -117,7 +117,7 @@ public class Scanner
       }
 
       //Check blank line
-      if(sourceLineM.get(iSourceLineNr).trim().length() < 1)
+      if(textCharM.length < 1)
       { 
         //Increment Line, set text char array, reset col position
         iSourceLineNr += 1;
@@ -127,6 +127,7 @@ public class Scanner
         }     
         textCharM = sourceLineM.get(iSourceLineNr).toCharArray();
         iColPos = 0;
+        flagComments = false;
       }
       //!!!!!!!!!!!!!!!!!!!!!!!!MARKED FIRST CHARACTER!!!!!!!!!!!!!!!!
       else if(flagStartCharacter)
@@ -308,6 +309,10 @@ public class Scanner
     }
     //Return for end of file
     return "";
+  }
+
+  public String printCurrLine(){
+    return sourceLineM.get(iSourceLineNr);
   }
   
 
