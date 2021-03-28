@@ -278,28 +278,23 @@ public class Parser {
 
     public void whileStmt() {
         int saveLineNr = scan.iSourceLineNr;
-
-        System.out.println("saveLineNr: " + saveLineNr);
-        System.out.println("in while");
-        System.out.println("entering while with this token: " + scan.currentToken.tokenStr);
+        boolean flag = false;
         try{
 
             boolean resCond = evalCond();
             //        // Did the condition return True?
-            if (resCond) {
-                System.out.println("this is a true statement");
+            while (resCond) {
+                if(flag){
+                    resCond = evalCond();
+                    if(resCond == false){
+                        break;
+                    }
+                }
+                flag = true;
                 executeStatements(true);
-                System.out.println("back from executing with this token: " + scan.currentToken.tokenStr);
-
-                scan.iSourceLineNr = saveLineNr;
-                System.out.println("line number that was saved: " + scan.currentToken.iSourceLineNr);
-                scan.iColPos=0;
+                scan.iSourceLineNr = saveLineNr - 1;
+                scan.iColPos=1000;
                 scan.getNext();
-                System.out.println(scan.currentToken.tokenStr);
-                whileStmt();
-            }
-            else{
-                ignoreStatements();
             }
         }
         catch (Exception e){
@@ -358,7 +353,6 @@ public class Parser {
                     skipTo(";");
                 }
                 else if(scan.currentToken.tokenStr.equals("endif") || scan.currentToken.tokenStr.equals("else") || scan.currentToken.tokenStr.equals("endwhile")){
-                    System.out.println("in last else if");
                     return;
                 }
                 else{
@@ -391,9 +385,7 @@ public class Parser {
         try{
             res01 = exp.expr(":");
             check = (boolean) res01.value;
-            System.out.println(check);
             return check;
-
         }
         catch (Exception e){
             e.printStackTrace();
