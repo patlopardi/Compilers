@@ -3,7 +3,9 @@ package pickle;
 import pickle.Exceptions.ParserException;
 
 import javax.print.DocFlavor;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 public class Parser {
     public boolean debugExpr = false;
@@ -12,6 +14,9 @@ public class Parser {
     public SymbolTable symbolT;
     public StorageManager storage = new StorageManager();
     boolean bExec = true;
+    List<Token> tokens = new ArrayList<>();
+
+
 
     public Parser(Scanner scanner, SymbolTable symbolTable){
         this.scan = scanner;
@@ -123,7 +128,8 @@ public class Parser {
     }
 
     public ResultValue assignment() throws Exception {
-//        System.out.println("in assignemnt");
+        System.out.println("in assignemnt");
+        System.out.println("current token: " + scan.currentToken.tokenStr);
         Expr exp = new Expr(scan, storage);
         ResultValue res = null;
 
@@ -197,6 +203,8 @@ public class Parser {
 
     private void ifStmt(boolean bExec) {
         try {
+            //tokens.add(scan.currentToken);
+            //tokens.
 //            System.out.println("in if");
             int saveLineNr = scan.currentToken.iSourceLineNr;
             if (bExec) {
@@ -267,6 +275,38 @@ public class Parser {
             e.printStackTrace();
         }
     }
+
+    public void whileStmt() {
+        int saveLineNr = scan.iSourceLineNr;
+
+        System.out.println("saveLineNr: " + saveLineNr);
+        System.out.println("in while");
+        System.out.println("entering while with this token: " + scan.currentToken.tokenStr);
+        try{
+
+            boolean resCond = evalCond();
+            //        // Did the condition return True?
+            if (resCond) {
+                System.out.println("this is a true statement");
+                executeStatements(true);
+                System.out.println("back from executing with this token: " + scan.currentToken.tokenStr);
+
+                scan.iSourceLineNr = saveLineNr;
+                System.out.println("line number that was saved: " + scan.currentToken.iSourceLineNr);
+                scan.iColPos=0;
+                scan.getNext();
+                System.out.println(scan.currentToken.tokenStr);
+                whileStmt();
+            }
+            else{
+                ignoreStatements();
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     public void ignoreStatements(){
         try{
 //            System.out.println("in ignoreStatements");
@@ -277,8 +317,9 @@ public class Parser {
 //                System.out.println("printing: " + scan.currentToken.tokenStr);
                 if(scan.currentToken.tokenStr.equals("if"))
                     checkForIf = true;
-                else if((scan.currentToken.tokenStr.equals("else") || scan.currentToken.tokenStr.equals("endif"))&& !checkForIf){
-//                    System.out.println("middle else if");
+                else if((scan.currentToken.tokenStr.equals("else") || scan.currentToken.tokenStr.equals("endif")
+                            || scan.currentToken.tokenStr.equals("endwhile"))&& !checkForIf){
+                    System.out.println("middle else if");
 
                     return;
                 }
@@ -306,6 +347,7 @@ public class Parser {
                 if(scan.currentToken.tokenStr.equals("print")){
 //                    System.out.println("in print");
                     print();
+                    scan.getNext();
                 }
                 if(scan.currentToken.tokenStr.equals("if")){
 //                    System.out.println("in if ");
@@ -315,8 +357,8 @@ public class Parser {
                         || scan.currentToken.tokenStr.equals("String") || scan.currentToken.tokenStr.equals("Float")){
                     skipTo(";");
                 }
-                else if(scan.currentToken.tokenStr.equals("endif") || scan.currentToken.tokenStr.equals("else")){
-//                    System.out.println("in last else if");
+                else if(scan.currentToken.tokenStr.equals("endif") || scan.currentToken.tokenStr.equals("else") || scan.currentToken.tokenStr.equals("endwhile")){
+                    System.out.println("in last else if");
                     return;
                 }
                 else{
@@ -349,6 +391,7 @@ public class Parser {
         try{
             res01 = exp.expr(":");
             check = (boolean) res01.value;
+            System.out.println(check);
             return check;
 
         }
@@ -358,10 +401,7 @@ public class Parser {
         return false;
     }
 
-    public void whileStmt() {
-        //System.out.println("in while");
-        skipTo(";");
-    }
+
 
 
     public void skipTo(String stopToken){
