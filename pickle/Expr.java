@@ -6,8 +6,8 @@ package pickle;
   * The variables it populates is the scanner object for reading in tokens as 
   *     as the storage object which holds all the initialized variable values
   *
-  * @param scanner      Scanner object for iterating through and getting the tokens
-  * @param storage      StorageManager object for access to the initialized variables
+  *  scanner      Scanner object for iterating through and getting the tokens
+  *  storage      StorageManager object for access to the initialized variables
   *
   * @return      N/A
   */
@@ -35,18 +35,25 @@ public class Expr {
   * @return       ResultValue which holds the boolean values of the calculated expression
   * @throws       Exception
   */
-  public ResultValue expr(String endSeparator) throws Exception {
+  public ResultValue expr(String endSeparator, boolean debugExpr) throws Exception {
     
     // begin on the first token of the expression
     this.endSeparator = endSeparator;
     
     if(scan.currentToken.primClassif != Classif.OPERAND)
     {
+      if(debugExpr && (scan.currentToken.tokenStr.equals("if") || scan.currentToken.tokenStr.equals("while"))){
+        System.out.println("> " + scan.currentToken.tokenStr + "Stmt: " + scan.printCurrLine().trim());
+      }
       scan.getNext();
+
     }
     
     Token operator;
-    ResultValue res = summation();              
+    String opString = "";
+    String res02 = "";
+    ResultValue res = summation();
+    String resClone = res.value.toString();
     ResultValue temp;
     boolean result;
     while (!scan.currentToken.tokenStr.equals(this.endSeparator)){
@@ -54,11 +61,13 @@ public class Expr {
       while (scan.currentToken.tokenStr.equals("<") || scan.currentToken.tokenStr.equals(">") || scan.currentToken.tokenStr.equals("<=") || scan.currentToken.tokenStr.equals(">=") ||
       scan.currentToken.tokenStr.equals("==") || scan.currentToken.tokenStr.equals("!=")){
         operator = scan.currentToken;
+        opString = operator.tokenStr;
         scan.getNext();
         if (scan.currentToken.primClassif != Classif.OPERAND)
           System.out.printf("Within expression, expected operand.  Found %s", scan.currentToken.tokenStr);
 
-        temp = summation(); 
+        temp = summation();
+        res02 = temp.value.toString();
         if(operator.tokenStr.equals("<"))   
         {
           result = PickleUtil.LessThan(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
@@ -91,9 +100,14 @@ public class Expr {
         }
       }
     }
+    if(debugExpr && opString.length() > 1){
+
+      System.out.println("..." + resClone + " " + opString + " " + res02 + " is " + res.value.toString() );
+    }
     // System.out.printf("Final result is: %s \n", res.value);
     return res;
   }
+
 
     /**
   * Summation function which is the 2nd down from the branching top level. It handles addition

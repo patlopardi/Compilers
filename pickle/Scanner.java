@@ -310,6 +310,10 @@ public class Scanner
     //Return for end of file
     return "";
   }
+
+  public String printCurrLine(){
+    return sourceLineM.get(iSourceLineNr);
+  }
   
 
   /**

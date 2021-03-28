@@ -47,7 +47,7 @@ circum = twoPi * radius;
 print("\tradius=", radius, "twoPi=", twoPi, "circum=", circum);
 
 // Minus stuff
-debug Assign off;
+debug Assign on;
 debug Expr on;
 Int A;
 Int B;
