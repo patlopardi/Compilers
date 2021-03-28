@@ -296,6 +296,7 @@ public class Parser {
                 scan.iColPos=1000;
                 scan.getNext();
             }
+            skipStatements();
             if(!scan.currentToken.tokenStr.equals("endwhile"))
                 error("expected endwhile for while received: ", scan.currentToken.tokenStr);
             if(!scan.getNext().equals(";"))
@@ -322,13 +323,13 @@ public class Parser {
                     checkForWhile = true;
                 }
                 else if( scan.currentToken.tokenStr.equals("endwhile") && !checkForWhile){
-//                    System.out.println("middle else if");
+                    System.out.println("middle else if");
 
 
                     return;
                 }
                 else if(scan.currentToken.tokenStr.equals("endwhile") && checkForWhile){
-//                    System.out.println("last else if");
+                    System.out.println("last else if");
                     checkForWhile = false;
                 }
                 scan.getNext();
@@ -401,6 +402,9 @@ public class Parser {
                 }
                 else if(scan.currentToken.tokenStr.equals("endif") || scan.currentToken.tokenStr.equals("else") || scan.currentToken.tokenStr.equals("endwhile")){
                     return;
+                }
+                else if(scan.currentToken.tokenStr.equals("while")){
+                    whileStmt();
                 }
                 else{
                     res = assignment();
