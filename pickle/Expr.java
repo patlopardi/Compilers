@@ -45,8 +45,10 @@ public class Expr {
       if(debugExpr && (scan.currentToken.tokenStr.equals("if") || scan.currentToken.tokenStr.equals("while"))){
         System.out.println("> " + scan.currentToken.tokenStr + "Stmt: " + scan.printCurrLine().trim());
       }
-      scan.getNext();
-
+      if(!scan.currentToken.tokenStr.equals("-"))
+      {
+        scan.getNext(); 
+      }
     }
     
     Token operator;
@@ -229,7 +231,7 @@ public class Expr {
       scan.getNext();
     }
     
-    ResultValue res = null;
+    ResultValue res = new ResultValue(null, null, null, null);
     if (scan.currentToken.primClassif == Classif.OPERAND)
     {
       switch (scan.currentToken.subClassif)
@@ -245,20 +247,23 @@ public class Expr {
           }
           return res;	
         case INTEGER:
-        case FLOAT:
+        case FLOAT: 
+          res = scan.currentToken.toResult(endSeparator);
           if(negative)
           {
             res = PickleUtil.UnitaryMinus(new Numeric(this.scan, res, null, null));
           }
+          // nextToken is operator or sep
+          scan.getNext();                     
+          return res;
         case DATE:
         case STRING:
         case BOOLEAN:
-          res = scan.currentToken.toResult(endSeparator);  
+          res = scan.currentToken.toResult(endSeparator);
           // nextToken is operator or sep
           scan.getNext();                     
           return res;
       }
-
     }
     
     System.out.printf("Within operand, found: '%s'", scan.currentToken.tokenStr);

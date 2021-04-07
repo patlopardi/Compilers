@@ -129,15 +129,14 @@ public class Parser {
         try{
             scan.getNext();
             while(!scan.getNext().equals(";")){
-                System.out.print("" + exp.expr(",)", debugExpr).value);
+                System.out.printf("%s", exp.expr(",)", debugExpr).value);
             }
             skipTo(";");
         }
         catch (Exception e){
             e.printStackTrace();
         }
-
-        System.out.println();
+        System.out.println("");
 
     }
     /**
@@ -329,7 +328,7 @@ public class Parser {
                     checkForWhile = true;
                 }
                 else if( scan.currentToken.tokenStr.equals("endwhile") && !checkForWhile){
-                    System.out.println("middle else if");
+                    //System.out.println("middle else if");
 
 
                     return;
