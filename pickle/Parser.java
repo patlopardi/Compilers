@@ -125,21 +125,13 @@ public class Parser {
      * @return      N/A
      */
     private void print() {
+        Expr exp = new Expr(scan, storage);
         try{
             scan.getNext();
             while(!scan.getNext().equals(";")){
-                if(scan.currentToken.subClassif == SubClassif.IDENTIFIER){
-                    System.out.println(" " + storage.getVariableValue(scan.currentToken.tokenStr).value);
-                }
-                else if(scan.currentToken.primClassif==Classif.OPERAND){
-                    System.out.print(scan.currentToken.tokenStr);
-                }
-                else if(scan.currentToken.tokenStr.equals(",")){
-                }
+                System.out.print("" + exp.expr(",)", debugExpr).value);
             }
-//            System.out.println();
             skipTo(";");
-//            System.out.println("still in print " + scan.currentToken.tokenStr);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -147,7 +139,6 @@ public class Parser {
 
         System.out.println();
 
-//        System.out.println("still in print " + scan.currentToken.tokenStr);
     }
     /**
      * assigns a value to a variable

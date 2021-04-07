@@ -56,7 +56,7 @@ public class Expr {
     String resClone = res.value.toString();
     ResultValue temp;
     boolean result;
-    while (!scan.currentToken.tokenStr.equals(this.endSeparator)){
+    while (!this.endSeparator.contains(scan.currentToken.tokenStr)){
       //Loop for the actual check of the comparison
       while (scan.currentToken.tokenStr.equals("<") || scan.currentToken.tokenStr.equals(">") || scan.currentToken.tokenStr.equals("<=") || scan.currentToken.tokenStr.equals(">=") ||
       scan.currentToken.tokenStr.equals("==") || scan.currentToken.tokenStr.equals("!=")){
