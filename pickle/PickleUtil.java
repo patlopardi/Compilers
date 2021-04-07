@@ -330,10 +330,10 @@ public final class PickleUtil {
         }
         else if(nOp1.resultValue.dataType == SubClassif.STRING){
             if(nOp1.valueToString().compareTo(nOp2.valueToString()) <= 0){
-                return false;
+                return true;
             }
             else{
-                return true;
+                return false;
             }
         }
 
@@ -373,10 +373,10 @@ public final class PickleUtil {
         }
         else if(nOp1.resultValue.dataType == SubClassif.STRING){
             if(nOp1.valueToString().compareTo(nOp2.valueToString()) >= 0){
-                return false;
+                return true;
             }
             else{
-                return true;
+                return false;
             }
         }
         return false;
@@ -416,10 +416,10 @@ public final class PickleUtil {
        
         else if(nOp1.resultValue.dataType == SubClassif.STRING){
             if(nOp1.valueToString().compareTo(nOp2.valueToString()) > 0){
-                return false;
+                return true;
             }
             else{
-                return true;
+                return false;
             }
         }
 
@@ -459,10 +459,10 @@ public final class PickleUtil {
         }
         else if(nOp1.resultValue.dataType == SubClassif.STRING){
             if(nOp1.valueToString().compareTo(nOp2.valueToString()) < 0){
-                return false;
+                return true;
             }
             else{
-                return true;
+                return false;
             }
         }
         return false;
