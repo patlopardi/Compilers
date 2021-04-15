@@ -210,6 +210,32 @@ public final class PickleUtil {
         return result;
 
     }
+    /**
+     * <p>
+     * This function will return ResultValue of two concatenated strings
+     *
+     * @param nOp1  Left hand operand
+     * @param nOp2  Right hand operand
+     *
+     * @return      ResultValue
+     */
+    public static ResultValue Concatenation(Numeric nOp1, Numeric nOp2){
+        ResultValue result = new ResultValue(SubClassif.STRING, 1, "", "");
+        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
+            // Throw error
+        }
+        if(nOp1.resultValue.dataType != SubClassif.STRING && nOp2.resultValue.dataType != SubClassif.STRING)
+        {
+            //Error invalid input
+            System.out.printf("Invalid Input, expected variables of type string instead recieved %s and %s\n", nOp1.resultValue.dataType, nOp1.resultValue.dataType);
+            return null;
+        }
+        else
+        {
+            result.value = nOp1.resultValue.value.toString() + nOp2.resultValue.value.toString();
+        }
+        return result;
+    }
 
     /**
      * <p>
@@ -467,5 +493,4 @@ public final class PickleUtil {
         }
         return false;
     }
-
 }
