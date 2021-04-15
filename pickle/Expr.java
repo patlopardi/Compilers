@@ -32,6 +32,7 @@ public class Expr {
   *    holding the boolean of the statement.
   *
   * @param endSeparator      The end Separator for populating the ResultValue with
+  * @param debugExpr         Boolean value to toggle debug mode
   *
   * @return       ResultValue which holds the boolean values of the calculated expression
   * @throws       Exception
@@ -160,7 +161,7 @@ public class Expr {
 
     Token operator; 
     //ResultValue res = operand();  
-    ResultValue res = expon();                  
+    ResultValue res = expon(null);                  
     ResultValue temp;
 
     while (scan.currentToken.tokenStr.equals("*") || scan.currentToken.tokenStr.equals("/")) {
@@ -171,7 +172,7 @@ public class Expr {
                       , scan.currentToken.tokenStr);
 
       //temp = operand();
-      temp = expon();
+      temp = expon(null);
       if(operator.tokenStr.equals("*"))
       {
         res = PickleUtil.Multiply(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
@@ -189,14 +190,26 @@ public class Expr {
   * <p>
   *   Handles exponent of left and right expression, returns the ResultValue fo the expression
   *
+  * @param recursed         ResultValue of the previous high level recursive temp used in chain exponents
+  *
   * @return       ResultValue which holds the value of the calculation of the expression
   * @throws       Exception
   */
-  private ResultValue expon() throws Exception {
+  private ResultValue expon(ResultValue recursed) throws Exception {
 
-    Token operator; 
-    ResultValue res = operand();                    
+    Token operator;
+    ResultValue res;
     ResultValue temp;
+    //Non recursive
+    if(recursed == null)
+    {
+      res = operand();  
+    }
+    //Recursive
+    else
+    {
+      res = recursed;
+    }
 
     while (scan.currentToken.tokenStr.equals("^")) {
       operator = scan.currentToken;
@@ -205,9 +218,14 @@ public class Expr {
         System.out.printf("Within expression, expected operand.  Found: '%s'"
                       , scan.currentToken.tokenStr);
 
-      temp = operand();  
+      temp = operand(); 
+      if(scan.currentToken.tokenStr.equals("^"))
+      {
+        temp = expon(temp);
+      }
       if(operator.tokenStr.equals("^"))
       {
+        
         res = PickleUtil.Square(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
       }
     }
