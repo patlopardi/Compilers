@@ -3,6 +3,7 @@ package pickle;
 import pickle.Exceptions.ParserException;
 
 import javax.print.DocFlavor;
+import javax.xml.transform.Result;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -14,7 +15,9 @@ public class Parser {
     public SymbolTable symbolT;
     public StorageManager storage = new StorageManager();
     boolean bExec = true;
+    boolean forCheck = false;
     List<Token> tokens = new ArrayList<>();
+
 
 
     //constructor
@@ -54,7 +57,26 @@ public class Parser {
                 }
                 else if(scan.currentToken.tokenStr.equals("Int") || scan.currentToken.tokenStr.equals("Bool")
                         || scan.currentToken.tokenStr.equals("String") || scan.currentToken.tokenStr.equals("Float")){
-                    skipTo(";");
+                    scan.getNext();
+                    scan.getNext();
+                    boolean check = false;
+                    if(!scan.currentToken.tokenStr.equals(";")){
+                        check=true;
+                    }
+                    scan.iSourceLineNr -= 1;
+                    scan.iColPos = 10000;
+                    scan.getNext();
+                    //System.out.println(scan.currentToken.tokenStr);
+                    scan.getNext();
+                    if(check){
+                        res = assignment();
+                    }
+                    else{
+                        skipTo(";");
+                    }
+                }
+                else if(scan.currentToken.tokenStr.equals("for")){
+                    forStmt();
                 }
                 else{
                     res = assignment();
@@ -154,12 +176,14 @@ public class Parser {
         if(!bExec)
             skipTo(";");
         else {
+//            System.out.println("in else");
 //        ResultValue res;
             if (scan.currentToken.subClassif != SubClassif.IDENTIFIER)
                 error("expected a variable for the target of an assignment ", scan.currentToken);
 
             String variableStr = scan.currentToken.tokenStr;
             scan.getNext();
+            //tokens.add(scan.currentToken);
             if (scan.currentToken.primClassif != Classif.OPERATOR)
                 error("expected assignment operator", scan.currentToken.tokenStr);
             String operatorStr = scan.currentToken.tokenStr;
@@ -170,9 +194,18 @@ public class Parser {
 
             switch (operatorStr) {
                 case "=":
-                    res02 = exp.expr(";", debugExpr);
+//                    System.out.println("in this case");
+                    if(forCheck) {
+//                        System.out.println("in here");
+                        res02 = exp.expr("to", debugExpr);
+                    }
+                    else{
+                        res02 = exp.expr(";", debugExpr);
+                    }
+
 
                     res = storage.Assign(variableStr, res02);   // assign to target
+
                     break;
                 case "-=":
                     res02 = exp.expr(operatorStr, debugExpr);
@@ -199,7 +232,6 @@ public class Parser {
                     n0p1 = new Numeric(scan, res01, " +=", " st operand");
                     // subtract 2nd operand from first and assign it
                     res = storage.Assign(variableStr, PickleUtil.Addition(n0p1, n0p2));
-
                     break;
                 default:
                     error("expected assignment operator received instead: ", operatorStr);
@@ -311,6 +343,235 @@ public class Parser {
             e.printStackTrace();
         }
     }
+    public void forStmt(){
+        //TODO: add this function to all the other callers
+        try{
+            ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
+            int saveLineNr = scan.iSourceLineNr;
+            String saveToken;
+            String saveToken2;
+            tokens.clear();
+            Expr exp = new Expr(scan, storage);
+            forCheck=true;
+            boolean forType1 = false;
+            boolean forType2 = false;
+            ResultValue res02;
+            ResultValue res01;
+            ResultValue res03;
+            ResultValue res04;
+            ResultValue res05;
+            boolean checkCond = false;
+            Numeric n0p2;  // numeric value of second operand
+            Numeric n0p1;  // numeric value of first operand
+            Numeric n0p4;
+            Numeric n0p3;
+            ResultValue res;
+            boolean forType3 = false;
+            scan.getNext();
+            if(scan.getNext().equals("=")){
+                //System.out.println("in forType1 or 2");
+                scan.getNext();
+                scan.getNext();
+                scan.getNext();
+                if(scan.getNext().equals("by")){
+                    forType1=true;
+                }
+                else{
+                    forType2=true;
+                }
+            }
+            else if(scan.currentToken.tokenStr.equals("in")){
+                //System.out.println("in forType3");
+                forType3=true;
+            }
+            else{
+                error("incorrect for form: ", scan.currentToken.tokenStr);
+            }
+            scan.iSourceLineNr=saveLineNr - 1;
+            scan.iColPos=10000;
+            scan.getNext();
+            //System.out.println(scan.currentToken.tokenStr);
+            if(forType1){
+                scan.getNext();
+                saveToken = scan.currentToken.tokenStr;
+
+                //System.out.println("right after exp: " + scan.currentToken.tokenStr);
+
+                scan.iSourceLineNr-=1;
+                scan.iColPos=1000;
+                scan.getNext();
+                scan.getNext();
+                assignment();
+                scan.getNext();
+                res04 = exp.expr("by", debugExpr);
+                n0p4 = new Numeric(scan, res04, " <", "2nd Operand");
+                res03 = storage.getVariableValue(saveToken);
+                n0p3 = new Numeric(scan, res03, " <", " st operand");
+                checkCond = PickleUtil.LessThan(n0p3, n0p4);
+                //System.out.println(checkCond);
+                //System.out.println(scan.currentToken.tokenStr);
+                //System.out.println(scan.currentToken.tokenStr);
+                scan.getNext();
+                //System.out.println(scan.currentToken.tokenStr);
+                res02 = exp.expr(":", debugExpr);
+                n0p2 = new Numeric(scan, res02, " +=", " nd Operand");
+                res01 = storage.getVariableValue(saveToken);
+                n0p1 = new Numeric(scan, res01, " +=", " st operand");
+                int saveLineNr2 = scan.iSourceLineNr;
+                while(checkCond){
+                    scan.iSourceLineNr = saveLineNr2;
+                    scan.iColPos=1000;
+                    scan.getNext();
+                    //System.out.println("before executing token: " + scan.currentToken.tokenStr);
+                    executeForStmt();
+                    //increment
+                    res01 = storage.getVariableValue(saveToken);
+                    n0p1 = new Numeric(scan, res01, " +=", " st operand");
+                    res = storage.Assign(saveToken, PickleUtil.Addition(n0p1, n0p2));
+                    //compare
+                    res03 = storage.getVariableValue(saveToken);
+                    n0p3 = new Numeric(scan, res03, " <", " st operand");
+                    checkCond = PickleUtil.LessThan(n0p3, n0p4);
+                }
+                if(!scan.currentToken.tokenStr.equals("endfor"))
+                    error("expected endfor for for received: ", scan.currentToken.tokenStr);
+                if(!scan.getNext().equals(";"))
+                    error("expected ; after endfor received: ", scan.currentToken.tokenStr);
+            }
+            else if(forType2){
+                scan.getNext();
+                saveToken = scan.currentToken.tokenStr;
+
+                //System.out.println("right after exp: " + scan.currentToken.tokenStr);
+
+                scan.iSourceLineNr-=1;
+                scan.iColPos=1000;
+                scan.getNext();
+                scan.getNext();
+                assignment();
+//                tokens.add(scan.currentToken);
+                System.out.println(scan.currentToken.tokenStr);
+                scan.getNext();
+                res04 = exp.expr(":", debugExpr);
+                n0p4 = new Numeric(scan, res04, " <", "2nd Operand");
+                res03 = storage.getVariableValue(saveToken);
+                n0p3 = new Numeric(scan, res03, " <", " st operand");
+                checkCond = PickleUtil.LessThan(n0p3, n0p4);
+                n0p2 = new Numeric(scan, result, " +=", " nd Operand");
+                res01 = storage.getVariableValue(saveToken);
+                n0p1 = new Numeric(scan, res01, " +=", " st operand");
+                int saveLineNr2 = scan.iSourceLineNr;
+                while(checkCond){
+                    scan.iSourceLineNr = saveLineNr2;
+                    scan.iColPos=1000;
+                    scan.getNext();
+                    //System.out.println("before executing token: " + scan.currentToken.tokenStr);
+                    executeForStmt();
+                    //increment
+                    res01 = storage.getVariableValue(saveToken);
+                    n0p1 = new Numeric(scan, res01, " +=", " st operand");
+                    res = storage.Assign(saveToken, PickleUtil.Addition(n0p1, n0p2));
+                    //compare
+                    res03 = storage.getVariableValue(saveToken);
+                    n0p3 = new Numeric(scan, res03, " <", " st operand");
+                    checkCond = PickleUtil.LessThan(n0p3, n0p4);
+                }
+                if(!scan.currentToken.tokenStr.equals("endfor"))
+                    error("expected endfor for for received: ", scan.currentToken.tokenStr);
+                if(!scan.getNext().equals(";"))
+                    error("expected ; after endfor received: ", scan.currentToken.tokenStr);
+            }
+            else if(forType3){
+                scan.getNext();
+                saveToken = scan.currentToken.tokenStr;
+                scan.getNext();
+                res01 = exp.expr(":", debugExpr);
+//                System.out.println(res01.value.toString());
+                char [] temp = new char[1000];
+                temp = res01.value.toString().toCharArray();
+                ResultValue rv = new ResultValue(SubClassif.STRING, "", "", "");
+                //System.out.println(temp[0]);
+                scan.getNext();
+                int saveLineNr2 = scan.iSourceLineNr;
+                for(char i: temp){
+                    scan.iSourceLineNr = saveLineNr2-1;
+                    scan.iColPos=1000;
+                    scan.getNext();
+
+                    rv.value = i;
+                    res = storage.Assign(saveToken, rv);
+                    executeForStmt();
+                }
+                if(!scan.currentToken.tokenStr.equals("endfor"))
+                    error("expected endfor for 'for' received: ", scan.currentToken.tokenStr);
+                if(!scan.getNext().equals(";"))
+                    error("expected ; after endfor received: ", scan.currentToken.tokenStr);
+                //System.out.println(scan.currentToken.tokenStr);
+            }
+            //System.out.println(scan.currentToken.tokenStr);
+            //if(sc
+            //an.currentToken.tokenStr.equals())
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void executeForStmt(){
+        try{
+            ResultValue res;
+            while(true){
+//                System.out.println("token in executeFor " + scan.currentToken.tokenStr);
+                if(scan.currentToken.tokenStr.equals("print")){
+//                    System.out.println("in print");
+                    print();
+                    scan.getNext();
+                    continue;
+                }
+                if(scan.currentToken.tokenStr.equals("if")){
+//                    System.out.println("in if ");
+                    ifStmt(bExec);
+                }
+                else if(scan.currentToken.tokenStr.equals("Int") || scan.currentToken.tokenStr.equals("Bool")
+                        || scan.currentToken.tokenStr.equals("String") || scan.currentToken.tokenStr.equals("Float")){
+                    scan.getNext();
+                    scan.getNext();
+                    boolean check = false;
+                    if(!scan.currentToken.tokenStr.equals(";")){
+                        check=true;
+                    }
+                    scan.iSourceLineNr -= 1;
+                    scan.iColPos = 10000;
+                    scan.getNext();
+                    //System.out.println(scan.currentToken.tokenStr);
+                    scan.getNext();
+                    if(check){
+                        res = assignment();
+                    }
+                    else{
+                        skipTo(";");
+                    }
+                }
+                else if(scan.currentToken.tokenStr.equals("endfor")){
+                    return;
+                }
+                else if(scan.currentToken.tokenStr.equals("while")){
+                    whileStmt();
+                }
+                else if(scan.currentToken.tokenStr.equals("for")){
+                    forStmt();
+                }
+                else{
+                    res = assignment();
+                    //System.out.println(scan.currentToken.tokenStr);
+                }
+                scan.getNext();
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
     /**
      * skips statements until it gets to endwhile
      *
@@ -334,7 +595,7 @@ public class Parser {
                     return;
                 }
                 else if(scan.currentToken.tokenStr.equals("endwhile") && checkForWhile){
-                    System.out.println("last else if");
+                    //System.out.println("last else if");
                     checkForWhile = false;
                 }
                 scan.getNext();
@@ -402,9 +663,28 @@ public class Parser {
 //                    System.out.println("in if ");
                     ifStmt(bExec);
                 }
+                else if(scan.currentToken.tokenStr.equals("for")){
+                    forStmt();
+                }
                 else if(scan.currentToken.tokenStr.equals("Int") || scan.currentToken.tokenStr.equals("Bool")
                         || scan.currentToken.tokenStr.equals("String") || scan.currentToken.tokenStr.equals("Float")){
-                    skipTo(";");
+                    scan.getNext();
+                    scan.getNext();
+                    boolean check2 = false;
+                    if(!scan.currentToken.tokenStr.equals(";")){
+                        check2=true;
+                    }
+                    scan.iSourceLineNr -= 1;
+                    scan.iColPos = 10000;
+                    scan.getNext();
+                    //System.out.println(scan.currentToken.tokenStr);
+                    scan.getNext();
+                    if(check2){
+                        res = assignment();
+                    }
+                    else{
+                        skipTo(";");
+                    }
                 }
                 else if(scan.currentToken.tokenStr.equals("endif") || scan.currentToken.tokenStr.equals("else") || scan.currentToken.tokenStr.equals("endwhile")){
                     return;
