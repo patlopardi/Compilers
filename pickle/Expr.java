@@ -130,7 +130,7 @@ public class Expr {
     ResultValue temp;
     
     //Loop for the actual check of the summation
-    while (scan.currentToken.tokenStr.equals("+") || scan.currentToken.tokenStr.equals("-")){
+    while (scan.currentToken.tokenStr.equals("+") || scan.currentToken.tokenStr.equals("-") || scan.currentToken.tokenStr.equals("#")){
       operator = scan.currentToken;
       scan.getNext();
       if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")))
@@ -144,6 +144,10 @@ public class Expr {
       else if(operator.tokenStr.equals("-"))
       {
         res = PickleUtil.Subtract(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
+      }
+      else if(operator.tokenStr.equals("#"))
+      {
+        res = PickleUtil.Concatenation(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
       }
     }
     return res;
