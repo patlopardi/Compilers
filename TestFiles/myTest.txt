@@ -1,4 +1,4 @@
-debug Stmt on;
-debug Assign on;
-int i = 1;
-i = -i;
+Int i = 3;
+Int k = 5;
+Int j = 2;
+Int final = j * k * i;
