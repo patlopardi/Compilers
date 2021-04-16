@@ -29,16 +29,16 @@ public class Expr {
 
 
 
-    /**
+  /**
   * Expr function which starts the movement down the grammar
   * <p>
-  *   Starting handle for any token that is comparing two values, then returning a result value
-  *    holding the boolean of the statement.
+  *   Begins the decent from lowest precedence to highest and returns the result of
+  *     the expression
   *
   * @param endSeparator      The end Separator for populating the ResultValue with
   * @param debugExpr         Boolean value to toggle debug mode
   *
-  * @return       ResultValue which holds the boolean values of the calculated expression
+  * @return       ResultValue
   * @throws       Exception
   */
   public ResultValue expr(String endSeparator, boolean debugExpr) throws Exception {
@@ -52,30 +52,75 @@ public class Expr {
       if(debugExpr && (scan.currentToken.tokenStr.equals("if") || scan.currentToken.tokenStr.equals("while"))){
         System.out.println("> " + scan.currentToken.tokenStr + "Stmt: " + scan.printCurrLine().trim());
       }
-      if(!scan.currentToken.tokenStr.equals("-"))
+      //if(!scan.currentToken.tokenStr.equals("-") && !scan.currentToken.tokenStr.equals("not"))
+      if(scan.currentToken.tokenStr.equals("=") || scan.currentToken.tokenStr.equals("+=") || scan.currentToken.tokenStr.equals("-=") 
+      || scan.currentToken.tokenStr.equals("if") ||scan.currentToken.tokenStr.equals("while") && scan.currentToken.subClassif != SubClassif.STRING)
       {
         scan.getNext(); 
       }
     }
-    
-    Token operator;
     String opString = "";
     String res02 = "";
-    ResultValue res = summation();
+    ResultValue res = notBoolean();
     String resClone = res.value.toString();
+    if(debugExpr && opString.length() > 1){
+
+      System.out.println("..." + resClone + " " + opString + " " + res02 + " is " + res.value.toString() );
+    }
+    return res;
+  }
+  /**
+   * notBoolean function which handles changing boolean to it's opposite
+   * <p>
+   *  Either returns the boolean opposite, or if there is no not, then pass down to the higher precedence
+   * @return      ResultValue
+   * @throws      Exception
+   */
+  public ResultValue notBoolean() throws Exception {
+    ResultValue res = null;
+    //Check if current token is not
+    if(scan.currentToken.tokenStr.equals("not"))
+    {
+      //Iterate past not
+      scan.getNext();
+      res = expr(endSeparator, debugExpr);
+      if((boolean) res.value)
+      {
+        res.value = false;
+      }
+      else
+      {
+        res.value = true;
+      }
+    }
+    else
+    {
+      res = comparison();
+    }
+    return res;
+  }
+  /**
+  * Comparison function which handles the boolean returning comparisons
+  * <p>
+  *   Either returns the comparison result, or if there is no comparison then pass down to the higher precedence
+  *
+  * @return       ResultValue
+  * @throws       Exception
+  */
+  public ResultValue comparison() throws Exception {
+    Token operator;
+    ResultValue res = summation();
     ResultValue temp;
     boolean result;
       //Loop for the actual check of the comparison
       while (scan.currentToken.tokenStr.equals("<") || scan.currentToken.tokenStr.equals(">") || scan.currentToken.tokenStr.equals("<=") || scan.currentToken.tokenStr.equals(">=") ||
       scan.currentToken.tokenStr.equals("==") || scan.currentToken.tokenStr.equals("!=")){
         operator = scan.currentToken;
-        opString = operator.tokenStr;
         scan.getNext();
         if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")))
           System.out.printf("Within expression, expected operand.  Found %s", scan.currentToken.tokenStr);
 
         temp = summation();
-        res02 = temp.value.toString();
         if(operator.tokenStr.equals("<"))   
         {
           result = PickleUtil.LessThan(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
@@ -107,11 +152,6 @@ public class Expr {
           res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
         }
       }
-    if(debugExpr && opString.length() > 1){
-
-      System.out.println("..." + resClone + " " + opString + " " + res02 + " is " + res.value.toString() );
-    }
-    // System.out.printf("Final result is: %s \n", res.value);
     return res;
   }
 
@@ -349,10 +389,22 @@ public class Expr {
           return res;
         case DATE:
         case STRING:
-        case BOOLEAN:
           res = scan.currentToken.toResult(endSeparator);
           // nextToken is operator or sep
           scan.getNext();                     
+          return res;
+        case BOOLEAN:
+          res = scan.currentToken.toResult(endSeparator);
+          // nextToken is operator or sep
+          scan.getNext();
+          if(res.value.toString().equals("T"))
+          {
+            res.value = true;
+          }
+          else if(res.value.toString().equals("F"))
+          {
+            res.value = false;
+          }                
           return res;
       }
     }
@@ -360,6 +412,8 @@ public class Expr {
     if(scan.currentToken.tokenStr.equals("("))
     {
       //System.out.printf("Entered Left Parenth\n");
+      //This is testing
+      scan.getNext();
       res = expr(endSeparator, debugExpr);
       //Ensure there is a right parentheses
       if(!scan.currentToken.tokenStr.equals(")"))
