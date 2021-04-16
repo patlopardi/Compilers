@@ -1,6 +1,10 @@
 package pickle;
 
-  /**
+import javax.lang.model.util.ElementScanner6;
+
+import org.graalvm.compiler.lir.StandardOp.NullCheck;
+
+/**
   * Constructor for the Expr class which set variables
   * <p>
   * The variables it populates is the scanner object for reading in tokens as 
@@ -294,6 +298,7 @@ public class Expr {
       scan.getNext();
     }
     
+    ResultValue within = new ResultValue(null, null, null,null);
     ResultValue res = new ResultValue(null, null, null, null);
     if (scan.currentToken.primClassif == Classif.OPERAND)
     {
@@ -302,8 +307,31 @@ public class Expr {
         case IDENTIFIER:                
           //Need reference to the manager
           res = storage.getVariableValue(scan.currentToken.tokenStr);
-          // nextToken is operator or sep
-          scan.getNext();                     
+          scan.getNext();
+          //String character or array reference
+          if(scan.currentToken.tokenStr.equals("["))
+          {
+            //Recurse for value
+            within = expr(endSeparator, debugExpr);
+            //Ensure there is a right parentheses
+            if(!scan.currentToken.tokenStr.equals("]"))
+            {
+              System.out.printf("Expected right bracket, found: '%s'\n", scan.currentToken.tokenStr);
+            }
+            //Pass the right bracket
+            scan.getNext(); 
+            //Either array or invalid variable
+            if(res == null)
+            {
+              //res = array value at [within]
+            }
+            //Character array
+            else
+            {
+              //res = char at within.value
+            }
+          }
+          // nextToken is operator or sep                     
           if(negative)
           {
             res = PickleUtil.UnitaryMinus(new Numeric(this.scan, res, null, null));
