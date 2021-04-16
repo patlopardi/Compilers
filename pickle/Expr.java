@@ -164,7 +164,6 @@ public class Expr {
   private ResultValue products() throws Exception {
 
     Token operator; 
-    //ResultValue res = operand();  
     ResultValue res = expon(null);                  
     ResultValue temp;
 
@@ -175,7 +174,6 @@ public class Expr {
         System.out.printf("Within expression, expected operand.  Found: '%s'"
                       , scan.currentToken.tokenStr);
 
-      //temp = operand();
       temp = expon(null);
       if(operator.tokenStr.equals("*"))
       {
@@ -207,7 +205,7 @@ public class Expr {
     //Non recursive
     if(recursed == null)
     {
-      res = operand();  
+      res = function();  
     }
     //Recursive
     else
@@ -222,16 +220,59 @@ public class Expr {
         System.out.printf("Within expression, expected operand.  Found: '%s'"
                       , scan.currentToken.tokenStr);
 
-      temp = operand(); 
+      temp = function(); 
       if(scan.currentToken.tokenStr.equals("^"))
       {
         temp = expon(temp);
       }
       if(operator.tokenStr.equals("^"))
       {
-        
         res = PickleUtil.Square(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
       }
+    }
+    return res;
+  }
+
+      /**
+  * Handles function calls of the expression which is the 5th down from the top level
+  * <p>
+  *   Handles the call to function, returns the ResultValue for the expression
+  *
+  * @return       ResultValue   Holds the returned value of the function
+  * @throws       Exception
+  */
+  private ResultValue function() throws Exception {
+
+    Token operator;
+    ResultValue res = null;
+    operator = scan.currentToken;
+
+    if(scan.currentToken.tokenStr.equals("LENGTH") || scan.currentToken.tokenStr.equals("MAXELEM") || scan.currentToken.tokenStr.equals("ELEM") 
+    || scan.currentToken.tokenStr.equals("SPACES")) { 
+      //Iterate to the left parentheses and call to operand for recursion with parentheses.
+      scan.getNext();
+      res = operand();
+      if(operator.tokenStr.equals("LENGTH"))
+      {
+        //res = PickleUtil.Length(res);
+      }
+      else if(operator.tokenStr.equals("MAXELEM"))
+      {
+        //res = PickleUtil.MAXELEM(res);
+      }
+      else if(operator.tokenStr.equals("ELEM"))
+      {
+        //res = PickleUtil.ELEM(res);
+      }
+      else if(operator.tokenStr.equals("SPACES"))
+      {
+        //res = PickleUtil.SPACES(res);
+      }
+    }
+    else
+    {
+      //Default call to operand
+      res = operand();
     }
     return res;
   }
@@ -292,11 +333,16 @@ public class Expr {
     {
       //System.out.printf("Entered Left Parenth\n");
       res = expr(endSeparator, debugExpr);
+      //Ensure there is a right parentheses
+      if(!scan.currentToken.tokenStr.equals(")"))
+      {
+        System.out.printf("Expected right parentheses, found: '%s'\n", scan.currentToken.tokenStr);
+      }
       scan.getNext();  
       return res;
     }
     
-    System.out.printf("Within operand, found: '%s'", scan.currentToken.tokenStr);
+    System.out.printf("Within operand, found: '%s'\n", scan.currentToken.tokenStr);
     return null; 
   }
 }
