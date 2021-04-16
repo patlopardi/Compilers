@@ -10,7 +10,8 @@ import java.util.HashMap;
 
 public class StorageManager {
 
-    public static HashMap VariableTable = new HashMap<String, ResultValue>();
+    public static HashMap<String, ResultValue> VariableTable = new HashMap<String, ResultValue>();
+    public static HashMap<String, ArrayList<ResultValue>> VariableTableArr = new HashMap<String, ArrayList<ResultValue>>();
 
     public StorageManager(){
     }
@@ -69,16 +70,16 @@ public class StorageManager {
             }
         }
 
-        VariableTable.put(variableName, resultArr);
+        VariableTableArr.put(variableName, resultArr);
     }
 
-    public void AssignArr(String variableName, String index, ResultValue value){
+    public void AssignArr(String variableName, int index, ResultValue value){
 
         //Check array exists
-        Object res = VariableTable.get(variableName);
+        ArrayList<ResultValue> res = VariableTableArr.get(variableName);
         System.out.println(res.getClass());
         if(res != null){
-
+            res.set(index, value);
         }
     }
 
