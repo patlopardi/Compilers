@@ -73,13 +73,27 @@ public class StorageManager {
         VariableTableArr.put(variableName, resultArr);
     }
 
-    public void AssignArr(String variableName, int index, ResultValue value){
-
+    public void AssignArr(String variableName, String index, ResultValue value){
         //Check array exists
+        int indexInt = 0;
         ArrayList<ResultValue> res = VariableTableArr.get(variableName);
-        System.out.println(res.getClass());
-        if(res != null){
-            res.set(index, value);
+
+        if(index == null){
+           for(int i = 0; i < res.size() - 1; i++){
+               if(res.get(i) == null){
+                   res.set(i, value);
+               }
+           }
+        }
+        else{
+            indexInt = Integer.parseInt(index);
+        }
+
+        if(indexInt < 0){
+            res.set((res.size() - 1) - indexInt, value);
+        }
+        else{
+            res.set(indexInt, value);
         }
     }
 
