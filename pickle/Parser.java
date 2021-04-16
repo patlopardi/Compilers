@@ -184,7 +184,7 @@ public class Parser {
             String variableStr = scan.currentToken.tokenStr;
             scan.getNext();
             //tokens.add(scan.currentToken);
-            if (scan.currentToken.primClassif != Classif.OPERATOR)
+            if (scan.currentToken.primClassif != Classif.OPERATOR && !scan.currentToken.tokenStr.equals("["))
                 error("expected assignment operator", scan.currentToken.tokenStr);
             String operatorStr = scan.currentToken.tokenStr;
             ResultValue res02;
@@ -202,7 +202,6 @@ public class Parser {
                     else{
                         res02 = exp.expr(";", debugExpr);
                     }
-
 
                     res = storage.Assign(variableStr, res02);   // assign to target
 
@@ -233,6 +232,10 @@ public class Parser {
                     // subtract 2nd operand from first and assign it
                     res = storage.Assign(variableStr, PickleUtil.Addition(n0p1, n0p2));
                     break;
+                case "[":
+                    String index = scan.getNext();
+                    storage.DeclareArr(scan, variableStr, index, SubClassif.INTEGER);
+
                 default:
                     error("expected assignment operator received instead: ", operatorStr);
                     break;
