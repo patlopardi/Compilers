@@ -369,7 +369,8 @@ public class Expr {
       negative = true;
       scan.getNext();
     }
-    ResultValue within = new ResultValue(null, null, null,null);
+    ResultValue temp = new ResultValue(null, null, null, null);
+    ResultValue within = new ResultValue(null, null, null, null);
     ResultValue res = new ResultValue(null, null, null, null);
     if (scan.currentToken.primClassif == Classif.OPERAND)
     {
@@ -402,7 +403,9 @@ public class Expr {
             else
             {
               //res = char at within.value
-              res.value = res.value.toString().charAt((Double.valueOf(within.value.toString())).intValue());
+              temp.value = res.value;
+              temp.value = temp.value.toString().charAt((Double.valueOf(within.value.toString())).intValue());
+              return temp;
             }
           }
           // nextToken is operator or sep                     
