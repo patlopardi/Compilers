@@ -27,8 +27,6 @@ public class Expr {
     this.storage = storage;
   }
 
-
-
   /**
   * Expr function which starts the movement down the grammar
   * <p>
@@ -61,7 +59,7 @@ public class Expr {
     }
     String opString = "";
     String res02 = "";
-    ResultValue res = notBoolean();
+    ResultValue res = logicals();
     String resClone = res.value.toString();
     if(debugExpr && opString.length() > 1){
 
@@ -70,13 +68,47 @@ public class Expr {
     return res;
   }
   /**
+   * Logicals function which handles 'and' and 'or' statements with booleans
+   * <p>
+   *  Either returns the boolean result of the and/or, or if there is neither, then it passes down to the higher precedence
+   * 
+   * @return
+   * @throws Exception
+   */
+  private ResultValue logicals() throws Exception {
+    Token operator;
+    //System.out.printf("This is the current token %s \n", scan.currentToken.tokenStr);
+    ResultValue res = notBoolean();                    
+    ResultValue temp;
+    
+    //Loop for the actual check of and/or
+    while (scan.currentToken.tokenStr.equals("and") || scan.currentToken.tokenStr.equals("or") && scan.currentToken.subClassif != SubClassif.STRING){
+      operator = scan.currentToken;
+      scan.getNext();
+      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")))
+        System.out.printf("Within expression, expected operand.  Found %s", scan.currentToken.tokenStr);
+
+      temp = notBoolean(); 
+      if(operator.tokenStr.equals("and"))   
+      {
+        res.value = ((boolean)res.value && (boolean)temp.value);
+      }              
+      else if(operator.tokenStr.equals("or"))
+      {
+        res.value = ((boolean)res.value || (boolean)temp.value);
+      }
+    }
+    return res;
+  }
+  /**
    * notBoolean function which handles changing boolean to it's opposite
    * <p>
    *  Either returns the boolean opposite, or if there is no not, then pass down to the higher precedence
+   * 
    * @return      ResultValue
    * @throws      Exception
    */
-  public ResultValue notBoolean() throws Exception {
+  private ResultValue notBoolean() throws Exception {
     ResultValue res = null;
     //Check if current token is not
     if(scan.currentToken.tokenStr.equals("not"))
@@ -107,7 +139,7 @@ public class Expr {
   * @return       ResultValue
   * @throws       Exception
   */
-  public ResultValue comparison() throws Exception {
+  private ResultValue comparison() throws Exception {
     Token operator;
     ResultValue res = summation();
     ResultValue temp;
