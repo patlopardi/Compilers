@@ -369,7 +369,6 @@ public class Expr {
       negative = true;
       scan.getNext();
     }
-    
     ResultValue within = new ResultValue(null, null, null,null);
     ResultValue res = new ResultValue(null, null, null, null);
     if (scan.currentToken.primClassif == Classif.OPERAND)
@@ -383,6 +382,8 @@ public class Expr {
           //String character or array reference
           if(scan.currentToken.tokenStr.equals("["))
           {
+            //Skip [
+            scan.getNext(); 
             //Recurse for value
             within = expr(endSeparator, debugExpr);
             //Ensure there is a right parentheses
@@ -390,8 +391,8 @@ public class Expr {
             {
               System.out.printf("Expected right bracket, found: '%s'\n", scan.currentToken.tokenStr);
             }
-            //Pass the right bracket
-            scan.getNext(); 
+            //Skip ]
+            scan.getNext();
             //Either array or invalid variable
             if(res == null)
             {
@@ -401,6 +402,7 @@ public class Expr {
             else
             {
               //res = char at within.value
+              res.value = res.value.toString().charAt((Double.valueOf(within.value.toString())).intValue());
             }
           }
           // nextToken is operator or sep                     
