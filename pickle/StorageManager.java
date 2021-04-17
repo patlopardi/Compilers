@@ -101,7 +101,7 @@ public class StorageManager {
         //Check array exists
         int indexInt = 0;
         ArrayList<ResultValue> res = VariableTableArr.get(variableName);
-        SubClassif arrayDataType = res.get(res.size()).dataType;
+        SubClassif arrayDataType = res.get(res.size()-1).dataType;
 
         if( value.dataType !=  arrayDataType){
             if(arrayDataType == SubClassif.INTEGER){

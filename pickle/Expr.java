@@ -328,9 +328,9 @@ public class Expr {
     || scan.currentToken.tokenStr.equals("SPACES")) { 
       //Iterate to the left parentheses and call to operand for recursion with parentheses.
       scan.getNext();
-      temp = operand();
       if(operator.tokenStr.equals("LENGTH"))
       {
+        temp = operand();
         //Length of string returns int
         res.value = PickleUtil.LENGTH(temp.value.toString());
         res.dataType = SubClassif.INTEGER;
@@ -338,17 +338,26 @@ public class Expr {
       else if(operator.tokenStr.equals("MAXELEM"))
       {
         //Number within array, returns int
-        res.value = PickleUtil.MAXELEM(temp.value.toString(), storage);
+        scan.getNext();
+        res.value = PickleUtil.MAXELEM(scan.currentToken.tokenStr, storage);
         res.dataType = SubClassif.INTEGER;
+        //Itterate past variable 
+        scan.getNext();
+        scan.getNext();
       }
       else if(operator.tokenStr.equals("ELEM"))
       {
         //Number populated within array, returns int
-        res.value = PickleUtil.ELEM(temp.value.toString(), storage);
+        scan.getNext();
+        res.value = PickleUtil.ELEM(scan.currentToken.tokenStr, storage);
         res.dataType = SubClassif.INTEGER;
+        //Itterate past variable
+        scan.getNext();
+        scan.getNext();
       }
       else if(operator.tokenStr.equals("SPACES"))
       {
+        temp = operand();
         res.value = PickleUtil.SPACES(temp.value.toString());
         res.dataType = SubClassif.BOOLEAN;
       }
