@@ -253,7 +253,7 @@ public class Parser {
                     res = storage.Assign(variableStr, PickleUtil.Addition(n0p1, n0p2));
                     break;
                 case "[":
-
+                
                     if(storage.getArrayValue(variableStr) == null){
                         System.out.println("this is not declared");
                         String index = scan.getNext();
@@ -335,6 +335,7 @@ public class Parser {
     /**
      * handles the if statements within pickle and executes them
      *
+     * @param bExec if set true
      *
      * @return      N/A
      */
@@ -432,6 +433,11 @@ public class Parser {
             e.printStackTrace();
         }
     }
+    /**
+     * Handles the line number and other components of the for loop
+     *
+     * @return      N/A
+     */
     public void forStmt(){
         //TODO: add for each element in an array
         try{
@@ -606,6 +612,11 @@ public class Parser {
         }
     }
 
+    /**
+     * Executes the code written in the for loop
+     *
+     * @return      N/A
+     */
     public void executeForStmt(){
         try{
             ResultValue res;
