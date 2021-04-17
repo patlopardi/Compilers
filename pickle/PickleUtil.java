@@ -514,5 +514,26 @@ public final class PickleUtil {
         return res.size()-1;
     }
 
+    public static boolean SPACES(String spaces){
+        int count = 0;
+
+        //Counts each character except space
+        for(int i = 0; i < spaces.length(); i++) {
+            if(spaces.charAt(i) != ' ')
+                count++;
+        }
+
+        if(count == 0){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
+
+    public static int LENGTH(String len){
+        return len.length();
+    }
 }
 
