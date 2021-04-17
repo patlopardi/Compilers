@@ -253,6 +253,7 @@ public class Parser {
                     res = storage.Assign(variableStr, PickleUtil.Addition(n0p1, n0p2));
                     break;
                 case "[":
+
                     if(storage.getArrayValue(variableStr) == null){
                         System.out.println("this is not declared");
                         String index = scan.getNext();

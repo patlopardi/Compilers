@@ -10,6 +10,7 @@ public enum SubClassif
     STRING,     // string constant
     DATE,       // date constant
     VOID,       // void
+    ARRAY,      // array type
     // CONTROL's subclassifications
     FLOW,       // flow statement (e.g., if)
     END,        // end statement (e.g., endif)
