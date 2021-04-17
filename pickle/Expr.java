@@ -406,8 +406,11 @@ public class Expr {
             scan.getNext(); 
             if(scan.currentToken.tokenStr.equals("]"))
             {
+              //Assign array to array[]
+              scan.getNext();
               res.value = arrNameHold;
               res.dataType = SubClassif.ARRAY;
+              return res;
             }
             //Recurse for value
             within = expr(endSeparator, debugExpr);
@@ -433,6 +436,12 @@ public class Expr {
               temp.value = temp.value.toString().charAt((Double.valueOf(within.value.toString())).intValue());
               return temp;
             }
+          }
+          else if(res == null && !storage.getArrayValue(arrNameHold) == null)
+          {
+            res.value = arrNameHold;
+            res.dataType = SubClassif.ARRAY;
+            return res;
           }
           // nextToken is operator or sep                     
           if(negative)
