@@ -320,29 +320,37 @@ public class Expr {
   private ResultValue function() throws Exception {
 
     Token operator;
-    ResultValue res = null;
+    ResultValue res = new ResultValue(null, null, null, null);
+    ResultValue temp = null;
     operator = scan.currentToken;
 
     if(scan.currentToken.tokenStr.equals("LENGTH") || scan.currentToken.tokenStr.equals("MAXELEM") || scan.currentToken.tokenStr.equals("ELEM") 
     || scan.currentToken.tokenStr.equals("SPACES")) { 
       //Iterate to the left parentheses and call to operand for recursion with parentheses.
       scan.getNext();
-      res = operand();
+      temp = operand();
       if(operator.tokenStr.equals("LENGTH"))
       {
-        //res = PickleUtil.Length(res);
+        //Length of string returns int
+        res.value = PickleUtil.LENGTH(temp.value.toString());
+        res.dataType = SubClassif.INTEGER;
       }
       else if(operator.tokenStr.equals("MAXELEM"))
       {
-        //res = PickleUtil.MAXELEM(res);
+        //Number within array, returns int
+        res.value = PickleUtil.MAXELEM(temp.value.toString(), storage);
+        res.dataType = SubClassif.INTEGER;
       }
       else if(operator.tokenStr.equals("ELEM"))
       {
-        //res = PickleUtil.ELEM(res);
+        //Number populated within array, returns int
+        res.value = PickleUtil.ELEM(temp.value.toString(), storage);
+        res.dataType = SubClassif.INTEGER;
       }
       else if(operator.tokenStr.equals("SPACES"))
       {
-        //res = PickleUtil.SPACES(res);
+        res.value = PickleUtil.SPACES(temp.value.toString());
+        res.dataType = SubClassif.BOOLEAN;
       }
     }
     else
@@ -369,6 +377,7 @@ public class Expr {
       negative = true;
       scan.getNext();
     }
+    String arrNameHold = "";
     ResultValue temp = new ResultValue(null, null, null, null);
     ResultValue within = new ResultValue(null, null, null, null);
     ResultValue res = new ResultValue(null, null, null, null);
@@ -378,6 +387,7 @@ public class Expr {
       {
         case IDENTIFIER:                
           //Need reference to the manager
+          arrNameHold = scan.currentToken.tokenStr;
           res = storage.getVariableValue(scan.currentToken.tokenStr);
           scan.getNext();
           //String character or array reference
@@ -385,6 +395,11 @@ public class Expr {
           {
             //Skip [
             scan.getNext(); 
+            if(scan.currentToken.tokenStr.equals("]"))
+            {
+              res.value = arrNameHold;
+              res.dataType = SubClassif.ARRAY;
+            }
             //Recurse for value
             within = expr(endSeparator, debugExpr);
             //Ensure there is a right parentheses
@@ -397,7 +412,9 @@ public class Expr {
             //Either array or invalid variable
             if(res == null)
             {
-              //res = array value at [within]
+              temp.value = within.value;
+              //GET FROM ARRAY
+              res = storage.getArrayValue(arrNameHold).get((Double.valueOf(within.value.toString())).intValue());
             }
             //Character array
             else
