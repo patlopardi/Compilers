@@ -395,6 +395,11 @@ public class Expr {
           {
             //Skip [
             scan.getNext(); 
+            if(scan.currentToken.tokenStr.equals("]"))
+            {
+              res.value = arrNameHold;
+              res.dataType = SubClassif.ARRAY;
+            }
             //Recurse for value
             within = expr(endSeparator, debugExpr);
             //Ensure there is a right parentheses
