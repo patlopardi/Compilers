@@ -505,7 +505,7 @@ public class Parser {
             String saveToken2;
             tokens.clear();
             Expr exp = new Expr(scan, storage);
-            forCheck=true;
+
             boolean forType1 = false;
             boolean forType2 = false;
             ResultValue res02;
@@ -546,6 +546,7 @@ public class Parser {
             //System.out.println(scan.currentToken.tokenStr);
             if(forType1){
                 scan.getNext();
+                forCheck=true;
                 saveToken = scan.currentToken.tokenStr;
 
                 //System.out.println("right after exp: " + scan.currentToken.tokenStr);
@@ -635,26 +636,71 @@ public class Parser {
                     error("expected ; after endfor received: ", scan.currentToken.tokenStr);
             }
             else if(forType3){
-                scan.getNext();
-                saveToken = scan.currentToken.tokenStr;
-                scan.getNext();
-                res01 = exp.expr(":", debugExpr);
-//                System.out.println(res01.value.toString());
-                char [] temp = new char[1000];
-                temp = res01.value.toString().toCharArray();
-                ResultValue rv = new ResultValue(SubClassif.STRING, "", "", "");
-                //System.out.println(temp[0]);
-                scan.getNext();
-                int saveLineNr2 = scan.iSourceLineNr;
-                for(char i: temp){
-                    scan.iSourceLineNr = saveLineNr2-1;
-                    scan.iColPos=1000;
-                    scan.getNext();
 
-                    rv.value = i;
-                    res = storage.Assign(saveToken, rv);
-                    executeForStmt();
+                scan.getNext();
+
+//                System.out.println(scan.currentToken.subClassif);
+
+                scan.getNext();
+                scan.getNext();
+                if(storage.getArrayValue(scan.currentToken.tokenStr)==null){
+                    scan.iSourceLineNr-=1;
+                    scan.iColPos=10000;
+                    scan.getNext();
+                    scan.getNext();
+                    saveToken = scan.currentToken.tokenStr;
+                    scan.getNext();
+                    scan.getNext();
+//                    scan.currentToken.printToken();
+
+                    res01 = exp.expr(":", debugExpr);
+//                System.out.println(res01.value.toString());
+                    char [] temp = new char[1000];
+                    temp = res01.value.toString().toCharArray();
+                    ResultValue rv = new ResultValue(SubClassif.STRING, "", "", "");
+                    //System.out.println(temp[0]);
+                    scan.getNext();
+                    int saveLineNr2 = scan.iSourceLineNr;
+                    for(char i: temp){
+                        scan.iSourceLineNr = saveLineNr2-1;
+                        scan.iColPos=1000;
+                        scan.getNext();
+
+                        rv.value = i;
+                        res = storage.Assign(saveToken, rv);
+                        executeForStmt();
+                    }
                 }
+                else{
+                    scan.iSourceLineNr-=1;
+                    scan.iColPos=10000;
+                    int i=0;
+                    scan.getNext();
+                    scan.getNext();
+                    saveToken=scan.currentToken.tokenStr;
+//                    scan.currentToken.printToken();
+                    scan.getNext();
+                    scan.getNext();
+                    saveToken2=scan.currentToken.tokenStr;
+//                    scan.currentToken.printToken();
+                    int max = PickleUtil.ELEM(scan.currentToken.tokenStr, storage);
+//                    System.out.println(max);
+                    int saveLineNr2 = scan.iSourceLineNr+1;
+//                    System.out.println(saveLineNr2);
+
+                    for(i=0;i<max;i++){
+                        scan.iSourceLineNr = saveLineNr2-1;
+                        scan.iColPos=1000;
+                        scan.getNext();
+                        ResultValue rv = new ResultValue(SubClassif.INTEGER, "", "", "");
+                        rv.value = storage.getArrayValue(saveToken2).get(i).value;
+                        res = storage.Assign(saveToken, rv);
+                        //System.out.println(storage.getArrayValue(scan.currentToken.tokenStr).get(i).value);
+                        executeForStmt();
+                    }
+//                    System.out.println(scan.currentToken.tokenStr);
+                }
+
                 if(!scan.currentToken.tokenStr.equals("endfor"))
                     error("expected endfor for 'for' received: ", scan.currentToken.tokenStr);
                 if(!scan.getNext().equals(";"))
