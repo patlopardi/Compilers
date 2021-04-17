@@ -494,6 +494,16 @@ public final class PickleUtil {
         }
         return false;
     }
+    /**
+     * <p>
+     *     This function returns an int based on the number of
+     *     non-null elements in the array
+     *
+     * @param storage storage manager to return the stored array
+     * @param variableName name of the array
+     *
+     * @return     int
+     */
 
     public static int ELEM(String variableName, StorageManager storage){
 
@@ -509,11 +519,30 @@ public final class PickleUtil {
         return elements;
     }
 
+    /**
+     * <p>
+     *     This function returns an int based on the number of
+     *     elements in the array
+     *
+     * @param storage storage manager to return the stored array
+     * @param variableName name of the array
+     *
+     * @return     int
+     */
     public static int MAXELEM(String variableName, StorageManager storage){
         ArrayList<ResultValue> res = storage.getArrayValue(variableName);
         return res.size()-1;
     }
 
+    /**
+     * <p>
+     *     This function returns true if the string has spaces and
+     *     false if the string has none
+     *
+     * @param spaces evaluated string
+     *
+     * @return     boolean
+     */
     public static boolean SPACES(String spaces){
         int count = 0;
 
@@ -532,6 +561,14 @@ public final class PickleUtil {
     }
 
 
+    /**
+     * <p>
+     *     This function returns the length of a string
+     *
+     * @param len String value of variable
+     *
+     * @return     int
+     */
     public static int LENGTH(String len){
         return len.length();
     }

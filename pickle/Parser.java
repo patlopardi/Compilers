@@ -235,6 +235,7 @@ public class Parser {
                 case "[":
                     String index = scan.getNext();
                     storage.DeclareArr(scan, variableStr, index, SubClassif.INTEGER);
+                    break;
 
                 default:
                     error("expected assignment operator received instead: ", operatorStr);
@@ -249,6 +250,7 @@ public class Parser {
     /**
      * handles the if statements within pickle and executes them
      *
+     * @param bExec if set true
      *
      * @return      N/A
      */
@@ -346,6 +348,11 @@ public class Parser {
             e.printStackTrace();
         }
     }
+    /**
+     * Handles the line number and other components of the for loop
+     *
+     * @return      N/A
+     */
     public void forStmt(){
         //TODO: add this function to all the other callers
         try{
@@ -520,6 +527,11 @@ public class Parser {
         }
     }
 
+    /**
+     * Executes the code written in the for loop
+     *
+     * @return      N/A
+     */
     public void executeForStmt(){
         try{
             ResultValue res;
