@@ -1,4 +1,1 @@
-Int i = 3;
-Int k = 5;
-Int j = 2;
-Int final = j * k * i;
+Int i[] = 10, 10, 10;

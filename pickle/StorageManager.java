@@ -36,41 +36,30 @@ public class StorageManager {
         ArrayList<ResultValue> resultArr = new ArrayList<ResultValue>();
 
         ResultValue EndOfArr = new ResultValue(classif, "ENDOFARR", "", "" );
-        ResultValue res01;
 
-        // for preset arrays int arr[] = 19, 10;
+        // for preset arrays
         if (index.equals("]")){
             while(!scan.getNext().equals(";")){
-                if(scan.currentToken.subClassif == classif){
-                   res01 = new ResultValue(classif, scan.currentToken.tokenStr, "", "" );
-                   resultArr.add(res01);
+                if(scan.currentToken.tokenStr.equals(",") && scan.currentToken.primClassif.name().equals("SEPARATOR") ){
+                    resultArr.add(null);
                 }
             }
+            resultArr.add(null);
             resultArr.add(EndOfArr);
         }
         else{
-
             int subscriptValue= Integer.valueOf(index);
-            boolean completedAssignmentFlag = false;
             for(int i = 0; i < subscriptValue; i++){
-                while(!scan.getNext().equals(";") && !completedAssignmentFlag){
-                    if(scan.currentToken.subClassif == classif){
-                        res01 = new ResultValue(classif, scan.currentToken.tokenStr, "", "" );
-                        resultArr.add(res01);
-                        i++;
-                    }
-                }
-                completedAssignmentFlag = true;
                 resultArr.add(null);
                 if((i + 1) == subscriptValue){
                     resultArr.add(EndOfArr);
                 }
-
-
             }
         }
 
+        scan.iColPos = begCol;
         VariableTableArr.put(variableName, resultArr);
+
     }
 
     public void AssignArr(String variableName, String index, ResultValue value){
