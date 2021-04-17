@@ -372,6 +372,7 @@ public class Expr {
       negative = true;
       scan.getNext();
     }
+    String arrNameHold = "";
     ResultValue temp = new ResultValue(null, null, null, null);
     ResultValue within = new ResultValue(null, null, null, null);
     ResultValue res = new ResultValue(null, null, null, null);
@@ -381,6 +382,7 @@ public class Expr {
       {
         case IDENTIFIER:                
           //Need reference to the manager
+          arrNameHold = scan.currentToken.tokenStr;
           res = storage.getVariableValue(scan.currentToken.tokenStr);
           scan.getNext();
           //String character or array reference
@@ -400,7 +402,9 @@ public class Expr {
             //Either array or invalid variable
             if(res == null)
             {
-              //res = array value at [within]
+              temp.value = within.value;
+              //GET FROM ARRAY
+              res = storage.getArrayValue(arrNameHold).get((Double.valueOf(within.value.toString())).intValue());
             }
             //Character array
             else
