@@ -1,5 +1,6 @@
 package pickle;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public final class PickleUtil {
@@ -493,4 +494,46 @@ public final class PickleUtil {
         }
         return false;
     }
+
+    public static int ELEM(String variableName, StorageManager storage){
+
+        int elements = 0;
+        ArrayList<ResultValue> res = storage.getArrayValue(variableName);
+
+        for(int i = 0; i < res.size() - 1; i++ ){
+            if(res.get(i) != null){
+                elements++;
+            }
+        }
+
+        return elements;
+    }
+
+    public static int MAXELEM(String variableName, StorageManager storage){
+        ArrayList<ResultValue> res = storage.getArrayValue(variableName);
+        return res.size()-1;
+    }
+
+    public static boolean SPACES(String spaces){
+        int count = 0;
+
+        //Counts each character except space
+        for(int i = 0; i < spaces.length(); i++) {
+            if(spaces.charAt(i) != ' ')
+                count++;
+        }
+
+        if(count == 0){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
+
+    public static int LENGTH(String len){
+        return len.length();
+    }
 }
+

@@ -10,7 +10,8 @@ import java.util.HashMap;
 
 public class StorageManager {
 
-    public static HashMap VariableTable = new HashMap<String, ResultValue>();
+    public static HashMap<String, ResultValue> VariableTable = new HashMap<String, ResultValue>();
+    public static HashMap<String, ArrayList<ResultValue>> VariableTableArr = new HashMap<String, ArrayList<ResultValue>>();
 
     public StorageManager(){
     }
@@ -35,50 +36,53 @@ public class StorageManager {
         ArrayList<ResultValue> resultArr = new ArrayList<ResultValue>();
 
         ResultValue EndOfArr = new ResultValue(classif, "ENDOFARR", "", "" );
-        ResultValue res01;
 
-        // for preset arrays int arr[] = 19, 10;
+        // for preset arrays
         if (index.equals("]")){
             while(!scan.getNext().equals(";")){
-                if(scan.currentToken.subClassif == classif){
-                   res01 = new ResultValue(classif, scan.currentToken.tokenStr, "", "" );
-                   resultArr.add(res01);
+                if(scan.currentToken.tokenStr.equals(",") && scan.currentToken.primClassif.name().equals("SEPARATOR") ){
+                    resultArr.add(null);
                 }
             }
+            resultArr.add(null);
             resultArr.add(EndOfArr);
         }
         else{
-
             int subscriptValue= Integer.valueOf(index);
-            boolean completedAssignmentFlag = false;
             for(int i = 0; i < subscriptValue; i++){
-                while(!scan.getNext().equals(";") && !completedAssignmentFlag){
-                    if(scan.currentToken.subClassif == classif){
-                        res01 = new ResultValue(classif, scan.currentToken.tokenStr, "", "" );
-                        resultArr.add(res01);
-                        i++;
-                    }
-                }
-                completedAssignmentFlag = true;
                 resultArr.add(null);
                 if((i + 1) == subscriptValue){
                     resultArr.add(EndOfArr);
                 }
-
-
             }
         }
 
-        VariableTable.put(variableName, resultArr);
+        scan.iColPos = begCol;
+        VariableTableArr.put(variableName, resultArr);
+
     }
 
     public void AssignArr(String variableName, String index, ResultValue value){
-
         //Check array exists
-        Object res = VariableTable.get(variableName);
-        System.out.println(res.getClass());
-        if(res != null){
+        int indexInt = 0;
+        ArrayList<ResultValue> res = VariableTableArr.get(variableName);
 
+        if(index == null){
+           for(int i = 0; i < res.size() - 1; i++){
+               if(res.get(i) == null){
+                   res.set(i, value);
+               }
+           }
+        }
+        else{
+            indexInt = Integer.parseInt(index);
+        }
+
+        if(indexInt < 0){
+            res.set((res.size() - 1) - indexInt, value);
+        }
+        else{
+            res.set(indexInt, value);
         }
     }
 
@@ -100,5 +104,14 @@ public class StorageManager {
     public ResultValue getVariableValue(String varName){
         return (ResultValue) VariableTable.get(varName);
     }
+
+    /**
+     * <p>
+     * This function grabs the value of a variable in the HashMap
+     */
+    public ArrayList<ResultValue> getArrayValue(String varName){
+        return (ArrayList<ResultValue>) VariableTableArr.get(varName);
+    }
+
 
 }
