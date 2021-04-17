@@ -331,16 +331,21 @@ public class Expr {
       temp = operand();
       if(operator.tokenStr.equals("LENGTH"))
       {
+        //Length of string returns int
         res.value = PickleUtil.LENGTH(temp.value.toString());
-        res.dataType = SubClassif.STRING;
+        res.dataType = SubClassif.INTEGER;
       }
       else if(operator.tokenStr.equals("MAXELEM"))
       {
-        //res = PickleUtil.MAXELEM(res);
+        //Number within array, returns int
+        res.value = PickleUtil.MAXELEM(temp.value.toString(), storage);
+        res.dataType = SubClassif.INTEGER;
       }
       else if(operator.tokenStr.equals("ELEM"))
       {
-        //res = PickleUtil.ELEM(res);
+        //Number populated within array, returns int
+        res.value = PickleUtil.ELEM(temp.value.toString(), storage);
+        res.dataType = SubClassif.INTEGER;
       }
       else if(operator.tokenStr.equals("SPACES"))
       {
