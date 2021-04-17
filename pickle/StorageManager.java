@@ -105,4 +105,13 @@ public class StorageManager {
         return (ResultValue) VariableTable.get(varName);
     }
 
+    /**
+     * <p>
+     * This function grabs the value of a variable in the HashMap
+     */
+    public ArrayList<ResultValue> getArrayValue(String varName){
+        return (ArrayList<ResultValue>) VariableTableArr.get(varName);
+    }
+
+
 }
