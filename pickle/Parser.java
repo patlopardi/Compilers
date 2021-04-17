@@ -235,6 +235,7 @@ public class Parser {
                 case "[":
                     String index = scan.getNext();
                     storage.DeclareArr(scan, variableStr, index, SubClassif.INTEGER);
+                    break;
 
                 default:
                     error("expected assignment operator received instead: ", operatorStr);

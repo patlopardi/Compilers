@@ -2,7 +2,7 @@ package pickle;
 
 import javax.lang.model.util.ElementScanner6;
 
-import org.graalvm.compiler.lir.StandardOp.NullCheck;
+//import org.graalvm.compiler.lir.StandardOp.NullCheck;
 
 /**
   * Constructor for the Expr class which set variables
@@ -320,17 +320,19 @@ public class Expr {
   private ResultValue function() throws Exception {
 
     Token operator;
-    ResultValue res = null;
+    ResultValue res = new ResultValue(null, null, null, null);
+    ResultValue temp = null;
     operator = scan.currentToken;
 
     if(scan.currentToken.tokenStr.equals("LENGTH") || scan.currentToken.tokenStr.equals("MAXELEM") || scan.currentToken.tokenStr.equals("ELEM") 
     || scan.currentToken.tokenStr.equals("SPACES")) { 
       //Iterate to the left parentheses and call to operand for recursion with parentheses.
       scan.getNext();
-      res = operand();
+      temp = operand();
       if(operator.tokenStr.equals("LENGTH"))
       {
-        //res = PickleUtil.Length(res);
+        res.value = PickleUtil.LENGTH(temp.value.toString());
+        res.dataType = SubClassif.STRING;
       }
       else if(operator.tokenStr.equals("MAXELEM"))
       {
@@ -342,7 +344,8 @@ public class Expr {
       }
       else if(operator.tokenStr.equals("SPACES"))
       {
-        //res = PickleUtil.SPACES(res);
+        res.value = PickleUtil.SPACES(temp.value.toString());
+        res.dataType = SubClassif.BOOLEAN;
       }
     }
     else
