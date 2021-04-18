@@ -2,7 +2,7 @@ package pickle;
 
 import javax.lang.model.util.ElementScanner6;
 
-//import org.graalvm.compiler.lir.StandardOp.NullCheck;
+import org.graalvm.compiler.lir.StandardOp.NullCheck;
 
 /**
   * Constructor for the Expr class which set variables
@@ -85,7 +85,8 @@ public class Expr {
     while (scan.currentToken.tokenStr.equals("and") || scan.currentToken.tokenStr.equals("or") && scan.currentToken.subClassif != SubClassif.STRING){
       operator = scan.currentToken;
       scan.getNext();
-      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")))
+      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")) 
+      && scan.currentToken.primClassif != Classif.FUNCTION)
         System.out.printf("Within expression, expected operand.  Found %s", scan.currentToken.tokenStr);
 
       temp = notBoolean(); 
@@ -149,7 +150,8 @@ public class Expr {
       scan.currentToken.tokenStr.equals("==") || scan.currentToken.tokenStr.equals("!=")){
         operator = scan.currentToken;
         scan.getNext();
-        if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")))
+        if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")) 
+      && scan.currentToken.primClassif != Classif.FUNCTION)
           System.out.printf("Within expression, expected operand.  Found %s", scan.currentToken.tokenStr);
 
         temp = summation();
@@ -209,7 +211,8 @@ public class Expr {
     while (scan.currentToken.tokenStr.equals("+") || scan.currentToken.tokenStr.equals("-") || scan.currentToken.tokenStr.equals("#")){
       operator = scan.currentToken;
       scan.getNext();
-      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")))
+      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")) 
+      && scan.currentToken.primClassif != Classif.FUNCTION)
         System.out.printf("Within expression, expected operand.  Found %s", scan.currentToken.tokenStr);
 
       temp = products(); 
@@ -246,7 +249,8 @@ public class Expr {
     while (scan.currentToken.tokenStr.equals("*") || scan.currentToken.tokenStr.equals("/")) {
       operator = scan.currentToken;
       scan.getNext();
-      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")))
+      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")) 
+      && scan.currentToken.primClassif != Classif.FUNCTION)
         System.out.printf("Within expression, expected operand.  Found: '%s'"
                       , scan.currentToken.tokenStr);
 
@@ -292,7 +296,8 @@ public class Expr {
     while (scan.currentToken.tokenStr.equals("^")) {
       operator = scan.currentToken;
       scan.getNext();
-      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")))
+      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")) 
+      && scan.currentToken.primClassif != Classif.FUNCTION)
         System.out.printf("Within expression, expected operand.  Found: '%s'"
                       , scan.currentToken.tokenStr);
 
@@ -437,10 +442,9 @@ public class Expr {
               return temp;
             }
           }
-          else if(res == null && !storage.getArrayValue(arrNameHold) == null)
+          else if(res == null && storage.getArrayValue(arrNameHold) != null)
           {
-            res.value = arrNameHold;
-            res.dataType = SubClassif.ARRAY;
+            res = new ResultValue(SubClassif.ARRAY, arrNameHold, null, null);
             return res;
           }
           // nextToken is operator or sep                     
