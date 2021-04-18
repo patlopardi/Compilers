@@ -48,21 +48,10 @@ public class Parser {
                 if(scan.currentToken.tokenStr.equals("if")){
                     ifStmt(bExec);
                 }
-//                else if(scan.currentToken.tokenStr.equals("=") || scan.currentToken.tokenStr.equals("]")){
-//                    //counter in the while for index
-//                    int count = 0;
-//                    System.out.println("in this case");
-//                    while(!scan.getNext().equals(";")){
-//                        String index = String.valueOf(count);
-//                        //res = exp.expr(",)", debugExpr);
-//                        count++;
-//                    }
-//
-//
-//
-//                    skipTo(";");
-//                    //storage.AssignArr(index);
-//                }
+                else if(scan.currentToken.tokenStr.equals("/")){
+                    scan.iColPos=100000;
+                    scan.getNext();
+                }
                 else if(scan.currentToken.tokenStr.equals("while")){
                     whileStmt();
                 }
@@ -203,26 +192,18 @@ public class Parser {
      * @throws  Exception
      */
     public ResultValue assignment() throws Exception {
-//        System.out.println("in assignemnt");
-//        System.out.println("current token: " + scan.currentToken.tokenStr);
-//        scan.getNext();
-//        System.out.println("current token: " + scan.currentToken.tokenStr);
         Expr exp = new Expr(scan, storage);
         ResultValue res = null;
 
         if(!bExec)
             skipTo(";");
         else {
-//            System.out.println("in else");
-//        ResultValue res;
-            System.out.println("current token: " + scan.currentToken.tokenStr);
             if (scan.currentToken.subClassif != SubClassif.IDENTIFIER)
                 error("expected a variable for the target of an assignment ", scan.currentToken);
 
             String variableStr = scan.currentToken.tokenStr;
+            Token saveToken = scan.currentToken;
             scan.getNext();
-            //tokens.add(scan.currentToken);
-//            scan.currentToken.printToken();
             if (scan.currentToken.primClassif != Classif.OPERATOR && !scan.currentToken.tokenStr.equals("["))
                 error("expected assignment operator", scan.currentToken.tokenStr);
             String operatorStr = scan.currentToken.tokenStr;
@@ -234,9 +215,7 @@ public class Parser {
 
             switch (operatorStr) {
                 case "=":
-//                    System.out.println("in this case");
                     if(forCheck) {
-//                        System.out.println("in here");
                         res02 = exp.expr("to", debugExpr);
                     }
                     else{
@@ -250,52 +229,30 @@ public class Parser {
                         scan.iColPos=10000;
                         scan.getNext();
                         skipTo("=");
-
-//                        System.out.println("here");
                         int count2=0;
                         int i;
-//                        System.out.println(scan.currentToken.tokenStr);
-//                        System.out.println(PickleUtil.ELEM(variableStr, storage));
-
-//                        System.out.println("max is " + max);
                         scan.getNext();
                         ResultValue res05;
                         res = exp.expr(";", debugExpr);
-//                        System.out.println(res.value.toString());
                         int max = PickleUtil.MAXELEM(variableStr, storage);
-                        System.out.println(res.value);
-
-//                        System.out.println("before if");
                         if(res.dataType == SubClassif.ARRAY){
                             max = PickleUtil.ELEM(res.value.toString(), storage);
-//                            System.out.println("in here");
                             for(i=0;i<max;i++){
                                 if(i>=PickleUtil.MAXELEM(variableStr, storage)){
                                     break;
                                 }
-//                                System.out.println("in here");
-//                                System.out.println(variableStr);
-//                                System.out.println("after getting result " + storage.getArrayValue(res.value.toString()).get(i).value);
                                 res05 = storage.getArrayValue(res.value.toString()).get(i);
                                 index=String.valueOf(i);
-                                //System.out.println("max elems: " + PickleUtil.MAXELEM(variableStr, storage));
-                                //System.out.println(index);
                                 storage.AssignArr(variableStr, index, res05);
                             }
                         }
                         else{
                             for(i=0;i<max;i++){
-//                            System.out.println(scan.currentToken.tokenStr);
-//                            System.out.println("storing");
                                 index = String.valueOf(i);
-//                            System.out.println("out here");
                                 storage.AssignArr(variableStr, index, res);
-//                            System.out.println("printing value " + storage.getArrayValue(variableStr).get(i).value);
                             }
                         }
                     }
-                    //res = storage.Assign(variableStr, res02);   // assign to target
-//                    System.out.println("this worked");
                     break;
                 case "-=":
                     res02 = exp.expr(operatorStr, debugExpr);
@@ -306,8 +263,6 @@ public class Parser {
                     // target variable must be numeric
                     n0p1 = new Numeric(scan, res01, " -=", "1st operand");
                     // subtract 2nd operand from first and assign it
-
-//                        System.out.println(PickleUtil.Subtract(n0p1, n0p2).value);
                     //ResultValue temp = PickleUtil.Subtract(n0p1, n0p2);
                     res = storage.Assign(variableStr, PickleUtil.Subtract(n0p1, n0p2));
 //                        System.out.println(res.value);
@@ -324,6 +279,36 @@ public class Parser {
                     res = storage.Assign(variableStr, PickleUtil.Addition(n0p1, n0p2));
                     break;
                 case "[":
+                    if(storage.getVariableValue(saveToken.tokenStr) != null){
+                        scan.getNext();
+                        res = exp.expr("]", debugExpr);
+                        index = res.toString();
+                        scan.getNext();
+                        res02 = exp.expr(";", debugExpr);
+                        int temp=Integer.parseInt(res.value.toString());
+                        int g = temp;
+                        int length = res02.value.toString().length();
+                        String temp5 = res02.value.toString();
+                        ArrayList<Character> chars = new ArrayList<Character>();
+                        for (char c : storage.getVariableValue(saveToken.tokenStr).value.toString().toCharArray()) {
+                            chars.add(c);
+                        }
+                        chars.remove(g);
+                        for(char k: temp5.toCharArray()){
+                            chars.add(g, k);
+                            g++;
+                        }
+                        StringBuilder builder = new StringBuilder(chars.size());
+                        for(Character ch: chars)
+                        {
+                            builder.append(ch);
+                        }
+
+                        String temp2 = builder.toString();
+                        ResultValue temp3 = new ResultValue(SubClassif.STRING, temp2, "", "");
+                        storage.Assign(saveToken.tokenStr, temp3);
+                        break;
+                    }
 //                    System.out.println("in here");
                     if(storage.getArrayValue(variableStr) == null){
 //                        System.out.println("this is not declared");
@@ -341,8 +326,6 @@ public class Parser {
                         break;
                     }
                     else if(storage.getArrayValue(variableStr) != null){
-//                        System.out.println("in this else if");
-                        //counter in the while for index
                         boolean check = false;
                         boolean checkForDeclaration=false;
                         boolean check2 = true;
@@ -350,81 +333,45 @@ public class Parser {
                         index=null;
                         scan.iSourceLineNr-=1;
                         scan.iColPos=1000;
-//                        System.out.println(scan.iSourceLineNr);
                         scan.getNext();
-//                        System.out.println(scan.currentToken.tokenStr);
                         if(scan.currentToken.tokenStr.equals("Int") ||scan.currentToken.tokenStr.equals("String") || scan.currentToken.tokenStr.equals("Float")){
                             while(!scan.getNext().equals(";")){
-//                                System.out.println(scan.currentToken.tokenStr);
                                 if(scan.currentToken.tokenStr.equals("=")){
                                     check2 = false;
                                 }
                             }
                             if(check2){
-//                                System.out.println("breaking out");
                                 break;
                             }
-//                            System.out.println(scan.currentToken.tokenStr);
                             checkForDeclaration=true;
                         }
-//                        System.out.println("current token before: "+ scan.currentToken.tokenStr);
                         while(!scan.currentToken.tokenStr.equals("=") && !checkForDeclaration){
-//                            System.out.println("current token: "+ scan.currentToken.tokenStr);
                             if(scan.currentToken.tokenStr.equals("[")){
                                 scan.getNext();
-//                                System.out.println(scan.currentToken.tokenStr);
                                 if(scan.currentToken.tokenStr.equals("]")){
                                     check=false;
                                     break;
                                 }
-
                                 check=true;
-                                //TODO: something wrong here
-//                                System.out.println("out here");
                                 res = exp.expr("]", debugExpr);
-//                                scan.currentToken.tokenStr;
-//                                System.out.println("out here");
-//                                System.out.println("this is the vlaue: " + res.value.toString());
                                 index = res.value.toString();
                             }
                             scan.getNext();
                         }
-//                        System.out.println("out of the loop");
-//                        scan.currentToken.printToken();
-//                        System.out.println("current token: " + scan.currentToken.tokenStr);
-//                        System.out.println(scan.iSourceLineNr);
                         scan.iSourceLineNr-=1;
                         scan.iColPos=1000;
-//                        System.out.println(scan.iSourceLineNr);
                         scan.getNext();
-//                        System.out.println(scan.iSourceLineNr);
-//                        scan.getNext();
-//                        scan.getNext();
-//                        scan.getNext();
-
-
-//                        System.out.println(scan.iSourceLineNr);
-//                        System.out.println(scan.currentToken.tokenStr);
-//                        System.out.println("now here");
                         skipTo("=");
-//                        System.out.println(scan.currentToken.tokenStr);
                         if(check){
-//                            System.out.println("in this if");
-
                             res = exp.expr(";", debugExpr);
                             storage.AssignArr(variableStr, index, res);
-//                            System.out.println(storage.getArrayValue(variableStr).get(2).value);
                         }
                         else {
                             count=0;
-//                            System.out.println("in else");
                             while (!scan.currentToken.tokenStr.equals(";")) {
                                 index = String.valueOf(count);
-//                                    System.out.println(index);
                                 res = exp.expr(";", debugExpr);
                                 storage.AssignArr(variableStr, index, res);
-//                                    System.out.println("printing value " + storage.getArrayValue(variableStr).get(count).value);
-                                //                            System.out.println("current token: " + res.value);
                                 if (scan.currentToken.tokenStr.equals(";")) {
                                     break;
                                 }
@@ -440,8 +387,6 @@ public class Parser {
                     error("expected assignment operator received instead: ", operatorStr);
                     break;
             }
-
-//            System.out.println("after switch");
         }
 
         return res;
@@ -546,6 +491,14 @@ public class Parser {
             e.printStackTrace();
         }
     }
+    /**
+     * forStmt() handles all the for loops and executes them in a loop
+     *
+     *
+     *
+     *
+     * @return      N/A
+     */
     public void forStmt(){
         //TODO: add for each element in an array
         try{
@@ -572,7 +525,6 @@ public class Parser {
             boolean forType3 = false;
             scan.getNext();
             if(scan.getNext().equals("=")){
-                //System.out.println("in forType1 or 2");
                 scan.getNext();
                 scan.getNext();
                 scan.getNext();
@@ -584,7 +536,6 @@ public class Parser {
                 }
             }
             else if(scan.currentToken.tokenStr.equals("in")){
-                //System.out.println("in forType3");
                 forType3=true;
             }
             else{
@@ -593,14 +544,10 @@ public class Parser {
             scan.iSourceLineNr=saveLineNr - 1;
             scan.iColPos=10000;
             scan.getNext();
-            //System.out.println(scan.currentToken.tokenStr);
             if(forType1){
                 scan.getNext();
                 forCheck=true;
                 saveToken = scan.currentToken.tokenStr;
-
-                //System.out.println("right after exp: " + scan.currentToken.tokenStr);
-
                 scan.iSourceLineNr-=1;
                 scan.iColPos=1000;
                 scan.getNext();
@@ -612,11 +559,7 @@ public class Parser {
                 res03 = storage.getVariableValue(saveToken);
                 n0p3 = new Numeric(scan, res03, " <", " st operand");
                 checkCond = PickleUtil.LessThan(n0p3, n0p4);
-                //System.out.println(checkCond);
-                //System.out.println(scan.currentToken.tokenStr);
-                //System.out.println(scan.currentToken.tokenStr);
                 scan.getNext();
-                //System.out.println(scan.currentToken.tokenStr);
                 res02 = exp.expr(":", debugExpr);
                 n0p2 = new Numeric(scan, res02, " +=", " nd Operand");
                 res01 = storage.getVariableValue(saveToken);
@@ -626,7 +569,6 @@ public class Parser {
                     scan.iSourceLineNr = saveLineNr2;
                     scan.iColPos=1000;
                     scan.getNext();
-                    //System.out.println("before executing token: " + scan.currentToken.tokenStr);
                     executeForStmt();
                     //increment
                     res01 = storage.getVariableValue(saveToken);
@@ -645,16 +587,11 @@ public class Parser {
             else if(forType2){
                 scan.getNext();
                 saveToken = scan.currentToken.tokenStr;
-
-                //System.out.println("right after exp: " + scan.currentToken.tokenStr);
-
                 scan.iSourceLineNr-=1;
                 scan.iColPos=1000;
                 scan.getNext();
                 scan.getNext();
                 assignment();
-//                tokens.add(scan.currentToken);
-//                System.out.println("current token: " + scan.currentToken.tokenStr);
                 scan.getNext();
                 res04 = exp.expr(":", debugExpr);
                 n0p4 = new Numeric(scan, res04, " <", "2nd Operand");
@@ -669,7 +606,6 @@ public class Parser {
                     scan.iSourceLineNr = saveLineNr2;
                     scan.iColPos=1000;
                     scan.getNext();
-                    //System.out.println("before executing token: " + scan.currentToken.tokenStr);
                     executeForStmt();
                     //increment
                     res01 = storage.getVariableValue(saveToken);
@@ -686,11 +622,7 @@ public class Parser {
                     error("expected ; after endfor received: ", scan.currentToken.tokenStr);
             }
             else if(forType3){
-
                 scan.getNext();
-
-//                System.out.println(scan.currentToken.subClassif);
-
                 scan.getNext();
                 scan.getNext();
                 if(storage.getArrayValue(scan.currentToken.tokenStr)==null){
@@ -701,14 +633,11 @@ public class Parser {
                     saveToken = scan.currentToken.tokenStr;
                     scan.getNext();
                     scan.getNext();
-//                    scan.currentToken.printToken();
 
                     res01 = exp.expr(":", debugExpr);
-//                System.out.println(res01.value.toString());
                     char [] temp = new char[1000];
                     temp = res01.value.toString().toCharArray();
                     ResultValue rv = new ResultValue(SubClassif.STRING, "", "", "");
-                    //System.out.println(temp[0]);
                     scan.getNext();
                     int saveLineNr2 = scan.iSourceLineNr;
                     for(char i: temp){
@@ -728,15 +657,11 @@ public class Parser {
                     scan.getNext();
                     scan.getNext();
                     saveToken=scan.currentToken.tokenStr;
-//                    scan.currentToken.printToken();
                     scan.getNext();
                     scan.getNext();
                     saveToken2=scan.currentToken.tokenStr;
-//                    scan.currentToken.printToken();
                     int max = PickleUtil.ELEM(scan.currentToken.tokenStr, storage);
-//                    System.out.println(max);
                     int saveLineNr2 = scan.iSourceLineNr+1;
-//                    System.out.println(saveLineNr2);
 
                     for(i=0;i<max;i++){
                         scan.iSourceLineNr = saveLineNr2-1;
@@ -745,40 +670,38 @@ public class Parser {
                         ResultValue rv = new ResultValue(SubClassif.INTEGER, "", "", "");
                         rv.value = storage.getArrayValue(saveToken2).get(i).value;
                         res = storage.Assign(saveToken, rv);
-                        //System.out.println(storage.getArrayValue(scan.currentToken.tokenStr).get(i).value);
                         executeForStmt();
                     }
-//                    System.out.println(scan.currentToken.tokenStr);
                 }
 
                 if(!scan.currentToken.tokenStr.equals("endfor"))
                     error("expected endfor for 'for' received: ", scan.currentToken.tokenStr);
                 if(!scan.getNext().equals(";"))
                     error("expected ; after endfor received: ", scan.currentToken.tokenStr);
-                //System.out.println(scan.currentToken.tokenStr);
             }
-            //System.out.println(scan.currentToken.tokenStr);
-            //if(sc
-            //an.currentToken.tokenStr.equals())
         }
         catch (Exception e){
             e.printStackTrace();
         }
     }
-
+    /**
+     * executeForStmt() responsible for executing the statements within a for loop
+     *
+     *
+     *
+     * @return N/A
+     *
+     */
     public void executeForStmt(){
         try{
             ResultValue res;
             while(true){
-//                System.out.println("token in executeFor " + scan.currentToken.tokenStr);
                 if(scan.currentToken.tokenStr.equals("print")){
-//                    System.out.println("in print");
                     print();
                     scan.getNext();
                     continue;
                 }
                 if(scan.currentToken.tokenStr.equals("if")){
-//                    System.out.println("in if ");
                     ifStmt(bExec);
                 }
                 else if(scan.currentToken.tokenStr.equals("Int") || scan.currentToken.tokenStr.equals("Bool")
@@ -792,7 +715,6 @@ public class Parser {
                     scan.iSourceLineNr -= 1;
                     scan.iColPos = 10000;
                     scan.getNext();
-                    //System.out.println(scan.currentToken.tokenStr);
                     scan.getNext();
                     if(check){
                         res = assignment();
@@ -812,7 +734,6 @@ public class Parser {
                 }
                 else{
                     res = assignment();
-                    //System.out.println(scan.currentToken.tokenStr);
                 }
                 scan.getNext();
             }
@@ -828,23 +749,17 @@ public class Parser {
      */
     public void skipStatements(){
         try{
-//            System.out.println("in ignoreStatements");
             boolean check = true;
             boolean checkForWhile = false;
             scan.getNext();
             while(check){
-//                System.out.println("printing: " + scan.currentToken.tokenStr);
                 if(scan.currentToken.tokenStr.equals("while")){
                     checkForWhile = true;
                 }
                 else if( scan.currentToken.tokenStr.equals("endwhile") && !checkForWhile){
-                    //System.out.println("middle else if");
-
-
                     return;
                 }
                 else if(scan.currentToken.tokenStr.equals("endwhile") && checkForWhile){
-                    //System.out.println("last else if");
                     checkForWhile = false;
                 }
                 scan.getNext();
@@ -861,23 +776,17 @@ public class Parser {
      */
     public void ignoreStatements(){
         try{
-//            System.out.println("in ignoreStatements");
             boolean check = true;
             boolean checkForIf = false;
             scan.getNext();
             while(check){
-//                System.out.println("printing: " + scan.currentToken.tokenStr);
                 if(scan.currentToken.tokenStr.equals("if"))
                     checkForIf = true;
                 else if((scan.currentToken.tokenStr.equals("else") || scan.currentToken.tokenStr.equals("endif")
                         || scan.currentToken.tokenStr.equals("endwhile"))&& !checkForIf){
-//                    System.out.println("middle else if");
-
-
                     return;
                 }
                 else if(scan.currentToken.tokenStr.equals("endif") && checkForIf){
-//                    System.out.println("last else if");
                     checkForIf = false;
                 }
                 scan.getNext();
@@ -899,11 +808,7 @@ public class Parser {
         try{
             scan.getNext();
             while(check){
-//                System.out.println("in execute while loop");
-                //scan.currentToken.printToken();
-//                System.out.println(scan.currentToken.tokenStr);
                 if(scan.currentToken.tokenStr.equals("print")){
-//                    System.out.println("in print");
                     print();
                     scan.getNext();
                     continue;
@@ -996,7 +901,6 @@ public class Parser {
     public void skipTo(String stopToken){
         while(!scan.currentToken.tokenStr.equals(stopToken)){
             try{
-                //System.out.println("in here");
                 scan.getNext();
             }
             catch (Exception e){
