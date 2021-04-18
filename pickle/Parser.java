@@ -528,6 +528,12 @@ public class Parser {
                 scan.getNext();
                 scan.getNext();
                 scan.getNext();
+//                System.out.println(scan.currentToken.tokenStr);
+                if(scan.currentToken.tokenStr.equals("ELEM")){
+//                    System.out.println("in here");
+                    skipTo(")");
+                }
+//                System.out.println(scan.currentToken.tokenStr);
                 if(scan.getNext().equals("by")){
                     forType1=true;
                 }
