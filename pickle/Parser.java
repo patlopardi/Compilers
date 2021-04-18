@@ -166,9 +166,27 @@ public class Parser {
         //TODO: work on print
         Expr exp = new Expr(scan, storage);
         try{
+            ResultValue res;
             scan.getNext();
             while(!scan.getNext().equals(";")){
-                System.out.printf("%s", exp.expr(",)", debugExpr).value);
+                res = exp.expr(",)", debugExpr);
+                if(res.dataType == SubClassif.ARRAY){
+                    int i;
+                    for(i=0;i<PickleUtil.MAXELEM(res.value.toString(), storage);i++){
+                        if(storage.getArrayValue(res.value.toString()).get(i) != null){
+                            //System.out.println("in here");
+//                            System.out.println(i);
+                            System.out.printf("%s ", storage.getArrayValue(res.value.toString()).get(i).value);
+                        }
+                    }
+
+                }
+                else{
+//                    System.out.println("in here");
+                    System.out.printf("%s", res.value);
+                }
+
+
             }
             skipTo(";");
         }
@@ -197,6 +215,7 @@ public class Parser {
         else {
 //            System.out.println("in else");
 //        ResultValue res;
+            System.out.println("current token: " + scan.currentToken.tokenStr);
             if (scan.currentToken.subClassif != SubClassif.IDENTIFIER)
                 error("expected a variable for the target of an assignment ", scan.currentToken);
 
@@ -237,20 +256,43 @@ public class Parser {
                         int i;
 //                        System.out.println(scan.currentToken.tokenStr);
 //                        System.out.println(PickleUtil.ELEM(variableStr, storage));
-                        int max = PickleUtil.MAXELEM(variableStr, storage);
+
 //                        System.out.println("max is " + max);
                         scan.getNext();
+                        ResultValue res05;
                         res = exp.expr(";", debugExpr);
-                        for(i=0;i<max;i++){
+//                        System.out.println(res.value.toString());
+                        int max = PickleUtil.MAXELEM(variableStr, storage);
+                        System.out.println(res.value);
+
+//                        System.out.println("before if");
+                        if(res.dataType == SubClassif.ARRAY){
+                            max = PickleUtil.ELEM(res.value.toString(), storage);
+//                            System.out.println("in here");
+                            for(i=0;i<max;i++){
+                                if(i>=PickleUtil.MAXELEM(variableStr, storage)){
+                                    break;
+                                }
+//                                System.out.println("in here");
+//                                System.out.println(variableStr);
+//                                System.out.println("after getting result " + storage.getArrayValue(res.value.toString()).get(i).value);
+                                res05 = storage.getArrayValue(res.value.toString()).get(i);
+                                index=String.valueOf(i);
+                                //System.out.println("max elems: " + PickleUtil.MAXELEM(variableStr, storage));
+                                //System.out.println(index);
+                                storage.AssignArr(variableStr, index, res05);
+                            }
+                        }
+                        else{
+                            for(i=0;i<max;i++){
 //                            System.out.println(scan.currentToken.tokenStr);
 //                            System.out.println("storing");
-                            index = String.valueOf(i);
+                                index = String.valueOf(i);
 //                            System.out.println("out here");
-                            storage.AssignArr(variableStr, index, res);
+                                storage.AssignArr(variableStr, index, res);
 //                            System.out.println("printing value " + storage.getArrayValue(variableStr).get(i).value);
+                            }
                         }
-
-//
                     }
                     //res = storage.Assign(variableStr, res02);   // assign to target
 //                    System.out.println("this worked");
@@ -285,7 +327,14 @@ public class Parser {
 //                    System.out.println("in here");
                     if(storage.getArrayValue(variableStr) == null){
 //                        System.out.println("this is not declared");
-                        index = scan.getNext();
+                        scan.getNext();
+                        if(!scan.currentToken.tokenStr.equals("]")){
+
+                            index = exp.expr("]", debugExpr).value.toString();
+                        }else{
+                            index = scan.currentToken.tokenStr;
+                        }
+
                         storage.DeclareArr(scan, variableStr, index, SubClassif.INTEGER);
                         scan.iSourceLineNr-=1;
                         scan.iColPos=1000;
@@ -304,7 +353,7 @@ public class Parser {
 //                        System.out.println(scan.iSourceLineNr);
                         scan.getNext();
 //                        System.out.println(scan.currentToken.tokenStr);
-                        if(scan.currentToken.tokenStr.equals("Int") ||scan.currentToken.tokenStr.equals("String")){
+                        if(scan.currentToken.tokenStr.equals("Int") ||scan.currentToken.tokenStr.equals("String") || scan.currentToken.tokenStr.equals("Float")){
                             while(!scan.getNext().equals(";")){
 //                                System.out.println(scan.currentToken.tokenStr);
                                 if(scan.currentToken.tokenStr.equals("=")){
@@ -330,6 +379,7 @@ public class Parser {
                                 }
 
                                 check=true;
+                                //TODO: something wrong here
 //                                System.out.println("out here");
                                 res = exp.expr("]", debugExpr);
 //                                scan.currentToken.tokenStr;
