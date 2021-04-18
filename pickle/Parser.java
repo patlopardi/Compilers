@@ -172,7 +172,7 @@ public class Parser {
                 }
                 else{
 //                    System.out.println("in here");
-                    System.out.printf("%s", res.value);
+                    System.out.printf("%s ", res.value);
                 }
 
 
