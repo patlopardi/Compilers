@@ -572,5 +572,65 @@ public final class PickleUtil {
     public static int LENGTH(String len){
         return len.length();
     }
+
+    /**
+  * Returns boolean value of whether string is valid as a date
+  * <p>
+  * Returns true if it follows the correct date format "YYYY-MM-DD"
+  *     Qualities of a date include:
+  *         - String must be total of 10 characters
+  *         - Y,M,D must be numbers with 4 Y's, 2 M's, and 2 D's
+  *         - Must be separated by hyphen
+  *         - 00 < M < 13 and 00 <= D <= M's max day
+  *
+  * @param date  String value to be evaluated
+  *
+  * @return       True if follows format, False if it doesn't
+  */
+  public static boolean ValidateDate(String date)
+  {
+      boolean returnVal = true;
+      int[] monthMaxDay = new int[]{0, 31, 29, 31, 30, 31, 30, 31 ,31 ,30, 31 ,30, 31};
+
+      //Check if Year is not 10 characters
+      if(date.length() != 10)
+      {
+          System.out.printf("Error date \"%s\" is %d instead of 10\n", date, date.length());
+          returnVal = false;
+      }
+      //Check for incorrect separators
+      if(date.charAt(4) != '-' || date.charAt(7) != '-')
+      {
+          System.out.printf("Incorrect or misplaced separator within date \"%s\"\n", date);
+          returnVal = false;
+      }
+      //Try catch for verifying is a number
+      try {
+          int year = Integer.parseInt(date.substring(0, 4));
+          int month = Integer.parseInt(date.substring(5,7));
+          int day = Integer.parseInt(date.substring(8,10));
+          //Check if incorrect month
+          if(month > 12 || month < 1)
+          {
+            System.out.printf("Invalid month for date \"%s\", must be 01-12\n", date);
+            returnVal = false;
+          }
+          //Check if incorrect day
+          if(day > monthMaxDay[month] || day < 1
+           || ((month == 2 && day == 29)) && ((year%4 != 0) || (year%100 == 0 && year%400 != 0))) //If Feb 29 the year must be divisible by 4 and not divisible by 100 unless also divisible by 400
+          {
+              System.out.printf("Invalid day within the month of %d within date \"%s\"\n", month, date);
+              returnVal = false;
+          }
+
+      } catch (Exception e)
+      {
+        System.out.printf("Invalid format for date \"%s\", found non-numeric value within\n", date);
+        returnVal = false;
+      }
+
+      return returnVal;
+  }
+
 }
 

@@ -63,7 +63,7 @@ public class Parser {
                     debug(debugType, debugSwitch);
                 }
                 else if(scan.currentToken.tokenStr.equals("Int") || scan.currentToken.tokenStr.equals("Bool")
-                        || scan.currentToken.tokenStr.equals("String") || scan.currentToken.tokenStr.equals("Float")){
+                        || scan.currentToken.tokenStr.equals("String") || scan.currentToken.tokenStr.equals("Float") || scan.currentToken.tokenStr.equals("Date")){
                     scan.getNext();
                     scan.getNext();
                     boolean check = false;
