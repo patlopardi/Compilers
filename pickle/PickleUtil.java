@@ -2,6 +2,9 @@ package pickle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public final class PickleUtil {
 
@@ -634,27 +637,36 @@ public final class PickleUtil {
         return returnVal;
     }
 
-    //NEEDS TO BE ADJUSTED TO TAKE IN DOUBLE VALUE AS WELL (NEEDS TO TAKE IN TYPE OBJECT AND CAST AS INTEGER)
     /**
     * Adjust the date by the adjustment value
     * <p>
     *   Adds the adjustment amount to the date and return the result.
     *
     * @param date  ResultValue holding date to be adjusted
-    * @param adjustment Object value of type int or float coerced to int to adjust the date by
+    * @param adjustment Numeric that holds the object value of type int or float coerced to int to adjust the date by days
     *
     * @return       date value or null if invalid date
     */
-    public static ResultValue dateAdj(ResultValue date, int adjustment)
+    public static ResultValue dateAdj(ResultValue date, Numeric days)
     {
         ResultValue res = new ResultValue(null, null, null, null);
-        //Coersion needs to be here
-        int adjValue = adjustment;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        int offset;
+        int[] dateValues;
+        //Coersion to int
+        offset = days.valueToInt();
+
         //Validate date
         if(validateDate(date))
         {
-            res.dataType = SubClassif.DATE;
+            //res.dataType = SubClassif.DATE;
+            res.dataType = SubClassif.STRING;
+            dateValues = parseDate(date.value.toString());
             //Date Adjustment
+            Calendar calendar = new GregorianCalendar(dateValues[0], dateValues[1]-1, dateValues[2]);
+            calendar.add(Calendar.DAY_OF_MONTH, offset);
+            res.value = sdf.format(calendar.getTime());
+
         }
         return res;
     }
@@ -696,7 +708,7 @@ public final class PickleUtil {
         {
             int difference = (int)dateDiff(date1, date2).value;
             res.dataType = SubClassif.INTEGER;
-            if(Math.abs(difference) == 365) //Some reason has trouble with exactly a year
+            if(Math.abs(difference) == 365) //Solve for exact division
             {
                 res.value = Integer.signum(difference);
             }

@@ -388,7 +388,12 @@ public class Expr {
       }
       else if(operator.tokenStr.equals("dateAdj"))
       {
-        
+        scan.getNext();
+        temp = expr(endSeparator, debugExpr);
+        scan.getNext();
+        temp2 = expr(endSeparator, debugExpr);
+        scan.getNext();
+        res = PickleUtil.dateAdj(temp, new Numeric(scan, temp2, null, null));
       }
     }
     else
