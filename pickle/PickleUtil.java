@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import pickle.Exceptions.InvalidDateException;
 
 public final class PickleUtil {
 
@@ -597,42 +598,40 @@ public final class PickleUtil {
         boolean returnVal = true;
         int[] parsedDate;
         int[] monthMaxDay = new int[]{0, 31, 29, 31, 30, 31, 30, 31 ,31 ,30, 31 ,30, 31};
-
-        //Check if Year is not 10 characters
-        if(date.length() != 10)
-        {
-            System.out.printf("Error date \"%s\" is %d instead of 10\n", date, date.length());
-            returnVal = false;
-        }
-        //Check for incorrect separators
-        if(date.charAt(4) != '-' || date.charAt(7) != '-')
-        {
-            System.out.printf("Incorrect or misplaced separator within date \"%s\"\n", date);
-            returnVal = false;
-        }
-        //Separate the date into year, month, day
-        parsedDate = parseDate(date);
-        if(parsedDate != null)
-        {
-            int year = parsedDate[0], month = parsedDate[1], day = parsedDate[2];
-            //Check if incorrect month
-            if(month > 12 || month < 1)
+        try {
+            //Check if Year is not 10 characters
+            if(date.length() != 10)
             {
-                System.out.printf("Invalid month for date \"%s\", must be 01-12\n", date);
-                returnVal = false;
+                throw new InvalidDateException("invalid size of " + date.length() + " instead of 10", date);
             }
-            //Check if incorrect day
-            if(day > monthMaxDay[month] || day < 1
-            || ((month == 2 && day == 29)) && ((year%4 != 0) || (year%100 == 0 && year%400 != 0))) //If Feb 29 the year must be divisible by 4 and not divisible by 100 unless also divisible by 400
+            //Check for incorrect separators
+            if(date.charAt(4) != '-' || date.charAt(7) != '-')
             {
-                System.out.printf("Invalid day within the month of %d within date \"%s\"\n", month, date);
-                returnVal = false;
+                throw new InvalidDateException("invalid or misplaced separator.", date);
             }
-        }
-        else
-        {
-            System.out.printf("Invalid format for date \"%s\", found non-numeric value within\n", date);
-            returnVal = false;
+            //Separate the date into year, month, day
+            parsedDate = parseDate(date);
+            if(parsedDate != null)
+            {
+                int year = parsedDate[0], month = parsedDate[1], day = parsedDate[2];
+                //Check if incorrect month
+                if(month > 12 || month < 1)
+                {
+                    throw new InvalidDateException("invalid month value, must be between 01-12.", date);
+                }
+                //Check if incorrect day
+                if(day > monthMaxDay[month] || day < 1
+                || ((month == 2 && day == 29)) && ((year%4 != 0) || (year%100 == 0 && year%400 != 0))) //If Feb 29 the year must be divisible by 4 and not divisible by 100 unless also divisible by 400
+                {
+                    throw new InvalidDateException("invalid day value, contains either over max or under min days for the month.", date);
+                }
+            }
+            else
+            {
+                throw new InvalidDateException("invalid format, contains non-numeric value in either year, month, or day index.", date);
+            }
+        } catch (InvalidDateException e) {
+            System.out.printf(e.getMessage() + "\n");
         }
         return returnVal;
     }
