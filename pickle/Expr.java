@@ -331,7 +331,8 @@ public class Expr {
     operator = scan.currentToken;
 
     if(scan.currentToken.tokenStr.equals("LENGTH") || scan.currentToken.tokenStr.equals("MAXELEM") || scan.currentToken.tokenStr.equals("ELEM") 
-    || scan.currentToken.tokenStr.equals("SPACES") || scan.currentToken.tokenStr.equals("dateDiff") || scan.currentToken.tokenStr.equals("dateAge")) { 
+    || scan.currentToken.tokenStr.equals("SPACES") || scan.currentToken.tokenStr.equals("dateDiff") || scan.currentToken.tokenStr.equals("dateAge") 
+    || scan.currentToken.tokenStr.equals("dateAdj")) { 
       //Iterate to the left parentheses and call to operand for recursion with parentheses.
       scan.getNext();
       if(operator.tokenStr.equals("LENGTH"))
@@ -370,20 +371,24 @@ public class Expr {
       else if(operator.tokenStr.equals("dateDiff"))
       {
         scan.getNext();
-        temp = operand();
+        temp = res = expr(endSeparator, debugExpr);
         scan.getNext();
-        temp2 = operand();
+        temp2 = res = expr(endSeparator, debugExpr);
         scan.getNext();
         res = PickleUtil.dateDiff(temp, temp2);
       }
       else if(operator.tokenStr.equals("dateAge"))
       {
         scan.getNext();
-        temp = operand();
+        temp = expr(endSeparator, debugExpr);
         scan.getNext();
-        temp2 = operand();
+        temp2 = expr(endSeparator, debugExpr);
         scan.getNext();
         res = PickleUtil.dateAge(temp, temp2);
+      }
+      else if(operator.tokenStr.equals("dateAdj"))
+      {
+        
       }
     }
     else
@@ -506,8 +511,6 @@ public class Expr {
     //Handling Parenth
     if(scan.currentToken.tokenStr.equals("("))
     {
-      //System.out.printf("Entered Left Parenth\n");
-      //This is testing
       scan.getNext();
       res = expr(endSeparator, debugExpr);
       //Ensure there is a right parentheses
