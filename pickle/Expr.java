@@ -327,10 +327,11 @@ public class Expr {
     Token operator;
     ResultValue res = new ResultValue(null, null, null, null);
     ResultValue temp = null;
+    ResultValue temp2 = null;
     operator = scan.currentToken;
 
     if(scan.currentToken.tokenStr.equals("LENGTH") || scan.currentToken.tokenStr.equals("MAXELEM") || scan.currentToken.tokenStr.equals("ELEM") 
-    || scan.currentToken.tokenStr.equals("SPACES")) { 
+    || scan.currentToken.tokenStr.equals("SPACES") || scan.currentToken.tokenStr.equals("dateDiff") || scan.currentToken.tokenStr.equals("dateAge")) { 
       //Iterate to the left parentheses and call to operand for recursion with parentheses.
       scan.getNext();
       if(operator.tokenStr.equals("LENGTH"))
@@ -365,6 +366,24 @@ public class Expr {
         temp = operand();
         res.value = PickleUtil.SPACES(temp.value.toString());
         res.dataType = SubClassif.BOOLEAN;
+      }
+      else if(operator.tokenStr.equals("dateDiff"))
+      {
+        scan.getNext();
+        temp = operand();
+        scan.getNext();
+        temp2 = operand();
+        scan.getNext();
+        res = PickleUtil.dateDiff(temp, temp2);
+      }
+      else if(operator.tokenStr.equals("dateAge"))
+      {
+        scan.getNext();
+        temp = operand();
+        scan.getNext();
+        temp2 = operand();
+        scan.getNext();
+        res = PickleUtil.dateAge(temp, temp2);
       }
     }
     else

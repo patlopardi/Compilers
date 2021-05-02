@@ -694,10 +694,16 @@ public final class PickleUtil {
         ResultValue res = new ResultValue(null, null, null, null);
         if(validateDate(date1) && validateDate(date2))
         {
+            int difference = (int)dateDiff(date1, date2).value;
             res.dataType = SubClassif.INTEGER;
-            int julian1 = toJulianConversion(date1.value.toString());
-            int julian2 = toJulianConversion(date2.value.toString());
-            res.value = (int)((int)(dateDiff(new ResultValue(SubClassif.INTEGER, julian1, null, null), new ResultValue(SubClassif.INTEGER, julian2, null, null)).value)/365.2425);
+            if(Math.abs(difference) == 365) //Some reason has trouble with exactly a year
+            {
+                res.value = Integer.signum(difference);
+            }
+            else
+            {
+                res.value = (int)(difference/365.2425);
+            }
         }
         return res;
     }
