@@ -6,8 +6,9 @@ public class ExprException extends Exception {
         super("Error");
     }
     public ExprException(int LineNr, String issue){
-        super("Error, Line " +  LineNr + issue);
-        this.text = "\nError, on line " +  (LineNr + 1) + " " + issue;
+        this.text = "Error, on line " +  (LineNr + 1) + " " + issue;
+        System.out.printf(text);
+        System.exit(1);
     }
 
     @Override

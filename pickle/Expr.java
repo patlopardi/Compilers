@@ -1,8 +1,6 @@
 package pickle;
 
-import javax.lang.model.util.ElementScanner6;
-
-import org.graalvm.compiler.lir.StandardOp.NullCheck;
+//import org.graalvm.compiler.lir.StandardOp.NullCheck;
 import pickle.Exceptions.ExprException;
 /**
   * Constructor for the Expr class which set variables
@@ -492,7 +490,13 @@ public class Expr {
             {
               temp.value = within.value;
               //GET FROM ARRAY
-              res = storage.getArrayValue(arrNameHold).get((Double.valueOf(within.value.toString())).intValue());
+              try{
+                res = storage.getArrayValue(arrNameHold).get((Double.valueOf(within.value.toString())).intValue());
+              } catch(IndexOutOfBoundsException e)
+              {
+                throw new ExprException(scan.iSourceLineNr, ("reference to array, " + arrNameHold + "[" + (Double.valueOf(within.value.toString())).intValue() + "], which is not populated" ));
+              }
+              
             }
             //Character array
             else
