@@ -1,0 +1,32 @@
+print("p5BreakX.txt");
+Bool bFlag;
+Int i;
+String fruit;
+String climber;
+bFlag = T;
+i = 0;
+fruit = 'larry';
+climber = 'pike';
+while bFlag:
+    i = i + 1;
+    print("i=", i);
+    if fruit == "apple" or fruit == "orange" or fruit == "larry":
+        print("it is a fruit");
+        if i > 2:
+           print("i is greater than 2");
+           break;
+        else:
+           print("i is <= 2");
+        endif;
+        print("inside while, after first inner if");
+        if climber == "pike":
+             print("it is pike");
+             continue
+        else:
+             print("it is not pike");
+        endif;
+        print("after inner if");
+    endif;
+    print("after outer if");
+endwhile;
+print("after while loop i=", i);

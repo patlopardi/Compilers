@@ -1,0 +1,7 @@
+print("p5ForErrX2");
+Int i;
+Int j=3;
+Int p;
+for i=0 in j:
+    print("hello");
+endfor;

@@ -1,0 +1,5 @@
+print("p5IfErrX1");
+Int i = 5;
+Int j = 10;
+if i < j:
+    print("hello");
