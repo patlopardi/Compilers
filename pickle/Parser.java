@@ -405,6 +405,9 @@ public class Parser {
             if (bExec) {
                 boolean resCond = evalCond();
                 if (resCond) {
+//                    System.out.println(scan.currentToken.tokenStr);
+                    if (!scan.currentToken.tokenStr.equals(":"))
+                        error("expected colon after if statement but received: ", scan.currentToken.tokenStr);
                     executeStatements(true);
                     if(checkForContinue){
 //                        System.out.println("found a continue");
@@ -418,7 +421,7 @@ public class Parser {
                     }
                     if (scan.currentToken.tokenStr.equals("else")) {
                         if (!scan.getNext().equals(":"))
-                            error("expected colon after else but received: ", scan.currentToken.tokenStr);
+                            error("expected colon after 'else' but received: ", scan.currentToken.tokenStr);
                         executeStatements(false);
                     }
                     else if(!scan.currentToken.tokenStr.equals("endif")){
@@ -486,6 +489,9 @@ public class Parser {
                     }
                 }
                 flag = true;
+                if(!scan.currentToken.tokenStr.equals(":")){
+                    error("Expected : for while statement but received: ", scan.currentToken.tokenStr);
+                }
                 executeStatements(true);
                 if(checkForBreak){
                     skipTo("endwhile");
@@ -497,6 +503,9 @@ public class Parser {
                     scan.getNext();
                     checkForContinue=false;
                     continue;
+                }
+                if(!scan.currentToken.tokenStr.equals("endwhile")){
+                    error("expected endwhile for while received: ", scan.currentToken.tokenStr);
                 }
                 scan.iSourceLineNr = saveLineNr - 1;
                 scan.iColPos=1000;
@@ -552,26 +561,46 @@ public class Parser {
             scan.getNext();
             if(scan.getNext().equals("=")){
                 scan.getNext();
+
                 scan.getNext();
-                scan.getNext();
-//                System.out.println(scan.currentToken.tokenStr);
-                if(scan.currentToken.tokenStr.equals("ELEM")){
-//                    System.out.println("in here");
-                    skipTo(")");
+                if(!scan.currentToken.tokenStr.equals("to")){
+                    error("incorrect 'for' form: ", scan.currentToken.tokenStr);
                 }
+                scan.getNext();
+                ResultValue saveThis = exp.expr(scan.currentToken.tokenStr, debugExpr);
 //                System.out.println(scan.currentToken.tokenStr);
-                if(scan.getNext().equals("by")){
-                    forType1=true;
+//                if(scan.currentToken.tokenStr.equals("ELEM")){
+////                    System.out.println("in here");
+//                    skipTo(")");
+//                }
+//                System.out.println(scan.currentToken.tokenStr);
+                if(scan.currentToken.tokenStr.equals("by")){
+                    scan.getNext();
+                    scan.getNext();
+//                    scan.getNext();
+//                    System.out.println(scan.currentToken.tokenStr);
+                    if(scan.currentToken.tokenStr.equals(":")){
+//                        System.out.println("in here1");
+                        forType1=true;
+                    }
+                    else {
+                        error("incorrect 'for' form: ", scan.currentToken.tokenStr);
+                    }
+                }
+                else if(scan.currentToken.tokenStr.equals(":")){
+//                    System.out.println("in here2");
+                    forType2=true;
                 }
                 else{
-                    forType2=true;
+                    error("incorrect 'for' form: ", scan.currentToken.tokenStr);
                 }
             }
             else if(scan.currentToken.tokenStr.equals("in")){
+//                System.out.println("in here3");
                 forType3=true;
             }
             else{
-                error("incorrect for form: ", scan.currentToken.tokenStr);
+                error("incorrect 'for' form: ", scan.currentToken.tokenStr);
             }
             scan.iSourceLineNr=saveLineNr - 1;
             scan.iColPos=10000;
@@ -631,9 +660,9 @@ public class Parser {
                     checkCond = PickleUtil.LessThan(n0p3, n0p4);
                 }
                 if(!scan.currentToken.tokenStr.equals("endfor"))
-                    error("expected endfor for for received: ", scan.currentToken.tokenStr);
+                    error("expected endfor for 'for' received: ", scan.currentToken.tokenStr);
                 if(!scan.getNext().equals(";"))
-                    error("expected ; after endfor received: ", scan.currentToken.tokenStr);
+                    error("expected ; after 'endfor' received: ", scan.currentToken.tokenStr);
             }
             else if(forType2){
                 scan.getNext();
@@ -677,6 +706,10 @@ public class Parser {
                         checkForContinue=false;
                         continue;
                     }
+                    else if(!scan.currentToken.tokenStr.equals("endfor")){
+//                        System.out.println("in here");
+                        error("expected endfor for 'for' received: ", scan.currentToken.tokenStr);
+                    }
                     //increment
                     res01 = storage.getVariableValue(saveToken);
                     n0p1 = new Numeric(scan, res01, " +=", " st operand");
@@ -687,11 +720,11 @@ public class Parser {
                     checkCond = PickleUtil.LessThan(n0p3, n0p4);
                 }
                 if(!scan.currentToken.tokenStr.equals("endfor")) {
-                    System.out.println("scan: " + scan.currentToken.tokenStr);
-                    error("expected endfor for for received: ", scan.currentToken.tokenStr);
+//                    System.out.println("scan: " + scan.currentToken.tokenStr);
+                    error("expected endfor for 'for' received: ", scan.currentToken.tokenStr);
                 }
                 if(!scan.getNext().equals(";"))
-                    error("expected ; after endfor received: ", scan.currentToken.tokenStr);
+                    error("expected ; after 'endfor' received: ", scan.currentToken.tokenStr);
             }
             else if(forType3){
                 scan.getNext();
@@ -727,6 +760,9 @@ public class Parser {
                             checkForBreak=false;
                             break;
                         }
+                        else if(!scan.currentToken.tokenStr.equals("endfor")){
+                            error("expected endfor for 'for' received: ", scan.currentToken.tokenStr);
+                        }
                     }
                     if(checkForContinue){
                         skipTo("endfor");
@@ -755,11 +791,15 @@ public class Parser {
                         rv.value = storage.getArrayValue(saveToken2).get(i).value;
                         res = storage.Assign(saveToken, rv);
                         executeForStmt();
+//                        System.out.println("back here");
                         if(checkForBreak){
                             //System.out.println("im back here and im breaking out");
                             skipTo("endfor");
                             checkForBreak=false;
                             break;
+                        }
+                        else if(!scan.currentToken.tokenStr.equals("endfor")){
+                            error("expected endfor for 'for' received: ", scan.currentToken.tokenStr);
                         }
                     }
                     if(checkForContinue){
@@ -769,11 +809,11 @@ public class Parser {
                 }
 
                 if(!scan.currentToken.tokenStr.equals("endfor")) {
-                    System.out.println("scan: " + scan.currentToken.tokenStr);
+//                    System.out.println("scan: " + scan.currentToken.tokenStr);
                     error("expected endfor for 'for' received: ", scan.currentToken.tokenStr);
                 }
                 if(!scan.getNext().equals(";"))
-                    error("expected ; after endfor received: ", scan.currentToken.tokenStr);
+                    error("expected ; after 'endfor' received: ", scan.currentToken.tokenStr);
             }
         }
         catch (Exception e){
@@ -880,8 +920,11 @@ public class Parser {
         try{
             boolean check = true;
             boolean checkForIf = false;
+            int saveLnNr = scan.iSourceLineNr;
+            int i=0;
             scan.getNext();
-            while(check){
+//            System.out.println(scan.currentToken.tokenStr);
+            while(true){
                 if(scan.currentToken.tokenStr.equals("if"))
                     checkForIf = true;
                 else if((scan.currentToken.tokenStr.equals("else") || scan.currentToken.tokenStr.equals("endif")
@@ -891,6 +934,7 @@ public class Parser {
                 else if(scan.currentToken.tokenStr.equals("endif") && checkForIf){
                     checkForIf = false;
                 }
+
                 scan.getNext();
             }
         }
@@ -904,7 +948,6 @@ public class Parser {
      * @return      N/A
      */
     public void execute(){
-        //TODO: work on this
         ResultValue res;
         boolean check = true;
 
@@ -935,11 +978,17 @@ public class Parser {
                     //System.out.println("in break case");
                     checkForBreak=true;
                     scan.getNext();
+                    if(!scan.currentToken.tokenStr.equals(";")){
+                        error("Expected a ; after break but received: ", scan.currentToken.tokenStr);
+                    }
                 }
                 else if(scan.currentToken.tokenStr.equals("continue")){
 //                    System.out.println("in continue case");
                     checkForContinue=true;
                     scan.getNext();
+                    if(!scan.currentToken.tokenStr.equals(";")){
+                        error("Expected a ; after continue but received: ", scan.currentToken.tokenStr);
+                    }
                 }
                 else if(scan.currentToken.tokenStr.equals("Int") || scan.currentToken.tokenStr.equals("Bool")
                         || scan.currentToken.tokenStr.equals("String") || scan.currentToken.tokenStr.equals("Float") || scan.currentToken.tokenStr.equals("Date")){
@@ -1001,7 +1050,7 @@ public class Parser {
         ResultValue res02;
 
         try{
-            res01 = exp.expr(":", debugExpr);
+            res01 = exp.expr(scan.currentToken.tokenStr, debugExpr);
             check = (boolean) res01.value;
             return check;
         }
