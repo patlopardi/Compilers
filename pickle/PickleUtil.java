@@ -2,6 +2,10 @@ package pickle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import pickle.Exceptions.InvalidDateException;
 
 public final class PickleUtil {
 
@@ -571,6 +575,198 @@ public final class PickleUtil {
      */
     public static int LENGTH(String len){
         return len.length();
+    }
+
+    /**
+    * Returns boolean value of whether string is valid as a date
+    * <p>
+    * Returns true if it follows the correct date format "YYYY-MM-DD"
+    *     Qualities of a date include:
+    *         - String must be total of 10 characters
+    *         - Y,M,D must be numbers with 4 Y's, 2 M's, and 2 D's
+    *         - Must be separated by hyphen
+    *         - 00 < M < 13 and 00 <= D <= M's max day
+    *
+    * @param date  String value to be evaluated
+    *
+    * @return       True if follows format, False if it doesn't
+    */
+    public static boolean validateDate(ResultValue inputDate)
+    {
+        //Get the value of the date
+        String date = inputDate.value.toString();
+        boolean returnVal = true;
+        int[] parsedDate;
+        int[] monthMaxDay = new int[]{0, 31, 29, 31, 30, 31, 30, 31 ,31 ,30, 31 ,30, 31};
+        try {
+            //Check if Year is not 10 characters
+            if(date.length() != 10)
+            {
+                throw new InvalidDateException("invalid size of " + date.length() + " instead of 10", date);
+            }
+            //Check for incorrect separators
+            if(date.charAt(4) != '-' || date.charAt(7) != '-')
+            {
+                throw new InvalidDateException("invalid or misplaced separator.", date);
+            }
+            //Separate the date into year, month, day
+            parsedDate = parseDate(date);
+            if(parsedDate != null)
+            {
+                int year = parsedDate[0], month = parsedDate[1], day = parsedDate[2];
+                //Check if incorrect month
+                if(month > 12 || month < 1)
+                {
+                    throw new InvalidDateException("invalid month value, must be between 01-12.", date);
+                }
+                //Check if incorrect day
+                if(day > monthMaxDay[month] || day < 1
+                || ((month == 2 && day == 29)) && ((year%4 != 0) || (year%100 == 0 && year%400 != 0))) //If Feb 29 the year must be divisible by 4 and not divisible by 100 unless also divisible by 400
+                {
+                    throw new InvalidDateException("invalid day value, contains either over max or under min days for the month.", date);
+                }
+            }
+            else
+            {
+                throw new InvalidDateException("invalid format, contains non-numeric value in either year, month, or day index.", date);
+            }
+        } catch (InvalidDateException e) {
+            System.out.printf(e.getMessage() + "\n");
+        }
+        return returnVal;
+    }
+
+    /**
+    * Adjust the date by the adjustment value
+    * <p>
+    *   Adds the adjustment amount to the date and return the result.
+    *
+    * @param date  ResultValue holding date to be adjusted
+    * @param adjustment Numeric that holds the object value of type int or float coerced to int to adjust the date by days
+    *
+    * @return       date value or null if invalid date
+    */
+    public static ResultValue dateAdj(ResultValue date, Numeric days)
+    {
+        ResultValue res = new ResultValue(null, null, null, null);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        int offset;
+        int[] dateValues;
+        //Coersion to int
+        offset = days.valueToInt();
+
+        //Validate date
+        if(validateDate(date))
+        {
+            //res.dataType = SubClassif.DATE;
+            res.dataType = SubClassif.STRING;
+            dateValues = parseDate(date.value.toString());
+            //Date Adjustment
+            Calendar calendar = new GregorianCalendar(dateValues[0], dateValues[1]-1, dateValues[2]);
+            calendar.add(Calendar.DAY_OF_MONTH, offset);
+            res.value = sdf.format(calendar.getTime());
+
+        }
+        return res;
+    }
+
+    /**
+    * Get the difference between two dates in days
+    * <p>
+    *   Get the result in days of date1-date2
+    *
+    * @param date1  ResultValue holding first date
+    * @param date2  ResultValue holding second date
+    *
+    * @return       res ResulveValue holding Integer to represent of days between date2 and date1 or returns null if invalid date
+    */
+    public static ResultValue dateDiff(ResultValue date1, ResultValue date2)
+    {
+        ResultValue res = new ResultValue(null, null, null, null);
+        if(validateDate(date1) && validateDate(date2))
+        {
+            res.dataType = SubClassif.INTEGER;
+            res.value = toJulianConversion(date1.value.toString()) - toJulianConversion(date2.value.toString());
+        }
+        return res;
+    }
+    /**
+    * Calculate the age in years between two dates
+    * <p>
+    *   Get the difference in years, truncating depending on the month and day difference
+    *
+    * @param date1  ResultValue holding first date
+    * @param date2  ResultValue holding second date
+    *
+    * @return      res ResultValue holding a int to represent the age between the two dates in years or returns null if invalid date
+    */
+    public static ResultValue dateAge(ResultValue date1, ResultValue date2)
+    {
+        ResultValue res = new ResultValue(null, null, null, null);
+        if(validateDate(date1) && validateDate(date2))
+        {
+            int difference = (int)dateDiff(date1, date2).value;
+            res.dataType = SubClassif.INTEGER;
+            if(Math.abs(difference) == 365) //Solve for exact division
+            {
+                res.value = Integer.signum(difference);
+            }
+            else
+            {
+                res.value = (int)(difference/365.2425);
+            }
+        }
+        return res;
+    }
+
+    /**
+    * Parse the year, month, and day into integer values and return array of them
+    * <p>
+    *   Return a valid date's year, month, and day within an array of integers
+    *
+    * @param date  String value holding date to be parsed
+    *
+    * @return      returns either null if unable to parse or returns an array of integers representing year[0], month[1], and day[2]
+    */
+    public static int[] parseDate(String date)
+    {
+        int[] dateArr;
+        try {
+            dateArr = new int[]{Integer.parseInt(date.substring(0, 4)), Integer.parseInt(date.substring(5,7)), Integer.parseInt(date.substring(8, 10))};
+        }
+        catch(Exception e)
+        {
+            return null;
+        }
+        return dateArr;
+    }
+    /**
+    * Converts a date into it's julian value
+    * <p>
+    *   Returns int value of the date converted to julian
+    *
+    * @param date  String value holding date to be converted
+    *
+    * @return      returns the conversion of date to julian
+    */
+    public static int toJulianConversion(String date)
+    {
+        int[] dateArr = parseDate(date); //[0]Year [1]Month [2]Day
+        int iCountDays;
+        if(dateArr[1] > 2)
+        {
+            dateArr[1] -= 3;
+        }
+        else
+        {
+            dateArr[1] += 9;
+            dateArr[0]--;
+        }
+        iCountDays = 365 * dateArr[0]
+            + dateArr[0]/4 - dateArr[0] / 100 + dateArr[0] / 400
+            + (dateArr[1] * 306 + 5) / 10
+            + (dateArr[2]);
+        return iCountDays;
     }
 }
 
