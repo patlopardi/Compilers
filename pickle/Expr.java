@@ -3,7 +3,7 @@ package pickle;
 import javax.lang.model.util.ElementScanner6;
 
 import org.graalvm.compiler.lir.StandardOp.NullCheck;
-
+import pickle.Exceptions.ExprException;
 /**
   * Constructor for the Expr class which set variables
   * <p>
@@ -65,6 +65,15 @@ public class Expr {
 
       System.out.println("..." + resClone + " " + opString + " " + res02 + " is " + res.value.toString() );
     }
+    //if next is not a separator its error
+    if(scan.currentToken.primClassif == Classif.OPERAND)
+    {
+      throw new ExprException(scan.iSourceLineNr , "operand was not expected, found " + scan.currentToken.tokenStr);
+    }
+    if(scan.currentToken.tokenStr.equals("("))
+    {
+      throw new ExprException(scan.iSourceLineNr , "expected operator, instead found " + scan.currentToken.tokenStr);
+    }
     return res;
   }
   /**
@@ -85,9 +94,9 @@ public class Expr {
     while (scan.currentToken.tokenStr.equals("and") || scan.currentToken.tokenStr.equals("or") && scan.currentToken.subClassif != SubClassif.STRING){
       operator = scan.currentToken;
       scan.getNext();
-      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")) 
+      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") || !scan.currentToken.tokenStr.equals("-")) 
       && scan.currentToken.primClassif != Classif.FUNCTION)
-        System.out.printf("Within expression, expected operand.  Found %s", scan.currentToken.tokenStr);
+        throw new ExprException(scan.iSourceLineNr , "expected operand, instead found " + scan.currentToken.tokenStr);
 
       temp = notBoolean(); 
       if(operator.tokenStr.equals("and"))   
@@ -142,7 +151,7 @@ public class Expr {
   */
   private ResultValue comparison() throws Exception {
     Token operator;
-    ResultValue res = summation();
+    ResultValue res = concatenation();
     ResultValue temp;
     boolean result;
       //Loop for the actual check of the comparison
@@ -150,11 +159,11 @@ public class Expr {
       scan.currentToken.tokenStr.equals("==") || scan.currentToken.tokenStr.equals("!=")){
         operator = scan.currentToken;
         scan.getNext();
-        if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")) 
-      && scan.currentToken.primClassif != Classif.FUNCTION)
-          System.out.printf("Within expression, expected operand.  Found %s", scan.currentToken.tokenStr);
+        if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-")) 
+        && scan.currentToken.primClassif != Classif.FUNCTION)
+          throw new ExprException(scan.iSourceLineNr , "expected operand, instead found " + scan.currentToken.tokenStr);
 
-        temp = summation();
+        temp = concatenation();
         if(operator.tokenStr.equals("<"))   
         {
           result = PickleUtil.LessThan(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
@@ -189,8 +198,37 @@ public class Expr {
     return res;
   }
 
+  /**
+   * Concatenation
+   * <p>
+   * @return
+   * @throws Exception
+   */
+  private ResultValue concatenation() throws Exception {
+    
+    Token operator;
+    //System.out.printf("This is the current token %s \n", scan.currentToken.tokenStr);
+    ResultValue res = summation();                    
+    ResultValue temp;
+    
+    //Loop for the actual check of the summation
+    while (scan.currentToken.tokenStr.equals("#")){
+      operator = scan.currentToken;
+      scan.getNext();
+      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-")) 
+      && scan.currentToken.primClassif != Classif.FUNCTION)
+        throw new ExprException(scan.iSourceLineNr , "expected operand, instead found " + scan.currentToken.tokenStr);
 
-    /**
+      temp = summation(); 
+      if(operator.tokenStr.equals("#"))
+      {
+        res = PickleUtil.Concatenation(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
+      }
+    }
+    return res;
+}
+
+  /**
   * Summation function which is the 2nd down from the branching top level. It handles addition
   *    as well as subtraction expressions
   * <p>
@@ -208,12 +246,12 @@ public class Expr {
     ResultValue temp;
     
     //Loop for the actual check of the summation
-    while (scan.currentToken.tokenStr.equals("+") || scan.currentToken.tokenStr.equals("-") || scan.currentToken.tokenStr.equals("#")){
+    while (scan.currentToken.tokenStr.equals("+") || scan.currentToken.tokenStr.equals("-")){
       operator = scan.currentToken;
       scan.getNext();
-      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")) 
+      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-")) 
       && scan.currentToken.primClassif != Classif.FUNCTION)
-        System.out.printf("Within expression, expected operand.  Found %s", scan.currentToken.tokenStr);
+        throw new ExprException(scan.iSourceLineNr , "expected operand, instead found " + scan.currentToken.tokenStr);
 
       temp = products(); 
       if(operator.tokenStr.equals("+"))   
@@ -223,10 +261,6 @@ public class Expr {
       else if(operator.tokenStr.equals("-"))
       {
         res = PickleUtil.Subtract(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
-      }
-      else if(operator.tokenStr.equals("#"))
-      {
-        res = PickleUtil.Concatenation(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
       }
     }
     return res;
@@ -249,10 +283,9 @@ public class Expr {
     while (scan.currentToken.tokenStr.equals("*") || scan.currentToken.tokenStr.equals("/")) {
       operator = scan.currentToken;
       scan.getNext();
-      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")) 
+      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-")) 
       && scan.currentToken.primClassif != Classif.FUNCTION)
-        System.out.printf("Within expression, expected operand.  Found: '%s'"
-                      , scan.currentToken.tokenStr);
+        throw new ExprException(scan.iSourceLineNr , "expected operand, instead found " + scan.currentToken.tokenStr);
 
       temp = expon(null);
       if(operator.tokenStr.equals("*"))
@@ -296,10 +329,9 @@ public class Expr {
     while (scan.currentToken.tokenStr.equals("^")) {
       operator = scan.currentToken;
       scan.getNext();
-      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")")) 
+      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-")) 
       && scan.currentToken.primClassif != Classif.FUNCTION)
-        System.out.printf("Within expression, expected operand.  Found: '%s'"
-                      , scan.currentToken.tokenStr);
+        throw new ExprException(scan.iSourceLineNr , "expected operand, instead found " + scan.currentToken.tokenStr);
 
       temp = function(); 
       if(scan.currentToken.tokenStr.equals("^"))
@@ -451,7 +483,7 @@ public class Expr {
             //Ensure there is a right parentheses
             if(!scan.currentToken.tokenStr.equals("]"))
             {
-              System.out.printf("Expected right bracket, found: '%s'\n", scan.currentToken.tokenStr);
+              throw new ExprException(scan.iSourceLineNr , "expected right bracket, instead found " + scan.currentToken.tokenStr);
             }
             //Skip ]
             scan.getNext();
@@ -521,13 +553,13 @@ public class Expr {
       //Ensure there is a right parentheses
       if(!scan.currentToken.tokenStr.equals(")"))
       {
-        System.out.printf("Expected right parentheses, found: '%s'\n", scan.currentToken.tokenStr);
+        throw new ExprException(scan.iSourceLineNr , "expected right parentheses, instead found " + scan.currentToken.tokenStr);
       }
       scan.getNext();  
       return res;
     }
     
-    System.out.printf("Within operand, found: '%s'\n", scan.currentToken.tokenStr);
-    return null; 
+    throw new ExprException(scan.iSourceLineNr , "expected operand, instead found " + scan.currentToken.tokenStr);
+    //return null; 
   }
 }
