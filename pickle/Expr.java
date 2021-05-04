@@ -2,6 +2,8 @@ package pickle;
 
 //import org.graalvm.compiler.lir.StandardOp.NullCheck;
 import pickle.Exceptions.ExprException;
+import pickle.Exceptions.InvalidINNOTINStatement;
+
 /**
   * Constructor for the Expr class which set variables
   * <p>
@@ -211,7 +213,7 @@ public class Expr {
         inFlag = storage.ArrContains(res, scan.currentToken.tokenStr);
       }
       else{
-
+        throw new InvalidINNOTINStatement("", null, scan.iColPos, scan.iSourceLineNr );
       }
 
       temp.dataType = SubClassif.BOOLEAN;

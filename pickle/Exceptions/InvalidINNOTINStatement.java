@@ -32,7 +32,7 @@ public class InvalidINNOTINStatement extends Exception{
             }
             invalidLiteral += textArr[i];
         }
-        out = "Invalid Literal \'" + invalidLiteral + "\' on line " + lineNumber;
+        out = "Invalid IN/NOTIN \'" + invalidLiteral + "\' on line " + lineNumber;
         return out;
     }
 

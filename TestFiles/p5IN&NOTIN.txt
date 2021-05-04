@@ -9,6 +9,15 @@ if checkInts IN checkIntArr:
     print("3 is in 1,2,3,4");
 endif;
 
+if checkString IN checkPlainString:
+    print("hi is in hi there");
+endif;
+
+if checkString IN checkStringArr:
+    print("hi is in hi, there");
+endif;
+
+
 if checkInts NOTIN checkPlainString:
     print("3 not in 'hi there'");
 endif;
@@ -17,6 +26,15 @@ if checkInts IN checkIntsToString:
     print("3 is in string arr 1,2,3");
 endif;
 
+if checkInts NOTIN checkIntsToString:
+    print("3 is in string arr 1,2,3");
+endif;
+
+
 if 3 IN {"1","2","3"}:
     print("3 is in string arr 1,2,3");
+endif;
+
+if 3 NOTIN {"1","2","4"}:
+    print("3 is not in string arr 1,2,4");
 endif;
