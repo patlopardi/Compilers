@@ -40,9 +40,7 @@ public class Parser {
 
         try{
             while(! scan.getNext().isEmpty() ){
-                //scan.currentToken.printToken();
 
-                //scan.currentToken.printToken();
                 if(scan.currentToken.tokenStr.equals("print")){
                     print();
                     continue;
@@ -73,7 +71,6 @@ public class Parser {
                     scan.iSourceLineNr -= 1;
                     scan.iColPos = 10000;
                     scan.getNext();
-                    //System.out.println(scan.currentToken.tokenStr);
                     scan.getNext();
                     if(check){
                         res = assignment();
@@ -154,7 +151,6 @@ public class Parser {
      * @return      N/A
      */
     private void print() {
-        //TODO: work on print
         Expr exp = new Expr(scan, storage);
         try{
             ResultValue res;
@@ -165,15 +161,12 @@ public class Parser {
                     int i;
                     for(i=0;i<PickleUtil.MAXELEM(res.value.toString(), storage);i++){
                         if(storage.getArrayValue(res.value.toString()).get(i) != null){
-                            //System.out.println("in here");
-//                            System.out.println(i);
                             System.out.printf("%s ", storage.getArrayValue(res.value.toString()).get(i).value);
                         }
                     }
 
                 }
                 else{
-//                    System.out.println("in here");
                     System.out.printf("%s ", res.value);
                 }
 
@@ -267,7 +260,6 @@ public class Parser {
                     // subtract 2nd operand from first and assign it
                     //ResultValue temp = PickleUtil.Subtract(n0p1, n0p2);
                     res = storage.Assign(variableStr, PickleUtil.Subtract(n0p1, n0p2));
-//                        System.out.println(res.value);
                     break;
                 case "+=":
                     res02 = exp.expr(operatorStr, debugExpr);
@@ -311,9 +303,7 @@ public class Parser {
                         storage.Assign(saveToken.tokenStr, temp3);
                         break;
                     }
-//                    System.out.println("in here");
                     if(storage.getArrayValue(variableStr) == null){
-//                        System.out.println("this is not declared");
                         scan.getNext();
                         if(!scan.currentToken.tokenStr.equals("]")){
 
@@ -397,18 +387,16 @@ public class Parser {
      *
      * @return      N/A
      */
-    private void ifStmt(boolean bExec) {
+    public void ifStmt(boolean bExec) {
         try {
             int saveLineNr = scan.currentToken.iSourceLineNr;
             if (bExec) {
                 boolean resCond = evalCond();
                 if (resCond) {
-//                    System.out.println(scan.currentToken.tokenStr);
                     if (!scan.currentToken.tokenStr.equals(":"))
                         error("expected colon after if statement but received: ", scan.currentToken.tokenStr);
                     executeStatements(true);
                     if(checkForContinue){
-//                        System.out.println("found a continue");
                         skipTo("endif");
                     }
                     else if(checkForBreak){
@@ -423,7 +411,6 @@ public class Parser {
                         executeStatements(false);
                     }
                     else if(!scan.currentToken.tokenStr.equals("endif")){
-//                        System.out.println("scan: " + scan.currentToken.tokenStr);
                         error("expected an endif for if found: ", scan.currentToken.tokenStr);
                     }
                     if(!scan.getNext().equals(";"))
@@ -566,19 +553,10 @@ public class Parser {
                 }
                 scan.getNext();
                 ResultValue saveThis = exp.expr(scan.currentToken.tokenStr, debugExpr);
-//                System.out.println(scan.currentToken.tokenStr);
-//                if(scan.currentToken.tokenStr.equals("ELEM")){
-////                    System.out.println("in here");
-//                    skipTo(")");
-//                }
-//                System.out.println(scan.currentToken.tokenStr);
                 if(scan.currentToken.tokenStr.equals("by")){
                     scan.getNext();
                     scan.getNext();
-//                    scan.getNext();
-//                    System.out.println(scan.currentToken.tokenStr);
                     if(scan.currentToken.tokenStr.equals(":")){
-//                        System.out.println("in here1");
                         forType1=true;
                     }
                     else {
@@ -586,7 +564,6 @@ public class Parser {
                     }
                 }
                 else if(scan.currentToken.tokenStr.equals(":")){
-//                    System.out.println("in here2");
                     forType2=true;
                 }
                 else{
@@ -594,7 +571,6 @@ public class Parser {
                 }
             }
             else if(scan.currentToken.tokenStr.equals("in")){
-//                System.out.println("in here3");
                 forType3=true;
             }
             else{
@@ -630,13 +606,11 @@ public class Parser {
                     scan.getNext();
                     executeForStmt();
                     if(checkForBreak){
-                        //System.out.println("im back here and im breaking out");
                         skipTo("endfor");
                         checkForBreak=false;
                         break;
                     }
                     if(checkForContinue){
-//                        System.out.println("in continue");
                         //increment
                         res01 = storage.getVariableValue(saveToken);
                         n0p1 = new Numeric(scan, res01, " +=", " st operand");
@@ -686,13 +660,11 @@ public class Parser {
                     scan.getNext();
                     executeForStmt();
                     if(checkForBreak){
-                        //System.out.println("im back here and im breaking out");
                         skipTo("endfor");
                         checkForBreak=false;
                         break;
                     }
                     if(checkForContinue){
-//                        System.out.println("in continue");
                         //increment
                         res01 = storage.getVariableValue(saveToken);
                         n0p1 = new Numeric(scan, res01, " +=", " st operand");
@@ -705,7 +677,6 @@ public class Parser {
                         continue;
                     }
                     else if(!scan.currentToken.tokenStr.equals("endfor")){
-//                        System.out.println("in here");
                         error("expected endfor for 'for' received: ", scan.currentToken.tokenStr);
                     }
                     //increment
@@ -718,7 +689,6 @@ public class Parser {
                     checkCond = PickleUtil.LessThan(n0p3, n0p4);
                 }
                 if(!scan.currentToken.tokenStr.equals("endfor")) {
-//                    System.out.println("scan: " + scan.currentToken.tokenStr);
                     error("expected endfor for 'for' received: ", scan.currentToken.tokenStr);
                 }
                 if(!scan.getNext().equals(";"))
@@ -753,7 +723,6 @@ public class Parser {
                         res = storage.Assign(saveToken, rv);
                         executeForStmt();
                         if(checkForBreak){
-                            //System.out.println("im back here and im breaking out");
                             skipTo("endfor");
                             checkForBreak=false;
                             break;
@@ -789,9 +758,7 @@ public class Parser {
                         rv.value = storage.getArrayValue(saveToken2).get(i).value;
                         res = storage.Assign(saveToken, rv);
                         executeForStmt();
-//                        System.out.println("back here");
                         if(checkForBreak){
-                            //System.out.println("im back here and im breaking out");
                             skipTo("endfor");
                             checkForBreak=false;
                             break;
@@ -807,7 +774,6 @@ public class Parser {
                 }
 
                 if(!scan.currentToken.tokenStr.equals("endfor")) {
-//                    System.out.println("scan: " + scan.currentToken.tokenStr);
                     error("expected endfor for 'for' received: ", scan.currentToken.tokenStr);
                 }
                 if(!scan.getNext().equals(";"))
@@ -921,7 +887,6 @@ public class Parser {
             int saveLnNr = scan.iSourceLineNr;
             int i=0;
             scan.getNext();
-//            System.out.println(scan.currentToken.tokenStr);
             while(true){
                 if(scan.currentToken.tokenStr.equals("if"))
                     checkForIf = true;
@@ -958,14 +923,11 @@ public class Parser {
                     continue;
                 }
                 if(scan.currentToken.tokenStr.equals("if")){
-//                    System.out.println("in if ");
                     ifStmt(bExec);
-//                    System.out.println(scan.currentToken.tokenStr);
                     if(checkForBreak){
                         return;
                     }
                     if (checkForContinue) {
-//                        System.out.println(scan.currentToken.tokenStr);
                         return;
                     }
                 }
@@ -973,7 +935,6 @@ public class Parser {
                     forStmt();
                 }
                 else if(scan.currentToken.tokenStr.equals("break")){
-                    //System.out.println("in break case");
                     checkForBreak=true;
                     scan.getNext();
                     if(!scan.currentToken.tokenStr.equals(";")){
@@ -981,7 +942,6 @@ public class Parser {
                     }
                 }
                 else if(scan.currentToken.tokenStr.equals("continue")){
-//                    System.out.println("in continue case");
                     checkForContinue=true;
                     scan.getNext();
                     if(!scan.currentToken.tokenStr.equals(";")){
@@ -999,7 +959,6 @@ public class Parser {
                     scan.iSourceLineNr -= 1;
                     scan.iColPos = 10000;
                     scan.getNext();
-                    //System.out.println(scan.currentToken.tokenStr);
                     scan.getNext();
                     if(check2){
                         res = assignment();
@@ -1016,7 +975,6 @@ public class Parser {
                 }
                 else{
                     res = assignment();
-                    //System.out.println(scan.currentToken.tokenStr);
                 }
                 scan.getNext();
             }
@@ -1041,7 +999,6 @@ public class Parser {
         }
     }
     public boolean evalCond(){
-//      System.out.println("in eval");
         boolean check = false;
         Expr exp = new Expr(scan, storage);
         ResultValue res01;
