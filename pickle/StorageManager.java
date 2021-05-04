@@ -177,5 +177,29 @@ public class StorageManager {
         return (ArrayList<ResultValue>) VariableTableArr.get(varName);
     }
 
+    public boolean ArrContains(ResultValue res, String arrName){
+        ArrayList<ResultValue> temp = VariableTableArr.get(arrName);
+
+
+        if(temp != null){
+            for(ResultValue x : temp) {
+                if (x.value.equals(res.value)) {
+                    return true;
+                }
+            }
+        }
+        else{
+            ResultValue tempRes = getVariableValue(arrName);
+            if (tempRes != null) {
+                String tempString = (String) tempRes.value;
+                if (tempString.contains((String) res.value)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 
 }
