@@ -192,6 +192,7 @@ public class Expr {
           result = PickleUtil.NotEquivalent(new Numeric(this.scan, res, null, null), new Numeric(this.scan, temp, null, null));
           res = new ResultValue(SubClassif.BOOLEAN, result, null, endSeparator);
         }
+
       }
       if(scan.currentToken.tokenStr.equals("IN") || scan.currentToken.tokenStr.equals("NOTIN")){
       boolean inFlag = false;
@@ -548,40 +549,6 @@ public class Expr {
             res = new ResultValue(SubClassif.ARRAY, arrNameHold, null, null);
             return res;
           }
-//          else if(scan.currentToken.tokenStr.equals("IN") || scan.currentToken.tokenStr.equals("NOTIN")){
-//            boolean inFlag = false;
-//            String INorNOTIN = scan.currentToken.tokenStr;
-//            scan.getNext();
-//            if(scan.currentToken.tokenStr.equals("{")){
-//              while(!scan.currentToken.tokenStr.equals("}")){
-//                scan.getNext();
-//                if (scan.currentToken.tokenStr.equals(res.value)){
-//                  inFlag = true;
-//                  break;
-//                }
-//              }
-//            }
-//            else if (scan.currentToken.primClassif == Classif.OPERAND){
-//               inFlag = storage.ArrContains(res, scan.currentToken.tokenStr);
-//            }
-//            else{
-//
-//            }
-//
-//            temp.dataType = SubClassif.BOOLEAN;
-//
-//            if(INorNOTIN.equals("IN")){
-//              temp.value = inFlag;
-//            }
-//            else{
-//              temp.value = !inFlag;
-//            }
-//            while(!scan.currentToken.tokenStr.equals(";") && !scan.currentToken.tokenStr.equals(":")){
-//              scan.getNext();
-//            }
-//
-//            return temp;
-//          }
           // nextToken is operator or sep                     
           if(negative)
           {
