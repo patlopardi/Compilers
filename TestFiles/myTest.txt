@@ -1,2 +1,22 @@
-Int i = 10;
-Int i = 10;
+Int checkInts = 3;
+Int checkIntArr[] = 1,2,3,4;
+String checkString = "hi";
+String checkPlainString = "hi there";
+String checkStringArr[] = "hi", "there";
+String checkIntsToString[] = "1","2","3";
+
+if checkInts IN checkIntArr:
+    print("3 is in 1,2,3,4");
+endif;
+
+if checkInts NOTIN checkPlainString:
+    print("3 not in 'hi there'");
+endif;
+
+if checkInts IN checkIntsToString:
+    print("3 is in string arr 1,2,3");
+endif;
+
+if 3 IN {"1","2","3"}:
+    print("3 is in string arr 1,2,3");
+endif;
