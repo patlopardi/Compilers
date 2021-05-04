@@ -1,0 +1,34 @@
+//Title
+print("p5FuncTest.txt");
+
+String word = "Hello World";
+Int iArr[100] = 1, 2, 3, 4, 5;
+Date aprilFools = "2014-04-01";
+Date current = "2015-04-01";
+
+//***************Test assignments to variables****************
+//True means expected result
+print("\nTesting function results:");
+print("\tLENGTH:", LENGTH("Hello World") == 11);
+print("\tSPACE:", SPACES("Space ") and not SPACES("NoSpace"));
+print("\tMAXELEM:", MAXELEM(iArr) == 100);
+print("\tELEM:", ELEM(iArr) == 5);
+print("\tdateDiff:", dateDiff(current, aprilFools) == 365);
+print("\tdateAge:", dateAge(current, aprilFools) == 1);
+print("\tdateAdj:", dateAdj(current, 5) == "2015-04-06");
+
+//Complex parameters
+print("\nTesting complex parameters:");
+print("\tLENGTH:", LENGTH("Hello"#" World") == 11);
+print("\tSPACES:", SPACES("Space"#""#" ") and not SPACES("NoSpace"));
+print("\tdateDiff:", dateDiff("2015"#"-04"#"-01", aprilFools) == 365);
+print("\tdateAge:", dateAge("2015"#"-04"#"-01", aprilFools) == 1);
+print("\tdateAdj:", dateAdj("2015"#"-04"#"-01", 4^2-10-1) == "2015-04-06");
+
+//Nested functions
+print("\nTesting nested paramters:");
+print("\t1:", dateAdj("2015-04-01",(LENGTH("Hello"#" World"))) == "2015-04-12");
+print("\t2:", dateDiff("2015-04-0"#ELEM(iArr), "2014-04-01") == 369);
+print("\t3:", dateAge("2015-04-"#MAXELEM(iArr)-80, aprilFools) == 1);
+
+

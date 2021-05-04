@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+
 import pickle.Exceptions.InvalidDateException;
+import pickle.Exceptions.ExprException;
 
 public final class PickleUtil {
 
@@ -61,23 +63,25 @@ public final class PickleUtil {
      * @param nOp1  Left hand operand, the result type will match this
      * @param nOp2  Right hand operand
      *
+     * @throws      ExpreException when numeric format conversion is incorrect
      * @return      ResultValue
      */
-    public static ResultValue Subtract(Numeric nOp1, Numeric nOp2){
+    public static ResultValue Subtract(Numeric nOp1, Numeric nOp2) throws ExprException{
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
-        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
-           // Throw error
+        try{
+            if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+                int value = nOp1.valueToInt() - nOp2.valueToInt();
+                result = new ResultValue(SubClassif.INTEGER, value, "","");
+            }
+            else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+                double value = nOp1.valueToDouble() - nOp2.valueToDouble();
+                result = new ResultValue(SubClassif.FLOAT, value, "","");
+            }
+        } catch(NumberFormatException e)
+        {   
+            throw new ExprException(nOp1.scan.iSourceLineNr, " invalid non-numeric data in '-' operation, regarding values "
+                + nOp1.resultValue.value.toString() + " with " + nOp2.resultValue.value.toString());
         }
-
-        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            int value = nOp1.valueToInt() - nOp2.valueToInt();
-            result = new ResultValue(SubClassif.INTEGER, value, "","");
-        }
-        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            double value = nOp1.valueToDouble() - nOp2.valueToDouble();
-            result = new ResultValue(SubClassif.FLOAT, value, "","");
-        }
-
         return result;
 
     }
@@ -90,20 +94,28 @@ public final class PickleUtil {
      * @param nOp1  Left hand operand, the result type will match this
      * @param nOp2  Right hand operand
      *
+     * @throws      ExprException when numeric format conversion is incorrect
      * @return      ResultValue
      */
-    public static ResultValue Addition(Numeric nOp1, Numeric nOp2){
+    public static ResultValue Addition(Numeric nOp1, Numeric nOp2) throws ExprException{
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
-        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
-            // Throw error
-        }
-        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            int value = nOp1.valueToInt() + nOp2.valueToInt();
-            result = new ResultValue(SubClassif.INTEGER, value, "","");
-        }
-        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            double value =  nOp1.valueToDouble() + nOp2.valueToDouble();
-            result = new ResultValue(SubClassif.FLOAT, value, "","");
+        try
+        {
+            if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
+                // Throw error
+            }
+            if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+                int value = nOp1.valueToInt() + nOp2.valueToInt();
+                result = new ResultValue(SubClassif.INTEGER, value, "","");
+            }
+            else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+                double value =  nOp1.valueToDouble() + nOp2.valueToDouble();
+                result = new ResultValue(SubClassif.FLOAT, value, "","");
+            }
+        } catch(NumberFormatException e)
+        {   
+            throw new ExprException(nOp1.scan.iSourceLineNr, " invalid non-numeric data in '+' operation, regarding values "
+                + nOp1.resultValue.value.toString() + " with " + nOp2.resultValue.value.toString());
         }
 
         return result;
@@ -118,28 +130,43 @@ public final class PickleUtil {
      * @param nOp1  Left hand operand, the result type will match this
      * @param nOp2  Right hand operand
      *
+     * @throws      ExprException when numeric format conversion is incorrect
      * @return      ResultValue
      */
-    public static ResultValue Multiply(Numeric nOp1, Numeric nOp2){
+    public static ResultValue Multiply(Numeric nOp1, Numeric nOp2) throws ExprException{
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
-        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
-            // Throw error
-        }
-
-        // check left hand operand type
-        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            int value = nOp1.valueToInt() * nOp2.valueToInt();
-            result = new ResultValue(SubClassif.INTEGER, value, "","");
-        }
-        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            double value = nOp1.valueToDouble() * nOp2.valueToDouble();
-            result = new ResultValue(SubClassif.FLOAT, value, "","");
+        try
+        {
+            // check left hand operand type
+            if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+                int value = nOp1.valueToInt() * nOp2.valueToInt();
+                result = new ResultValue(SubClassif.INTEGER, value, "","");
+            }
+            else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+                double value = nOp1.valueToDouble() * nOp2.valueToDouble();
+                result = new ResultValue(SubClassif.FLOAT, value, "","");
+            }
+        } catch(NumberFormatException e)
+        {   
+            throw new ExprException(nOp1.scan.iSourceLineNr, " invalid non-numeric data in '*' operation, regarding values "
+                + nOp1.resultValue.value.toString() + " with " + nOp2.resultValue.value.toString());
         }
 
         return result;
 
     }
-    public static ResultValue UnitaryMinus(Numeric nOp1){
+
+    /**
+     * <p>
+     * This function will return a result value of an input value's unary minus
+     *
+     * @param nOp1  Left hand operand, the result type will match this
+     * @param nOp2  Right hand operand
+     *
+     * @throws      ExprException when numeric format conversion is incorrect
+     * @return      ResultValue
+     */
+    public static ResultValue UnitaryMinus(Numeric nOp1) throws ExprException{
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
 
         // check left hand operand type
@@ -151,7 +178,10 @@ public final class PickleUtil {
             double value = nOp1.valueToDouble() * -1;
             result = new ResultValue(SubClassif.FLOAT, value, "","");
         }
-
+        else{
+            throw new ExprException(nOp1.scan.iSourceLineNr, " invalid attachment of unitary minus to non-numeric data, value is "
+                    + nOp1.resultValue.value.toString());
+        }
         return result;
 
     }
@@ -164,21 +194,24 @@ public final class PickleUtil {
      * @param nOp1  Left hand operand, the result type will match this
      * @param nOp2  Right hand operand
      *
+     * @throws      ExprException when numeric format conversion is incorrect
      * @return      ResultValue
      */
-    public static ResultValue Divide(Numeric nOp1, Numeric nOp2){
+    public static ResultValue Divide(Numeric nOp1, Numeric nOp2) throws ExprException{
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
-        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
-            // Throw error
-        }
-
-        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            int value = nOp1.valueToInt() / nOp2.valueToInt();
-            result = new ResultValue(SubClassif.INTEGER, value, "","");
-        }
-        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            double value = nOp1.valueToDouble() / nOp2.valueToDouble();
-            result = new ResultValue(SubClassif.FLOAT, value, "","");
+        try{
+            if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+                int value = nOp1.valueToInt() / nOp2.valueToInt();
+                result = new ResultValue(SubClassif.INTEGER, value, "","");
+            }
+            else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+                double value = nOp1.valueToDouble() / nOp2.valueToDouble();
+                result = new ResultValue(SubClassif.FLOAT, value, "","");
+            }
+        } catch(NumberFormatException e)
+        {   
+            throw new ExprException(nOp1.scan.iSourceLineNr, " invalid non-numeric data in '/' operation, regarding values "
+                + nOp1.resultValue.value.toString() + " with " + nOp2.resultValue.value.toString());
         }
 
         return result;
@@ -193,23 +226,26 @@ public final class PickleUtil {
      * @param nOp1  Left hand operand, the result type will match this
      * @param nOp2  Right hand operand
      *
+     * @throws      ExprException when numeric format conversion is incorrect
      * @return      ResultValue
      */
-    public static ResultValue Square(Numeric nOp1, Numeric nOp2){
+    public static ResultValue Square(Numeric nOp1, Numeric nOp2) throws ExprException{
         ResultValue result = new ResultValue(SubClassif.INTEGER, 1, "", "");
-        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
-            // Throw error
-        }
-
-        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            int op1 = nOp1.valueToInt();
-            int op2 = nOp2.valueToInt();
-            int value = (int) Math.pow(op1, op2);
-            result = new ResultValue(SubClassif.INTEGER, value, "","");
-        }
-        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            double value = Math.pow((nOp1.valueToDouble()), nOp2.valueToDouble());
-            result = new ResultValue(SubClassif.FLOAT, value, "","");
+        try{
+            if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+                int op1 = nOp1.valueToInt();
+                int op2 = nOp2.valueToInt();
+                int value = (int) Math.pow(op1, op2);
+                result = new ResultValue(SubClassif.INTEGER, value, "","");
+            }
+            else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+                double value = Math.pow((nOp1.valueToDouble()), nOp2.valueToDouble());
+                result = new ResultValue(SubClassif.FLOAT, value, "","");
+            }
+        } catch(NumberFormatException e)
+        {   
+            throw new ExprException(nOp1.scan.iSourceLineNr, " invalid non-numeric data in '^' operation, regarding values "
+                + nOp1.resultValue.value.toString() + " with " + nOp2.resultValue.value.toString());
         }
 
         return result;
@@ -226,19 +262,7 @@ public final class PickleUtil {
      */
     public static ResultValue Concatenation(Numeric nOp1, Numeric nOp2){
         ResultValue result = new ResultValue(SubClassif.STRING, 1, "", "");
-        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
-            // Throw error
-        }
-        if(nOp1.resultValue.dataType != SubClassif.STRING && nOp2.resultValue.dataType != SubClassif.STRING)
-        {
-            //Error invalid input
-            System.out.printf("Invalid Input, expected variables of type string instead recieved %s and %s\n", nOp1.resultValue.dataType, nOp1.resultValue.dataType);
-            return null;
-        }
-        else
-        {
-            result.value = nOp1.resultValue.value.toString() + nOp2.resultValue.value.toString();
-        }
+        result.value = nOp1.resultValue.value.toString() + nOp2.resultValue.value.toString();
         return result;
     }
 
@@ -250,36 +274,39 @@ public final class PickleUtil {
      * @param nOp1  Left hand operand
      * @param nOp2  Right hand operand
      *
+     * @throws      ExprException when numeric format conversion is incorrect     
      * @return      Boolean
      */
-    public static Boolean Equivalent(Numeric nOp1, Numeric nOp2){
-        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
-            // Throw error
-        }
-
-        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            if (nOp1.valueToInt() == nOp2.valueToInt()){
-                return true;
+    public static Boolean Equivalent(Numeric nOp1, Numeric nOp2) throws ExprException{
+        try{
+            if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+                if (nOp1.valueToInt() == nOp2.valueToInt()){
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
-            else {
-                return false;
+            else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+                if((nOp1.valueToDouble() == Double.valueOf(nOp2.resultValue.value.toString()))){
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
-        }
-        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            if((nOp1.valueToDouble() == Double.valueOf(nOp2.resultValue.value.toString()))){
-                return true;
+            else if(nOp1.resultValue.dataType == SubClassif.STRING){
+                if(nOp1.valueToString().equals(nOp2.valueToString())){
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
-            else{
-                return false;
-            }
-        }
-        else if(nOp1.resultValue.dataType == SubClassif.STRING){
-            if(nOp1.valueToString().equals(nOp2.valueToString())){
-                return true;
-            }
-            else{
-                return false;
-            }
+        } catch(NumberFormatException e)
+        {   
+            throw new ExprException(nOp1.scan.iSourceLineNr, " invalid non-numeric data in '==' operation, regarding values "
+                + nOp1.resultValue.value.toString() + " with " + nOp2.resultValue.value.toString());
         }
         return false;
     }
@@ -292,36 +319,40 @@ public final class PickleUtil {
      * @param nOp1  Left hand operand
      * @param nOp2  Right hand operand
      *
+     * @throws      ExprException when numeric format conversion is incorrect
      * @return      Boolean
      */
-    public static Boolean NotEquivalent(Numeric nOp1, Numeric nOp2){
-        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
-            // Throw error
-        }
-
-        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            if (nOp1.valueToInt() != nOp2.valueToInt()){
-                return true;
+    public static Boolean NotEquivalent(Numeric nOp1, Numeric nOp2) throws ExprException
+    {
+        try{
+            if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+                if (nOp1.valueToInt() != nOp2.valueToInt()){
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
-            else {
-                return false;
+            else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+                if((nOp1.valueToDouble() != Double.valueOf(nOp2.resultValue.value.toString()))){
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
-        }
-        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            if((nOp1.valueToDouble() != Double.valueOf(nOp2.resultValue.value.toString()))){
-                return true;
+            else if(nOp1.resultValue.dataType == SubClassif.STRING){
+                if(nOp1.valueToString().compareTo(nOp2.valueToString()) == 0){
+                    return false;
+                }
+                else{
+                    return true;
+                }
             }
-            else{
-                return false;
-            }
-        }
-        else if(nOp1.resultValue.dataType == SubClassif.STRING){
-            if(nOp1.valueToString().compareTo(nOp2.valueToString()) == 0){
-                return false;
-            }
-            else{
-                return true;
-            }
+        } catch(NumberFormatException e)
+        {   
+            throw new ExprException(nOp1.scan.iSourceLineNr, " invalid non-numeric data in '!=' operation, regarding values "
+                + nOp1.resultValue.value.toString() + " with " + nOp2.resultValue.value.toString());
         }
 
         return false;
@@ -336,36 +367,43 @@ public final class PickleUtil {
      * @param nOp1  Left hand operand
      * @param nOp2  Right hand operand
      *
+     * @throws      ExprException when numeric format conversion is incorrect
      * @return      Boolean
      */
-    public static Boolean LessThanOrEqual(Numeric nOp1, Numeric nOp2){
-        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
-            // Throw error
-        }
+    public static Boolean LessThanOrEqual(Numeric nOp1, Numeric nOp2) throws ExprException{
+    try {
+            if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
+                // Throw error
+            }
 
-        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            if (nOp1.valueToInt() <= nOp2.valueToInt()){
-                return true;
+            if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+                if (nOp1.valueToInt() <= nOp2.valueToInt()){
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
-            else {
-                return false;
+            else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+                if((nOp1.valueToDouble() <= nOp2.valueToDouble())){
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
-        }
-        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            if((nOp1.valueToDouble() <= nOp2.valueToDouble())){
-                return true;
+            else if(nOp1.resultValue.dataType == SubClassif.STRING){
+                if(nOp1.valueToString().compareTo(nOp2.valueToString()) <= 0){
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
-            else{
-                return false;
-            }
-        }
-        else if(nOp1.resultValue.dataType == SubClassif.STRING){
-            if(nOp1.valueToString().compareTo(nOp2.valueToString()) <= 0){
-                return true;
-            }
-            else{
-                return false;
-            }
+        } catch(NumberFormatException e)
+        {   
+            throw new ExprException(nOp1.scan.iSourceLineNr, " invalid non-numeric data in '<=' operation, regarding values "
+                + nOp1.resultValue.value.toString() + " with " + nOp2.resultValue.value.toString());
         }
 
         return false;
@@ -381,34 +419,36 @@ public final class PickleUtil {
      *
      * @return      Boolean
      */
-    public static Boolean GreaterThanOrEqual(Numeric nOp1, Numeric nOp2){
-        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
-            // Throw error
-        }
-
-        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            if (nOp1.valueToInt() >= nOp2.valueToInt()){
-                return true;
+    public static Boolean GreaterThanOrEqual(Numeric nOp1, Numeric nOp2) throws ExprException{
+        try {
+            if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+                if (nOp1.valueToInt() >= nOp2.valueToInt()){
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
-            else {
-                return false;
+            else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+                if((nOp1.valueToDouble() >= nOp2.valueToDouble())){
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
-        }
-        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            if((nOp1.valueToDouble() >= nOp2.valueToDouble())){
-                return true;
+            else if(nOp1.resultValue.dataType == SubClassif.STRING){
+                if(nOp1.valueToString().compareTo(nOp2.valueToString()) >= 0){
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
-            else{
-                return false;
-            }
-        }
-        else if(nOp1.resultValue.dataType == SubClassif.STRING){
-            if(nOp1.valueToString().compareTo(nOp2.valueToString()) >= 0){
-                return true;
-            }
-            else{
-                return false;
-            }
+        } catch(NumberFormatException e)
+        {   
+            throw new ExprException(nOp1.scan.iSourceLineNr, " invalid non-numeric data in '>=' operation, regarding values "
+                + nOp1.resultValue.value.toString() + " with " + nOp2.resultValue.value.toString());
         }
         return false;
     }
@@ -423,35 +463,38 @@ public final class PickleUtil {
      *
      * @return      Boolean
      */
-    public static Boolean GreaterThan(Numeric nOp1, Numeric nOp2){
-        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
-            // Throw error
-        }
-        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            if (nOp1.valueToInt() > nOp2.valueToInt()){
-                return true;
+    public static Boolean GreaterThan(Numeric nOp1, Numeric nOp2) throws ExprException{
+        try{
+            if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+                if (nOp1.valueToInt() > nOp2.valueToInt()){
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
-            else {
-                return false;
-            }
-        }
 
-        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            if((nOp1.valueToDouble() > nOp2.valueToDouble())){
-                return true;
+            else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+                if((nOp1.valueToDouble() > nOp2.valueToDouble())){
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
-            else{
-                return false;
+        
+            else if(nOp1.resultValue.dataType == SubClassif.STRING){
+                if(nOp1.valueToString().compareTo(nOp2.valueToString()) > 0){
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
-        }
-       
-        else if(nOp1.resultValue.dataType == SubClassif.STRING){
-            if(nOp1.valueToString().compareTo(nOp2.valueToString()) > 0){
-                return true;
-            }
-            else{
-                return false;
-            }
+        } catch(NumberFormatException e)
+        {   
+            throw new ExprException(nOp1.scan.iSourceLineNr, " invalid non-numeric data in '>' operation, regarding values "
+                + nOp1.resultValue.value.toString() + " with " + nOp2.resultValue.value.toString());
         }
 
         return false;
@@ -467,34 +510,36 @@ public final class PickleUtil {
      *
      * @return      Boolean
      */
-    public static Boolean LessThan(Numeric nOp1, Numeric nOp2){
-        if(!checkNumericExpr(nOp1.resultValue, nOp2.resultValue)){
-            // Throw error
-        }
-
-        if (nOp1.resultValue.dataType == SubClassif.INTEGER){
-            if (nOp1.valueToInt() < nOp2.valueToInt()){
-                return true;
+    public static Boolean LessThan(Numeric nOp1, Numeric nOp2) throws ExprException{
+        try{
+            if (nOp1.resultValue.dataType == SubClassif.INTEGER){
+                if (nOp1.valueToInt() < nOp2.valueToInt()){
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
-            else {
-                return false;
+            else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
+                if((nOp1.valueToDouble() < nOp2.valueToDouble())){
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
-        }
-        else if(nOp1.resultValue.dataType == SubClassif.FLOAT){
-            if((nOp1.valueToDouble() < nOp2.valueToDouble())){
-                return true;
+            else if(nOp1.resultValue.dataType == SubClassif.STRING){
+                if(nOp1.valueToString().compareTo(nOp2.valueToString()) < 0){
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
-            else{
-                return false;
-            }
-        }
-        else if(nOp1.resultValue.dataType == SubClassif.STRING){
-            if(nOp1.valueToString().compareTo(nOp2.valueToString()) < 0){
-                return true;
-            }
-            else{
-                return false;
-            }
+        } catch(NumberFormatException e)
+        {   
+            throw new ExprException(nOp1.scan.iSourceLineNr, " invalid non-numeric data in '<' operation, regarding values "
+                + nOp1.resultValue.value.toString() + " with " + nOp2.resultValue.value.toString());
         }
         return false;
     }
@@ -552,7 +597,7 @@ public final class PickleUtil {
 
         //Counts each character except space
         for(int i = 0; i < spaces.length(); i++) {
-            if(spaces.charAt(i) != ' ')
+            if(spaces.charAt(i) == ' ')
                 count++;
         }
 
