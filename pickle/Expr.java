@@ -92,8 +92,8 @@ public class Expr {
     while (scan.currentToken.tokenStr.equals("and") || scan.currentToken.tokenStr.equals("or") && scan.currentToken.subClassif != SubClassif.STRING){
       operator = scan.currentToken;
       scan.getNext();
-      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") || !scan.currentToken.tokenStr.equals("-")) 
-      && scan.currentToken.primClassif != Classif.FUNCTION)
+      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-") 
+      && !scan.currentToken.tokenStr.equals("not")) && scan.currentToken.primClassif != Classif.FUNCTION)
         throw new ExprException(scan.iSourceLineNr , "expected operand, instead found " + scan.currentToken.tokenStr);
 
       temp = notBoolean(); 
@@ -157,8 +157,8 @@ public class Expr {
       scan.currentToken.tokenStr.equals("==") || scan.currentToken.tokenStr.equals("!=")){
         operator = scan.currentToken;
         scan.getNext();
-        if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-")) 
-        && scan.currentToken.primClassif != Classif.FUNCTION)
+        if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-") 
+        && !scan.currentToken.tokenStr.equals("not")) && scan.currentToken.primClassif != Classif.FUNCTION)
           throw new ExprException(scan.iSourceLineNr , "expected operand, instead found " + scan.currentToken.tokenStr);
 
         temp = concatenation();
@@ -213,8 +213,8 @@ public class Expr {
     while (scan.currentToken.tokenStr.equals("#")){
       operator = scan.currentToken;
       scan.getNext();
-      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-")) 
-      && scan.currentToken.primClassif != Classif.FUNCTION)
+      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-") 
+      && !scan.currentToken.tokenStr.equals("not")) && scan.currentToken.primClassif != Classif.FUNCTION)
         throw new ExprException(scan.iSourceLineNr , "expected operand, instead found " + scan.currentToken.tokenStr);
 
       temp = summation(); 
@@ -247,8 +247,8 @@ public class Expr {
     while (scan.currentToken.tokenStr.equals("+") || scan.currentToken.tokenStr.equals("-")){
       operator = scan.currentToken;
       scan.getNext();
-      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-")) 
-      && scan.currentToken.primClassif != Classif.FUNCTION)
+      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-") 
+      && !scan.currentToken.tokenStr.equals("not")) && scan.currentToken.primClassif != Classif.FUNCTION)
         throw new ExprException(scan.iSourceLineNr , "expected operand, instead found " + scan.currentToken.tokenStr);
 
       temp = products(); 
@@ -281,8 +281,8 @@ public class Expr {
     while (scan.currentToken.tokenStr.equals("*") || scan.currentToken.tokenStr.equals("/")) {
       operator = scan.currentToken;
       scan.getNext();
-      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-")) 
-      && scan.currentToken.primClassif != Classif.FUNCTION)
+      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-") 
+      && !scan.currentToken.tokenStr.equals("not")) && scan.currentToken.primClassif != Classif.FUNCTION)
         throw new ExprException(scan.iSourceLineNr , "expected operand, instead found " + scan.currentToken.tokenStr);
 
       temp = expon(null);
@@ -327,8 +327,8 @@ public class Expr {
     while (scan.currentToken.tokenStr.equals("^")) {
       operator = scan.currentToken;
       scan.getNext();
-      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-")) 
-      && scan.currentToken.primClassif != Classif.FUNCTION)
+      if (scan.currentToken.primClassif != Classif.OPERAND && (!scan.currentToken.tokenStr.equals("(") && !scan.currentToken.tokenStr.equals(")") && !scan.currentToken.tokenStr.equals("-") 
+      && !scan.currentToken.tokenStr.equals("not")) && scan.currentToken.primClassif != Classif.FUNCTION)
         throw new ExprException(scan.iSourceLineNr , "expected operand, instead found " + scan.currentToken.tokenStr);
 
       temp = function(); 
