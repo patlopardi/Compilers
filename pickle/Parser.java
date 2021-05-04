@@ -382,8 +382,6 @@ public class Parser {
                             }
                         }
                     }
-
-
                     break;
                 default:
                     error("expected assignment operator received instead: ", operatorStr);

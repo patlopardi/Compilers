@@ -11,7 +11,7 @@ public class Scanner
   //Variables
   //private final static String delimiters = " \t;:()\'\"=!<>+-*/[]#,^\n";
   private final static String operators = "+-*/<>!=#^";
-  private final static String separators = "():;[],";
+  private final static String separators = "():;[],{}";
   public Token currentToken = new Token();
   public int iColPos;
   public int iSourceLineNr;
