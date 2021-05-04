@@ -64,7 +64,7 @@ public class Expr {
       System.out.println("..." + resClone + " " + opString + " " + res02 + " is " + res.value.toString() );
     }
     //if next is not a separator its error
-    if(scan.currentToken.primClassif == Classif.OPERAND)
+    if(scan.currentToken.primClassif == Classif.OPERAND && !scan.currentToken.tokenStr.equals("to") && !scan.currentToken.tokenStr.equals("by"))
     {
       throw new ExprException(scan.iSourceLineNr , "operand was not expected, found " + scan.currentToken.tokenStr);
     }
